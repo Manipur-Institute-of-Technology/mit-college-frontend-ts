@@ -1,11 +1,11 @@
-import "./HomePage.css";
+import "./Home.css";
 import React from "react";
 import { Navbar } from "./Navbar/Navbar";
-import { Image_slider } from "./Home/Image_slider/Image_slider";
-import { LeftNotification } from "./Home/MainContent/LocalNavigation/Left_Notice/LeftNotification";
-import { LeftInformation } from "./Home/MainContent/LocalNavigation/Left_Information/LeftInformation";
-import { LeftDownload } from "./Home/MainContent/LocalNavigation/Left_Download/LeftDownload";
-import { MainContent } from "./Home/MainContent/Main_body";
+import { Image_slider } from "./Main_Page/Image_slider/Image_slider";
+import { LeftNotification } from "./Main_Page/MainContent/LocalNavigation/Left_Notice/LeftNotification";
+import { LeftInformation } from "./Main_Page/MainContent/LocalNavigation/Left_Information/LeftInformation";
+import { LeftDownload } from "./Main_Page/MainContent/LocalNavigation/Left_Download/LeftDownload";
+import { MainContent } from "./Main_Page/MainContent/Main_body";
 import { Top_Navbar } from "./Navbar/TopNavbar/Top_Navbar";
 import { Footer } from "./Footer/Footer";
 

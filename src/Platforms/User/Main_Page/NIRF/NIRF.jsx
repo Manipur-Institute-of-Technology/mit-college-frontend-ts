@@ -1,8 +1,8 @@
-import { Footer } from "../../../User/Footer/Footer";
-import { Navbar } from "../../../User/Navbar/Navbar";
-import { LeftDownload } from "../../Home/MainContent/LocalNavigation/Left_Download/LeftDownload";
-import { LeftInformation } from "../../Home/MainContent/LocalNavigation/Left_Information/LeftInformation";
-import { LeftNotification } from "../../Home/MainContent/LocalNavigation/Left_Notice/LeftNotification";
+import { Footer } from "../../Footer/Footer";
+import { Navbar } from "../../Navbar/Navbar";
+import { LeftDownload } from "../MainContent/LocalNavigation/Left_Download/LeftDownload";
+import { LeftInformation } from "../MainContent/LocalNavigation/Left_Information/LeftInformation";
+import { LeftNotification } from "../MainContent/LocalNavigation/Left_Notice/LeftNotification";
 import "./NIRF.css";
 function NIRF() {
   return (

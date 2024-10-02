@@ -93,11 +93,6 @@ export function Footer() {
         <p>Manipur Institute of Technology</p>
         <p>(A Constitute College of Manipur University)</p>
         <p>Takyelpat, Imphal - 795001, Manipur, India</p>
-        <div className="Creators_btn">
-          <a className="Creators_btn_link" href="Creators" target="_blank">
-            Creators
-          </a>
-        </div>
       </div>
     </div>
   );

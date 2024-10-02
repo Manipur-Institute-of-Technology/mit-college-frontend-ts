@@ -2,9 +2,9 @@ import "./Online_grievance_redressal.css";
 import React from "react";
 import { Navbar } from "../../User/Navbar/Navbar";
 import { Footer } from "../Footer/Footer";
-import { LeftNotification } from "../Home/MainContent/LocalNavigation/Left_Notice/LeftNotification";
-import { LeftInformation } from "../Home/MainContent/LocalNavigation/Left_Information/LeftInformation";
-import { LeftDownload } from "../Home/MainContent/LocalNavigation/Left_Download/LeftDownload";
+import { LeftNotification } from "../Main_Page/MainContent/LocalNavigation/Left_Notice/LeftNotification";
+import { LeftInformation } from "../Main_Page/MainContent/LocalNavigation/Left_Information/LeftInformation";
+import { LeftDownload } from "../Main_Page/MainContent/LocalNavigation/Left_Download/LeftDownload";
 
 function OGR_footer() {
   return (

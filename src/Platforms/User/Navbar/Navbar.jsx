@@ -1,11 +1,11 @@
-
-import { Administration_drop } from "../Home/Administration/Administration_drop";
-import { Department_drop } from "../Home/Department/Department_drop";
-import { Facility_drop } from "../Home/Facility/Facility_drop";
-import { FeePayment_Drop } from "../Home/Fee_Payment/FeePayment_Drop";
-import { Information_drop } from "../Home/Information/Information_drop";
+import { Administration_drop } from "../Main_Page/Administration/Administration_drop";
+import { Department_drop } from "../Main_Page/Department/Department_drop";
+import { Facility_drop } from "../Main_Page/Facility/Facility_drop";
+import { FeePayment_Drop } from "../Main_Page/Fee_Payment/FeePayment_Drop";
+import { Information_drop } from "../Main_Page/Information/Information_drop";
 
 import "./Navbar.css";
+
 export function Navbar() {
   return (
     <div className="Navbar">
@@ -60,9 +60,13 @@ export function Navbar() {
           </a>
         </div>
         <div className="nirf_btn Link_2">
-          <a className="nonDrop" href="NIRF">NIRF</a>
+          <a className="nonDrop" href="NIRF">
+            NIRF
+          </a>
         </div>
-        <div className="gallery_btn Link_2">Gallery</div>
+        <div className="gallery_btn Link_2">
+          <button onClick={() => alert("Under Maintenance")}>Gallery</button>
+        </div>
         <div className="contact_Us_btn Link_2">
           <a className="nonDrop" href="Contact_Us">
             Contact Us

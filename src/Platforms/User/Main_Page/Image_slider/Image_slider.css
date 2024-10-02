@@ -8,6 +8,10 @@
     border: 2px solid #ddd;
     border-radius: 10px;
     margin-bottom: 1rem;
+  }
+  .carousel.carousel-slider .control-arrow {
+  font-size: 20px !important;
+
 }
 .img_1{
   height: 26rem;

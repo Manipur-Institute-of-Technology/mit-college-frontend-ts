@@ -1,37 +1,36 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "../../Platforms/User/HomePage";
-import ContactUs from "../../Platforms/User/Home/ContactUs/ContactUs";
-import ViceChancellor from "../../Platforms/User/Home/Administration/ViceChancellor/ViceChancellor";
-import Principal from "../../Platforms/User/Home/Administration/Principal/Principal";
-import Hostel_admin from "../../Platforms/User/Home/Administration/Hostel Administration/Hostel_admin";
-import Ins_admin from "../../Platforms/User/Home/Administration/Institute Administration/Ins_admin";
-import BSC_dept from "../../Platforms/User/Home/Department/BSC/BSC_dept";
-import CE_dept from "../../Platforms/User/Home/Department/CE/CE_dept";
-import CSE_dept from "../../Platforms/User/Home/Department/CSE/CSE_dept";
-import ECE_dept from "../../Platforms/User/Home/Department/ECE/ECE_dept";
-import EE_dept from "../../Platforms/User/Home/Department/EE/EE_dept";
-import ME_dept from "../../Platforms/User/Home/Department/ME/ME_dept";
-import HF from "../../Platforms/User/Home/Facility/Facility_Container/HF";
-import IF from "../../Platforms/User/Home/Facility/Facility_Container/IF";
-import LF from "../../Platforms/User/Home/Facility/Facility_Container/LF";
-import LL from "../../Platforms/User/Home/Facility/Facility_Container/LL";
-import Campus from "../../Platforms/User/Home/Information/Information_Container/Campus";
-import Classroom from "../../Platforms/User/Home/Information/Information_Container/Classroom";
-import FDP from "../../Platforms/User/Home/Information/Information_Container/FDP";
-import FSC from "../../Platforms/User/Home/Information/Information_Container/FSC";
-import MD from "../../Platforms/User/Home/Information/Information_Container/MD";
-import OGR from "../../Platforms/User/Home/Information/Information_Container/OGR";
-import Placement from "../../Platforms/User/Home/Information/Information_Container/Placement";
-import Ragging from "../../Platforms/User/Home/Information/Information_Container/Ragging";
+import Home from "../../Platforms/User/Home";
+import ContactUs from "../../Platforms/User/Main_Page/ContactUs/ContactUs";
+import ViceChancellor from "../../Platforms/User/Main_Page/Administration/ViceChancellor/ViceChancellor";
+import Principal from "../../Platforms/User/Main_Page/Administration/Principal/Principal";
+import Hostel_admin from "../../Platforms/User/Main_Page/Administration/Hostel Administration/Hostel_admin";
+import Ins_admin from "../../Platforms/User/Main_Page/Administration/Institute Administration/Ins_admin";
+import BSC_dept from "../../Platforms/User/Main_Page/Department/BSC/BSC_dept";
+import CE_dept from "../../Platforms/User/Main_Page/Department/CE/CE_dept";
+import CSE_dept from "../../Platforms/User/Main_Page/Department/CSE/CSE_dept";
+import ECE_dept from "../../Platforms/User/Main_Page/Department/ECE/ECE_dept";
+import EE_dept from "../../Platforms/User/Main_Page/Department/EE/EE_dept";
+import ME_dept from "../../Platforms/User/Main_Page/Department/ME/ME_dept";
+import HF from "../../Platforms/User/Main_Page/Facility/Facility_Container/HF";
+import IF from "../../Platforms/User/Main_Page/Facility/Facility_Container/IF";
+import LF from "../../Platforms/User/Main_Page/Facility/Facility_Container/LF";
+import LL from "../../Platforms/User/Main_Page/Facility/Facility_Container/LL";
+import Campus from "../../Platforms/User/Main_Page/Information/Information_Container/Campus";
+import Classroom from "../../Platforms/User/Main_Page/Information/Information_Container/Classroom";
+import FDP from "../../Platforms/User/Main_Page/Information/Information_Container/FDP";
+import FSC from "../../Platforms/User/Main_Page/Information/Information_Container/FSC";
+import MD from "../../Platforms/User/Main_Page/Information/Information_Container/MD";
+import OGR from "../../Platforms/User/Main_Page/Information/Information_Container/OGR";
+import Placement from "../../Platforms/User/Main_Page/Information/Information_Container/Placement";
+import Ragging from "../../Platforms/User/Main_Page/Information/Information_Container/Ragging";
 import Teachers from "../../Platforms/common/Teachers/TeachersMain";
-import Conference from "../../Platforms/User/Home/Conference/Conference";
-import NIRF from "../../Platforms/User/Home/NIRF/NIRF";
-import CE_14th from "../../Platforms/User/Home/Information/Information_Container/placement_table/CE_14th";
-import CE_15th from "../../Platforms/User/Home/Information/Information_Container/placement_table/CE_15th";
-import CE_16th from "../../Platforms/User/Home/Information/Information_Container/placement_table/CE_16th";
+import Conference from "../../Platforms/User/Main_Page/Conference/Conference";
+import NIRF from "../../Platforms/User/Main_Page/NIRF/NIRF";
+import CE_14th from "../../Platforms/User/Main_Page/Information/Information_Container/placement_table/CE_14th";
+import CE_15th from "../../Platforms/User/Main_Page/Information/Information_Container/placement_table/CE_15th";
+import CE_16th from "../../Platforms/User/Main_Page/Information/Information_Container/placement_table/CE_16th";
 import OGR_footer from "../../Platforms/User/Footer/Online_grievance_redressal";
-import Creators from "../../Platforms/User/Footer/Creators";
 
 function MainRouter() {
   return (
@@ -68,7 +67,6 @@ function MainRouter() {
         <Route path="Placement/CE_15th" element={<CE_15th />} />
         <Route path="Placement/CE_16th" element={<CE_16th />} />
         <Route path="OGR_footer" element={<OGR_footer />} />
-        <Route path="Creators" element={<Creators />} />
       </Route>
     </Routes>
   );

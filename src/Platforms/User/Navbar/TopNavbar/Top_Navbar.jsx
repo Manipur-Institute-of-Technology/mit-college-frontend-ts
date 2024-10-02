@@ -8,8 +8,14 @@ export function Top_Navbar() {
       </div>
       <div className="Top_Navbar_align">
         <div className="admin_panel">
-          <div className="Link_1">Faculties</div>
-          <div className="Link_1">Teaches</div>
+          <div className="Link_1">
+            <button onClick={() => alert("Under Maintenance")}>
+              Faculties
+            </button>
+          </div>
+          <div className="Link_1">
+            <button onClick={() => alert("Under Maintenance")}>Teaches</button>
+          </div>
         </div>
         {/* <div className="Font_sizer">
           <div className="Link_1 decrease_font"></div>
@@ -18,13 +24,13 @@ export function Top_Navbar() {
         </div> */}
         <div className="Theme_box">
           <div className="theme_btn">
-            <h1>+</h1>
+            <button onClick={() => alert("Under Maintenance")}>-</button>
           </div>
           <div className="theme_btn">
-            <h1>N</h1>
+            <button onClick={() => alert("Under Maintenance")}>N</button>
           </div>
           <div className="theme_btn">
-            <h1>-</h1>
+            <button onClick={() => alert("Under Maintenance")}>+</button>
           </div>
         </div>
       </div>

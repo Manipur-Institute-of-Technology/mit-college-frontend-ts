@@ -1,8 +1,8 @@
 import { Footer } from "../../../User/Footer/Footer";
 import { Navbar } from "../../../User/Navbar/Navbar";
-import { LeftDownload } from "../../Home/MainContent/LocalNavigation/Left_Download/LeftDownload";
-import { LeftInformation } from "../../Home/MainContent/LocalNavigation/Left_Information/LeftInformation";
-import { LeftNotification } from "../../Home/MainContent/LocalNavigation/Left_Notice/LeftNotification";
+import { LeftDownload } from "../../Main_Page/MainContent/LocalNavigation/Left_Download/LeftDownload";
+import { LeftInformation } from "../../Main_Page/MainContent/LocalNavigation/Left_Information/LeftInformation";
+import { LeftNotification } from "../../Main_Page/MainContent/LocalNavigation/Left_Notice/LeftNotification";
 import "./Conference.css";
 function Conference() {
   return (

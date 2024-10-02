@@ -15,9 +15,7 @@ function OGR() {
         </div>
         <div className="Information_wrapper">
           <div className="Information_Header_container">
-            <h2>
-              Online Grievance Redressal :{" "}
-            </h2>
+            <h2>Online Grievance Redressal : </h2>
           </div>
           <div className="Information_body">
             <div className="Information_main">
@@ -47,7 +45,8 @@ function OGR() {
                       </tr>
                       <tr>
                         <td>
-                          <h4>&nbsp;Administrative Officer</h4>
+                          &nbsp;
+                          <h4>Administrative Officer</h4>
                         </td>
                         <td>
                           &nbsp;
