@@ -1,0 +1,89 @@
+.ContactUs{
+  padding: 1rem;
+}
+.ContactUs_Tittle {
+  background-color: #e9f7fe;
+  color: #5091b2;
+  border: 1px solid #b6d7e8;
+  font-family: Arial, sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  padding: 14px 40px 14px 18px;
+  box-shadow: 0px 1px 1px 0px rgba(180, 180, 180, 0.1);
+}
+.centered_text {
+  margin: 16px 12px;
+}
+.ContactUs_Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.ContactUs_body{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.ContactUs_left{
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+.ContactUs_text{
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-bottom: 2rem;
+}
+.ContactUs_text p{
+  color: rgb(34, 34, 34);
+  font-weight: 500;
+}
+.map_edit{
+  border: black solid 2px;
+  box-shadow: rgba(0, 0, 0, 0.336) -5px 5px 10px 10px;
+  border-radius: 10px;
+}
+.ContactUs_body_align{
+  background-color: rgb(230, 255, 247);
+  width: 80%;
+  height: 100vh;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  overflow-y: scroll;
+}
+.ContactUs_mid{
+display: flex;
+align-items: center;
+justify-content: center;
+width: 70%;
+}
+.ContactUs_form {
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 90%;
+  height: 18rem;
+  padding: 20px;
+  gap: 1rem;
+  border-radius: 10px;
+  border: black solid 2px;
+  box-shadow: rgba(0, 0, 0, 0.336) -5px 5px 10px 10px;
+}
+.submit_btn{
+  width: 5rem;
+  height: 2rem;
+  border-radius: .5rem;
+}
+.ContactUs_right{
+  width: 25%;
+  height: 100vh;
+  overflow-y: scroll;
+}

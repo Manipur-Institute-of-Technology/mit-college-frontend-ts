@@ -1,0 +1,94 @@
+.SignBtn {
+  height: 3rem;
+  width: 10rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  border-radius: 8px;
+}
+
+.NextStep {
+  background-color: #f7a582;
+  transition: all 0.2s ease-in-out;
+}
+
+.NextStep:hover {
+  background-color: #1f3f37;
+  color: white;
+}
+
+.SignIn {
+  background-color: blue;
+  color: white;
+  transition: all 0.5s ease-in-out;
+}
+
+.SignIn:hover {
+  background-color: wheat;
+  color: black;
+}
+
+.EmailBlock {
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.OTPWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+  gap: 0.5rem;
+}
+
+.OTPHeader {
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.Buttons_API_Call {
+  background-color: #f7a582;
+  width: 13rem;
+  border-radius: 8px;
+  border: 1px solid #1f3f37;
+  height: 3.5rem;
+  transition: 0.2s all ease-in-out;
+}
+
+.Buttons_API_Call:hover {
+  background-color: #1f3f37;
+  color: white;
+  border: 1px solid #f7a582;
+}
+
+.TeacherPhotoInput {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 12px;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+  padding: 0.2rem;
+  border: 1px solid black;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  width: 70%;
+}
+
+.TeacherDataInput {
+  width: 60%;
+}
+
+.Photo {
+  object-fit: fill;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}

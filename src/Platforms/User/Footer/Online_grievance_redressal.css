@@ -1,0 +1,110 @@
+.OGR_footer{
+  padding: 1rem;
+}
+.OGR_footer_Tittle {
+  background-color: #e9f7fe;
+  color: #5091b2;
+  border: 1px solid #b6d7e8;
+  font-family: Arial, sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  padding: 14px 40px 14px 18px;
+  box-shadow: 0px 1px 1px 0px rgba(180, 180, 180, 0.1);
+}
+.OGR_footer_Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.OGR_footer_body{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.OGR_footer_left{
+  /* background-color: aquamarine; */
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+.OGR_footer_text{
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-left: 1rem;
+}
+.OGR_footer_text p{
+  color: rgb(34, 34, 34);
+  font-weight: 500;
+}
+.OGR_footer_text h2{
+  font-size: 18px;
+  color: rgb(34, 34, 34);
+  font-weight: 700;
+}
+.OGR_footer_input{
+  background-color: #fff;
+  border: #000 solid 1px;
+  width: 90%;
+}
+.token_submit_btn{
+  background-color: #72B626;
+  font-weight: 400;
+  color: #fff;
+  width: 19%;
+  padding: .2rem;
+  border-radius: 1rem;
+}
+.token_submit_btn:hover{
+  background-color: #64a11e;
+}
+.map_edit{
+  border: black solid 2px;
+  box-shadow: rgba(0, 0, 0, 0.336) -5px 5px 10px 10px;
+  border-radius: 10px;
+}
+.OGR_footer_body_align{
+  background-color: rgb(230, 255, 247);
+  width: 80%;
+  height: 100vh;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  overflow-y: scroll;
+}
+.OGR_footer_mid{
+display: flex;
+justify-content: center;
+width: 100%;
+margin-top: 2rem;
+}
+.OGR_footer_form {
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 90%;
+  padding: 20px;
+  gap: 1rem;
+  border-radius: 10px;
+  border: black solid 1px;
+  box-shadow: rgba(0, 0, 0, 0.336) -5px 5px 10px 10px;
+}
+.submit_btn{
+  background-color: #fff;
+  border: #000 solid 1px;
+  width: 5rem;
+  height: 2rem;
+  border-radius: .5rem;
+}
+.submit_btn:hover{
+  background-color: #f0f0f0;
+}
+.OGR_footer_right{
+  width: 25%;
+  height: 100vh;
+  overflow-y: scroll;
+}

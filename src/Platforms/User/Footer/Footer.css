@@ -1,0 +1,47 @@
+
+.footer h4{
+  color: #fff;
+}
+.footer p , a{
+  color: #a2a2a2;
+  font-size: 15px;
+}
+.footer a{
+  text-decoration: none;
+}
+.footer a:hover{
+}
+.facility_foot a:hover{
+  color: #fff;
+}
+.information_footer a:hover{
+  color: #fff;
+}
+
+.footer ul{
+  padding: 0;
+  list-style: none;
+}
+
+.footer{
+  padding: 30px 50px;
+  display: flex;
+  justify-content:space-between ;
+  background-color: #303030;
+  color: #fff;
+}
+
+.Creators_btn{
+  /* background-color: red; */
+  height: 40%;
+  display: flex;
+  align-items: center;
+}
+.Creators_btn_link{
+  font-weight: 500;
+  color: #fff;
+  padding: .1rem;
+}
+.Creators_btn_link:hover{
+  border-bottom: #fff solid 2px;
+}

@@ -1,0 +1,36 @@
+.HomePage{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.HomePage_align{
+  width: 95%;
+}
+.HomePage_wrapper{
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+.HomePage_top_link{
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.HomePage_top_link a{
+  font-size: 16px;
+  font-weight: 500;
+  color: #5ca20d;
+}
+.Home_Align{
+  display: flex;
+  flex-direction: row;
+}
+.Right_Side{
+  width: 100%;
+}
+.left_Side{
+  width: 30%;
+  height: 100vh;
+  overflow: auto;
+  overflow-y: scroll;
+  border: 1px solid black;
+}

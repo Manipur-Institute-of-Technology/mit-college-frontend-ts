@@ -1,0 +1,86 @@
+.Facility_container {
+  padding: 1rem;
+  height: 100vh;
+}
+.Facility_align {
+  margin-bottom: 2rem;
+}
+.Facility_Tittle {
+  background-color: #e9f7fe;
+  color: #5091b2;
+  border: 1px solid #b6d7e8;
+  font-family: Arial, sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  padding: 14px 40px 14px 18px;
+  box-shadow: 0px 1px 1px 0px rgba(180, 180, 180, 0.1);
+}
+.Facility_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.Facility_Header_container {
+  width: 100%;
+  font-size: 22px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.Facility_body {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.Facility_main {
+  background-color: rgb(230, 255, 247);
+  width: 80%;
+  height: 100vh;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: scroll;
+}
+.Facility_right {
+  width: 25%;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.align_img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.facility_text_box ol {
+  margin-left: 1.5rem;
+}
+
+.facility_text_box h2{
+  font-size: 20px;
+  font-weight: 500;
+} 
+.facility_text_box h3{
+  font-size: 18px;
+  font-weight: 500;
+} 
+.facility_text {
+  margin-left: 1rem;
+}
+.facility_link {
+  margin-left: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+  color: #5ca20d;
+}
+
+.inside_Links{
+  text-decoration: none;
+  font-weight: 500;
+  color: #5ca20d;
+}

@@ -1,0 +1,31 @@
+.lN_w2{
+  background-color: #fff;
+  padding: 1rem;
+  border: 1px solid black;
+}
+.LeftNavigation_options{
+  padding:.8rem .3rem;
+  border-bottom: 1px solid black;
+}
+.LeftNavigation_options a {
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #5ca20d;
+}
+.LeftNavigation_wrapper {
+  border: 1px solid black;
+  padding: 1rem;
+}
+.news_n_notices{
+  height: 15rem;
+}
+.LeftNavigation_Header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.LeftNavigation_Header h1{
+  font-size: 26px;
+  font-weight: 500;
+}

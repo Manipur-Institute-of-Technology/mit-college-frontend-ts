@@ -1,0 +1,69 @@
+.Creators{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.Creators_align{
+  height: 100%;
+  width: 90%;
+  display: flex;
+  padding-top: 1rem;
+  justify-content: center;
+}
+.Creators_wrapper{
+  display: grid;
+  grid-template-columns: repeat(3, 20rem);
+  grid-template-rows: repeat(2, 16rem);
+  justify-content: center;
+  gap: 5rem;
+}
+.Creators_container{
+  border: black solid 1px;
+
+}
+.Creators_img{
+  background-color: aqua;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  border-radius: 1rem 1rem 0rem 0rem;
+}
+.Creators_info_container{
+  padding-bottom: 1rem;
+  background-color: #fff;
+  border-radius: 0rem 0rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 70%;
+}
+.Creators_info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: .5rem;
+  height: 8rem;
+  width: 90%;
+}
+.Creators_name{
+  font-size: 18px;
+  font-weight: 500;
+}
+.Creators_contact{
+  display: flex;
+  align-items: end;
+  height: 2rem;
+}
+.Creators_contact_align{
+display: flex;
+justify-content: space-evenly;
+width: 10rem;
+}
+.Creators_contact_align a{
+  font-size: 30px;
+}
+.Creators_link{
+  color: black;
+}

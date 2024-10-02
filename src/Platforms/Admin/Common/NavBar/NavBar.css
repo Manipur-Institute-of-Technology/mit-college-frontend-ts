@@ -1,0 +1,72 @@
+.TopBar {
+  background: rgb(89, 131, 146);
+  background: linear-gradient(
+    90deg,
+    rgba(89, 131, 146, 1) 0%,
+    rgba(130, 76, 113, 0.9051995798319328) 100%
+  );
+  color: rgb(255, 255, 255);
+  z-index: 5;
+  pointer-events: all;
+  font-weight: 400;
+  height: 4rem;
+}
+
+.menu {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.line {
+  fill: none;
+  stroke: white;
+  stroke-width: 3;
+  height: 1.5rem;
+  width: 1.5rem;
+  transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.line1 {
+  stroke-dasharray: 60 207;
+}
+.line2 {
+  stroke-dasharray: 60 60;
+}
+.line3 {
+  stroke-dasharray: 60 207;
+}
+.opened .line1 {
+  stroke-dasharray: 90 207;
+  stroke-dashoffset: -134;
+}
+.opened .line2 {
+  stroke-dasharray: 1 60;
+  stroke-dashoffset: -30;
+}
+.opened .line3 {
+  stroke-dasharray: 90 207;
+  stroke-dashoffset: -134;
+}
+
+.NavSmallViewPort {
+  position: absolute;
+  flex-direction: column;
+  color: rgb(255, 255, 255);
+  background-color: #824c7191;
+  border-radius: 12px;
+  padding: 2rem;
+  min-height: 10rem;
+  top: 4.1rem;
+  right: 0.2rem;
+}
+
+.ActiveNavBar {
+  font-weight: 700;
+  font-size: 1.3rem;
+}

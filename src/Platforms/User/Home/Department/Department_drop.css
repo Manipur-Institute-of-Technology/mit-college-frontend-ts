@@ -1,0 +1,24 @@
+.Department_drop{
+  background-color: aquamarine;
+  position: relative;
+}
+.Department_drop_align{
+  background-color: #90a880;
+  width: 18rem;
+  position: absolute;
+  top: 0px;
+  left: 16.7rem;
+  border-radius: 0rem 0rem 1rem 1rem;
+  z-index: 1;
+}
+.Dep_link_1{
+  padding: .7rem;
+  font-size: 18px;
+}
+.Dep_link_1 a{
+  font-size: 20px;
+}
+.Dep_link_1:hover{
+  transition: all ease .3s;
+  background-color: #d8d0c2;
+}

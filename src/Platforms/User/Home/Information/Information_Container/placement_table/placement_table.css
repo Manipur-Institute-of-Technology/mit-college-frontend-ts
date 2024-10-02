@@ -1,0 +1,7 @@
+
+.info_placement_text_box tr{
+  border: black solid 1px;
+}
+.info_placement_text_box td{
+  border-right: black solid 1px;
+}

@@ -1,0 +1,43 @@
+.MailWrapper {
+  margin: 0.5rem;
+  border-radius: 12px;
+  width: 99vw;
+  overflow: hidden;
+  border: 1px solid black;
+  height: 89vh;
+}
+
+.MailHeaderWrapper {
+  background-color: grey;
+  height: 7%;
+}
+
+.MailBodyWrapper {
+  overflow: scroll;
+  height: 84vh;
+  gap: 1.5rem;
+}
+
+.MailBodyWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.MailBodyItem {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 6fr 1fr;
+  gap: 0.5rem;
+  min-height: 6rem;
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+.MailItemMessage {
+  border-radius: 8px;
+  min-height: 1rem;
+  max-height: 5.5rem;
+  outline: none;
+  background-color: rgb(250, 244, 236);
+  padding: 0.1rem 1rem 0.1rem 1rem;
+  width: 100%;
+}

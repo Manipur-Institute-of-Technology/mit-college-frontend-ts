@@ -1,0 +1,237 @@
+.Dept_Container {
+  padding: 1rem;
+}
+
+.Dept_Tittle {
+  background-color: #e9f7fe;
+  color: #5091b2;
+  border: 1px solid #b6d7e8;
+  font-family: Arial, sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  padding: 14px 40px 14px 18px;
+  box-shadow: 0px 1px 1px 0px rgba(180, 180, 180, 0.1);
+}
+.Dept_Wrapper {
+  background-color: rgb(219, 253, 242);
+  display: flex;
+  padding-bottom: 0.5rem;
+}
+.Dept_main {
+  padding: 1rem;
+  width: 80%;
+  height: 100vh;
+  overflow-y: scroll;
+}
+.Right_main {
+  border: black solid 1px;
+  height: 100vh;
+  width: 25%;
+  overflow-y: scroll;
+}
+.Dept_name {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  /* background-color: rebeccapurple; */
+  padding: 0.5rem;
+}
+.DeptName_header {
+  width: 100%;
+  font-size: 22px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.Dept_info {
+  margin-bottom: 2rem;
+}
+.Dept_Container h2 {
+  font-size: 20px;
+  font-weight: 500;
+}
+.Dept_Container h3 {
+  font-size: 16px;
+  font-weight: 500;
+}
+.Dept_info_align {
+  margin-left: 2rem;
+}
+.Dept_info_align ul {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  list-style: lower-alpha;
+  line-height: 25px;
+}
+.Dept_info_align ol {
+  list-style: decimal;
+}
+.Dept_moreInfo p {
+  margin-left: 1rem;
+}
+.Dept_moreInfo ol {
+  margin-top: 1rem;
+  list-style: decimal;
+  margin-left: 2rem;
+  line-height: 25px;
+}
+.Dept_moreInfo ul {
+  list-style: upper-alpha;
+  margin-left: 2rem;
+  line-height: 25px;
+}
+.img_align {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.img_align img {
+  width: 48%;
+}
+.Dept_staff {
+  margin-bottom: 2rem;
+}
+.Members_align {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  height: 10%;
+}
+.Members_container {
+  /* background-color: rebeccapurple; */
+  display: grid;
+  width: 100%;
+  grid-template-columns: 28rem 28rem;
+  grid-template-rows: repeat(6, 12rem);
+  gap: 3rem;
+  justify-content: space-evenly;
+}
+.Members_container_CSE {
+  grid-template-rows: repeat(4, 12rem);
+}
+.Members_container_BSC {
+  grid-template-rows: repeat(4, 12rem);
+}
+.Members_container_ME {
+  grid-template-rows: repeat(3, 12rem);
+}
+.Members_container_EE {
+  grid-template-rows: repeat(2, 12rem);
+}
+.Box_1 {
+  background-color: #fff;
+  border-radius: 10px;
+  border: #4b7488 2px solid;
+  box-shadow: gray -5px 3px 5px 1px;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+.Box_1_align {
+  /* margin-top: 14px; */
+  display: flex;
+  justify-content: center;
+  height: 10rem;
+  width: 90%;
+}
+.member_img_container {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+}
+.member_img {
+  width: 100%;
+}
+.member_info_box {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 90%;
+  margin: 1rem;
+}
+.member_info_box h3 {
+  font-size: 14px;
+  font-weight: 500;
+}
+.member_info_box h4 {
+  font-size: 14px;
+  font-weight: 500;
+}
+.member_info_box a {
+  font-size: 14px;
+}
+.member_info_box p {
+  font-size: 14px;
+}
+
+.tag_align {
+  display: flex;
+  justify-content: end;
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+.HOD_tag {
+  position: relative;
+}
+.hod_tag_text {
+  transform: rotate(45deg);
+  position: absolute;
+  right: -0.1rem;
+  top: 0.3rem;
+  color: white;
+  font-weight: 600;
+  z-index: 1;
+}
+.tag_1 {
+  background-color: red;
+  height: 1.5rem;
+  width: 4.5rem;
+  transform: rotate(45deg);
+  border-radius: 1000rem 1000rem 0rem 0rem;
+  position: absolute;
+  top: 0.3rem;
+  left: -3.3rem;
+}
+.tag_2 {
+  background-color: rgb(219, 253, 242);
+  height: 2.2rem;
+  width: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  right: -0.5rem;
+  z-index: 1;
+  border-left: #4b7488 solid 2px;
+}
+.tag_3 {
+  background-color: rgb(219, 253, 242);
+  border-bottom: #4b7488 solid 2px;
+  height: 0.5rem;
+  width: 2.2rem;
+  position: absolute;
+  top: -0.5rem;
+  right: 1rem;
+  z-index: 1;
+}
+.Dept_lab {
+  margin-bottom: 2rem;
+}
+.DepLab_wrapper {
+  display: flex;
+  justify-content: space-around;
+}
+.DeptLab_container {
+  padding: 1rem;
+}
+.DeptLab_pic {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+.DeptLab_info ol {
+  margin-left: 2rem;
+  list-style: decimal;
+}

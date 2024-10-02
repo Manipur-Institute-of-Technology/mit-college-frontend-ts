@@ -1,0 +1,91 @@
+.NIRF_container {
+  padding: 1rem;
+  height: 100vh;
+}
+.NIRF_align{
+  margin-bottom: 2rem;
+}
+.NIRF_Tittle {
+  background-color: #e9f7fe;
+  color: #5091b2;
+  border: 1px solid #b6d7e8;
+  font-family: Arial, sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  padding: 14px 40px 14px 18px;
+  box-shadow: 0px 1px 1px 0px rgba(180, 180, 180, 0.1);
+}
+.NIRF_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.NIRF_Header_container {
+  width: 100%;
+  font-size: 22px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.NIRF_body{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.NIRF_main{
+  background-color: rgb(230, 255, 247);
+  width: 79%;
+  height: 100vh;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: scroll;
+}
+.NIRF_right{
+  width: 25%;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.Dynamic_info{
+  background-color: red;
+  text-align: center;
+}
+.align_img{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.text_box{
+  margin-top: 1rem;
+  margin-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.NIRF_text_box{
+  list-style: decimal;
+  margin-left: 2rem;
+}
+.NIRF_text_box a{
+  color: #5ca20d;
+}
+.NIRF_text_box h2{
+  margin-top: 1rem;
+  font-size: 18px;
+  font-weight: 500;
+}
+.NIRF_text_box a{
+  margin-left: 1rem;
+  font-size: 14;
+  font-weight: 500;
+}
+.NIRF_main_info_text_header{
+  font-size: 20px;
+  font-weight: 500;
+}
