@@ -4,7 +4,7 @@ export function Top_Navbar() {
   return (
     <div className="Top_Navbar">
       <div className="Image_wrapper">
-        <img className="mit_logo" src="./Images/Main_page/MIT_logo.webp"></img>
+        <img className="mit_logo" src="./Images/Main_page/MIT_Logo.png"></img>
       </div>
       <div className="Top_Navbar_align">
         <div className="admin_panel">
