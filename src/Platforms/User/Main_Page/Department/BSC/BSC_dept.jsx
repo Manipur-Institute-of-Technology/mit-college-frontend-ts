@@ -18,6 +18,8 @@ function BSC_dept() {
           </h1>
         </div>
         <div className="Dept_Wrapper">
+          <div className="Dept_main_Wrapper">
+
           <div className="Dept_main">
             <div className="Dept_info">
               <h2>Faculty Member of Basic Sciences & Humanities</h2>
@@ -198,6 +200,7 @@ function BSC_dept() {
             <LeftNotification />
             <LeftDownload />
             <LeftInformation />
+          </div>
           </div>
         </div>
       </div>

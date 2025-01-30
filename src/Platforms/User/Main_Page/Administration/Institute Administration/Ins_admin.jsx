@@ -122,55 +122,55 @@ function Ins_admin() {
               <h3>Proceedings of the BoG/GB meetings of MIT :</h3>
               <ul className="Administration_table_links">
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485613996.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 5th GB meeting held on 08-05-2013
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614074.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of Special GB meeting held on 06-09-2014
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614145.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 6th GB meeting held on 25-06-2015
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614203.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 7th GB meeting held on 07-12-2015
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614239.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 8th GB meeting held on 16-02-2016
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614307.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 9th GB meeting held on 22-03-2016
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614442.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 10th GB meeting held on 15-07-2016
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614505.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of 11th GB meeting held on 02-12-2016
                 </a>
                 <a
-                  href="http://mitimphal.in/uploads/media/m1485614559.pdf"
+                  onClick={() => alert("Under Maintenance")}
                   target="_blank"
                 >
                   Proceedings of Emergency GB meeting held on 28-01-2017

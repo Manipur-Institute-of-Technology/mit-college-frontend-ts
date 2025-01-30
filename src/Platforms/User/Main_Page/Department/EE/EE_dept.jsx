@@ -18,6 +18,8 @@ function EE_dept() {
           </h1>
         </div>
         <div className="Dept_Wrapper">
+          <div className="Dept_main_Wrapper">
+
           <div className="Dept_main">
             <div className="Dept_info">
               <h3>
@@ -113,6 +115,7 @@ function EE_dept() {
             <LeftNotification />
             <LeftDownload />
             <LeftInformation />
+          </div>
           </div>
         </div>
       </div>

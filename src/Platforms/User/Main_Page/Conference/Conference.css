@@ -32,7 +32,7 @@
 }
 .Conference_body{
   display: flex;
-  width: 100%;
+  width: 90%;
   justify-content: space-between;
 }
 .Conference_main{

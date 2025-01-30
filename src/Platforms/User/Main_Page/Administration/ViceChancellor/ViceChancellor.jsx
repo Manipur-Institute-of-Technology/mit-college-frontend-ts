@@ -4,7 +4,9 @@ import { LeftDownload } from "../../MainContent/LocalNavigation/Left_Download/Le
 import { LeftInformation } from "../../MainContent/LocalNavigation/Left_Information/LeftInformation";
 import { LeftNotification } from "../../MainContent/LocalNavigation/Left_Notice/LeftNotification";
 import "../Administration.css";
+import data from "../Administration.json";
 function ViceChancellor() {
+  const vc = data.administration.find((item) => item.id === "Vice-Chancellor");
   return (
     <div className="Administration_container">
       <Navbar />
@@ -25,9 +27,10 @@ function ViceChancellor() {
                 <h1 className="Administration_main_info_text_header">
                   About the the VC{" "}
                 </h1>
-                <p>Prof. Naorem Lokendra Singh</p>
-                <p>Vice-Chancellor, Manipur University</p>
-                <p>Chairman, Governing Body of MIT</p>
+                <p>{vc.name}</p>
+                <p>{vc.info}</p>
+                <p>{vc.aboutMIT}</p>
+                {/* <p>{vc.description}</p> */}
               </div>
             </div>
             <div className="Administration_right">

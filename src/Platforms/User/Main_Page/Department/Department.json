@@ -1,0 +1,494 @@
+{
+  "CE" :{
+  "lab_img":[
+    {
+      "id": "Lab_1",
+      "title": "Image_1",
+      "images": ""
+    },
+    {
+      "id": "Lab_2",
+      "title": "Image_2",
+      "images": ""
+    },
+    {
+      "id": "Lab_3",
+      "title": "Image_3",
+      "images": ""
+    }
+    
+  ],
+
+  "FacultyMembers":[
+    {
+      "id": "f1",
+      "name": "Dr. Suresh Thokchom",
+      "role":"Associate Professor",
+      "email": "thok_s@rediffmail.com ",
+      "education": "Ph.D.",
+      "description" : "Structural Engg.",
+      "images": ""
+    },
+    {
+      "id": "f2",
+      "name": "Dr. Thokchom Kiranbala Devi",
+      "role":"Associate Professor",
+      "email": "kiranbala_th@mitimphal.in",
+      "education": "Ph.D.",
+      "description" : "Structural Engg.",
+      "images": ""
+    },
+    {
+      "id": "f3",
+      "name": "Dr. Th. Somchand Singh",
+      "role":"Associate Professor",
+      "email": "thangjam_somchand@yahoo.com",
+      "education": "Ph.D.",
+      "description" : "Water Resources Engg.",
+      "images": ""
+    },
+    {
+      "id": "f4",
+      "name": "Dr. Y. Arunkumar Singh",
+      "role":"Associate Professor",
+      "email": "y_arunmit@rediffmail.com",
+      "education": "Ph.D.",
+      "description" : "Transportation Engg.",
+      "images": ""
+    },
+    {
+      "id": "f5",
+      "name": "Dr. Sangeeta Shougrakpam",
+      "role":"Associate Professor & HOD (wef 7-11-2023)",
+      "email": "ssangeetamit@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Geotechnical Engineering",
+      "images": ""
+    },
+    {
+      "id": "f6",
+      "name": "Dr. Konsam Rambha Devi",
+      "role":"Associate Professor",
+      "email": "mail_rambha@yahoo.co.in",
+      "education": "Ph.D.",
+      "description" : "Dynamic properties of clay, Site investigations, soil stabilization",
+      "images": ""
+    },
+    {
+      "id": "f7",
+      "name": "Dr. Nongthombam Premananda Singh",
+      "role":"Associate Professor",
+      "email": "nps.env.mit@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Urban Air Quality, Human Exposure Assesment/Environment Engineering",
+      "images": ""
+    },
+    {
+      "id": "f8",
+      "name": "Dr. N. Sukumar Singh",
+      "role": "Associate Professor",
+      "email": "sukumar@manipuruniv.ac.in, sukunao@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Structural Engg.: Structural Dynamics, Earthquake Related Analysis, FEM, etc.",
+      "images": ""
+    },
+    {
+      "id": "f9",
+      "name": "Dr. Ch. Gobin Singh",
+      "role":"Associate Professor",
+      "email": "chgobin@rediffmail.com",
+      "education": "Ph.D.",
+      "description" : "Sedimentology",
+      "images": ""
+    },
+    {
+      "id": "f10",
+      "name": "Mr. Nahakpam Hitler Singh",
+      "role":"Guest Faculty",
+      "email": "hitler_ju@yahoo.co.in",
+      "education": "M.Tech",
+      "description" : "Environmental Engineering.",
+      "images": ""
+    },
+    {
+      "id": "f11",
+      "name": "Mr. Khumallambam Allinson",
+      "role":"Guest Faculty",
+      "email": "allinsonkh@gmail.com",
+      "education": "M.Tech",
+      "description" : "Infrastructure Construction & Management",
+      "images": ""
+    },
+    {
+      "id": "f12",
+      "name": "Mr. Thoudam Jagat Singh",
+      "role":"Guest Faculty",
+      "email": "jagat.thoudam@gmail.com ",
+      "education": "M.Tech",
+      "description" : "Structural Enginèeing, Performance based engineering",
+      "images": ""
+    }
+  ]
+},
+  "ECE":{
+  "FacultyMembers":[
+    {
+      "id": "a1",
+      "name": "Prof. N. Basanta Singh",
+      "role":"Associate Professor",
+      "email": "basanta_n@rediffmail.com",
+      "education": "Ph.D.",
+      "description" : "Modelling & Simulation of Semiconductor Devices",
+      "images": ""
+    },
+    {
+      "id": "a2",
+      "name": "Dr. Kh. Jolson Singh",
+      "role":"Associate Professor",
+      "email": "jolly4u2@rediffmail.com",
+      "education": "Ph.D.",
+      "description" : "Devices, Biomedical Engg",
+      "images": ""
+    },
+    {
+      "id": "a3",
+      "name": "Dr. Romesh Laishram",
+      "role":"Associate Professor",
+      "email": "romeshlaishram@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Communication & Signal processing, Image Processing, Swarm Intelligence, Robotics, VLSI",
+      "images": ""
+    },
+    {
+      "id": "a4",
+      "name": "Sharmila Meinam",
+      "role":"Associate Professor",
+      "email": "sharmila_meinam@yahoo.com ",
+      "education": "M.E.",
+      "description" : "Communication",
+      "images": ""
+    },
+    {
+      "id": "a5",
+      "name": "Kh. Renuca Devi",
+      "role": "khrenucamit@yahoo.com",
+      "email": "Associate Professor",
+      "education": "M.E.",
+      "description" : "Communication (Pursuing Ph.D. at Manipur University)",
+      "images": ""
+    },
+    {
+      "id": "a6",
+      "name": "A. Balarampyari Devi",
+      "role":"Associate Professor",
+      "email": "balaramaribam@gmail.com ",
+      "education": "M.Tech.",
+      "description" : "VLSI & Embedded system",
+      "images": ""
+    },
+    {
+      "id": "a7",
+      "name": "Ghaneshori Thingbaijam",
+      "role":"Assistant Professor & HoD (wef 7-11-2023)",
+      "email": "ghaneth@yahoo.co.in",
+      "education": "M.E.",
+      "description" : "Communication",
+      "images": ""
+    },
+    {
+      "id": "a8",
+      "name": "Nemthianhoi Zou P",
+      "role":"Associate Professor",
+      "email": "",
+      "education": "M.Tech. (Electronics & Communication Engg.)",
+      "description" : "",
+      "images": ""
+    },
+    {
+      "id": "a9",
+      "name": "Dr. Dickson Warepam",
+      "role":"Guest Faculty",
+      "email": "dicksonwarepam@gmail.com ",
+      "education": "Ph.D.",
+      "description" : "Optoelectronic Devices, Semiconductor Materials for Solar Cell, Micro Electronics and Control Systems",
+      "images": ""
+    },
+    {
+      "id": "a10",
+      "name": "Dr. L. Kholee Phimu",
+      "role":"Guest Faculty",
+      "email": "kholeephimu@gmail.com",
+      "education": "Ph. D.",
+      "description" : "Solar Cells, semiconductor devices",
+      "images": ""
+    },
+    {
+      "id": "a11",
+      "name": "Dr. Paikhomba Loktongbam",
+      "role":"Guest Faculty",
+      "email": "pailee.li81@gmail.com",
+      "education": "Ph. D.",
+      "description" : "Design and Analytical Modelling of mm-wave dipole antennas, Biomedical implantable antennas",
+      "images": ""
+    }
+  ]
+  
+},
+  "CSE":{
+    "lab_img":[
+    {
+      "id": "Lab_1",
+      "title": "Image_1",
+      "images": ""
+    },
+    {
+      "id": "Lab_2",
+      "title": "Image_2",
+      "images": ""
+    }
+    
+  ],
+  "FacultyMembers":[
+    {
+      "id": "b1",
+      "name": "Dr. Th. Ibungomacha Singh",
+      "role":"Associate Professor & HoD (wef 7-11-2023)",
+      "email": "ibomcha.2007@rediffmail.com ",
+      "education": "Ph.D.",
+      "description" : "Image Processing",
+      "images": ""
+    },
+    {
+      "id": "b2",
+      "name": "Dr. Ranbir Soram",
+      "role":"Associate Professor",
+      "email": "ranbirsoram@gmail.com ",
+      "education": "Ph.D.",
+      "description" : "Elliptic Curve Cryptography, WSN",
+      "images": ""
+    },
+    {
+      "id": "b3",
+      "name": "Dr. Sapam Jitu Singh",
+      "role":"Associate Professor ",
+      "email": "sapamjitu@gmail.com ",
+      "education": "Ph.D.",
+      "description" : "Robotics, AI",
+      "images": ""
+    },
+    {
+      "id": "b4",
+      "name": "Dr. Takhellambam Sonamani Singh",
+      "role":"Associate Professor",
+      "email": "sona.cse2013@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Wireless Sensor Network, Software Engineering",
+      "images": ""
+    },
+    {
+      "id": "b5",
+      "name": "Selina Khoirom",
+      "role":"Associate Professor",
+      "email": "selinakh@gmail.com",
+      "education": "M.Tech.",
+      "description" : "OS, Cloud Computing. Java",
+      "images": ""
+    },
+    {
+      "id": "b6",
+      "name": "Dr. Rajeev Rajkumar",
+      "role":"Associate Professor",
+      "email": "rajeev.bono@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Digital Image Processing, Networking",
+      "images": ""
+    },
+    {
+      "id": "b7",
+      "name": "Pebam Binodini",
+      "role":"tambipebam@gmail.com",
+      "email": "Guest Faculty",
+      "education": "M.E.",
+      "description" : "Wireless Network, Computer Organisation, Computer Architecture",
+      "images": ""
+    }
+  ]
+  
+},
+  "BSE":{
+  "FacultyMembers":[
+    {
+      "id": "c1",
+      "name": "Dr. N. Ashalata Devi",
+      "role":"Assistant Professor",
+      "subject":"(Chemistry)", 
+      "email": "",
+      "education": "Ph.D.",
+      "description" : "Organic chemistry",
+      "images": ""
+    },
+    {
+      "id": "c2",
+      "name": "Mr. A. Romeo",
+      "role":"Associate Professor",
+      "subject":"(Physics)", 
+      "email": "aromeomit@gmail.com ",
+      "education": "M.Sc",
+      "description" : "Condensed matter Physics, TL, OSL (Pursuing Ph.D. at Manipur University)",
+      "images": ""
+    },
+    {
+      "id": "c3",
+      "name": "Dr. Y. Mahendra Singh",
+      "role":"Associate Professor",
+      "subject":"(Mathematics)", 
+      "email": "ymahendmit@rediffmail.com",
+      "education": "Ph.D.",
+      "description" : "Fixed Point Theory and Topology",
+      "images": ""
+    },
+    {
+      "id": "c4",
+      "name": "Dr. Anita Sorokhaibam",
+      "role":"Associate Professor",
+      "subject":"(Mathematics)", 
+      "email": "Anitasur2004@yahoo.co.in ",
+      "education": "Ph.D.",
+      "description" : "",
+      "images": ""
+    },
+    {
+      "id": "c5",
+      "name": "Dr. G.A. Hirankumar Sharm",
+      "role":"Assistant Professor & HOD (w.e.f. 7-11-2023)",
+      "subject":"(Mathematics)", 
+      "email": "",
+      "education": "Ph.D.",
+      "description" : "",
+      "images": ""
+    },
+    {
+      "id": "c6",
+      "name": "Mr. Jayantakumar Oinam",
+      "role":"Associate Professor",
+      "subject":"(English)", 
+      "email": "",
+      "education": "Ph.D.",
+      "description" : "",
+      "images": ""
+    },
+    {
+      "id": "c7",
+      "name": "Dr. Tolendra Kshetri",
+      "role":"Guest Faculty",
+      "subject":"(Physics)", 
+      "email": "tolendra.ksh@gmail.com ",
+      "education": "Ph.D.",
+      "description" : "Materials Science and Engineering",
+      "images": ""
+    },
+    {
+      "id": "c8",
+      "name": "Nigombam Babina Devi",
+      "role":"Guest Faculty",
+      "subject":"(Management)", 
+      "email": "nbabinadevi@gmail.com",
+      "education": "MBA",
+      "description" : "Finance & Management",
+      "images": ""
+    }
+  ]
+  
+},
+  "ME":{
+  "FacultyMembers":[
+    {
+      "id": "d1",
+      "name": "Dr. Syed Mujibur Rahman",
+      "role":"Assistant Professor",
+      "email": "mujib27mit@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Thermal Engg. and Renewable Energy",
+      "images": ""
+    },
+    {
+      "id": "d2",
+      "name": "Dr. Ngangkham Peter Singh",
+      "role":"Guest Faculty",
+      "email": "peter.mit.me@manipuruniv.ac.in",
+      "education": "Ph.D.",
+      "description" : "Advanced Materials Technology",
+      "images": ""
+    },
+    {
+      "id": "d3",
+      "name": "Dr. Rajkumar Shufen",
+      "role":"Guest Faculty",
+      "email": "rajkumar.shufen@iitg.ac.in ",
+      "education": "Ph.D.",
+      "description" : "Materials and Design",
+      "images": ""
+    },
+    {
+      "id": "d4",
+      "name": "Dr. Maisanam Anil Kumar Singh",
+      "role":"Guest Faculty",
+      "email": "hianil09@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Thermal Engineering",
+      "images": ""
+    },
+    {
+      "id": "d5",
+      "name": "Dr. Satishchandra Salam",
+      "role":"Guest Faculty",
+      "email": "satisji@gmail.com",
+      "education": "Ph.D.",
+      "description" : "Applied Thermal Sciences",
+      "images": ""
+    }
+  ]
+  
+},
+  "EE":{
+  "FacultyMembers":[
+    {
+      "id": "e1",
+      "name": "Mr. Th. Sukadeba Singh",
+      "role":"Assistant Professor",
+      "email": "sukacm@yahoo.com",
+      "education": "M.E.",
+      "description" : "Control System, Measurement",
+      "images": ""
+    },
+    {
+      "id": "e2",
+      "name": "Mr. Khwairakpam Chaoba Singh",
+      "role":"Guest Faculty",
+      "email": "chaobasit@gmail.com",
+      "education": "M.Tech.",
+      "description" : "Power System",
+      "images": ""
+    },
+    {
+      "id": "e3",
+      "name": "Mr. Athokpam Bharatbushan Singh",
+      "role":"Guest Faculty",
+      "email": "Bbsan2043@gmail.com",
+      "education": "Master in Power Electronics, Pursuing Ph.D.",
+      "description" : "Power Electronics, Electrical Machines, Renewable Energy",
+      "images": ""
+    },
+    {
+      "id": "e4",
+      "name": "Mr. Sanasam Dhanabanta Singh",
+      "role":"Guest Faculty",
+      "email": "dhanasanasam1@gmail.com",
+      "education": "M.Tech, Pursuing Ph.D",
+      "description" : "Power and Control System",
+      "images": ""
+    }
+  ]
+  
+}
+}

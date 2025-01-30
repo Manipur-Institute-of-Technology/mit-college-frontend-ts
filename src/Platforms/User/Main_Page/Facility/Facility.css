@@ -32,7 +32,7 @@
 }
 .Facility_body {
   display: flex;
-  width: 100%;
+  width: 90%;
   justify-content: space-between;
 }
 .Facility_main {

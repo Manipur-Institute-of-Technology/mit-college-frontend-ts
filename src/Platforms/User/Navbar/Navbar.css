@@ -5,7 +5,6 @@
   align-items: center;
   width: 100%;
   margin-bottom: 1rem;
-  /* position: fixed; */
 }
 .Navbar a{
   text-decoration: none;
@@ -16,7 +15,7 @@
   justify-content: space-evenly;
   align-items: center;
   width: 100%;
-  background-color: #86AC99;
+  background-color: #86aca8;
 }
 .Link_2{
   padding: .6rem;

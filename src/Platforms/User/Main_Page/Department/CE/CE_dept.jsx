@@ -2,8 +2,8 @@ import { Navbar } from "../../../Navbar/Navbar";
 import "../Department_Style.css";
 import { LeftDownload } from "../../MainContent/LocalNavigation/Left_Download/LeftDownload";
 import { LeftInformation } from "../../MainContent/LocalNavigation/Left_Information/LeftInformation";
-import { Footer } from "../../../Footer/Footer";
 import { LeftNotification } from "../../MainContent/LocalNavigation/Left_Notice/LeftNotification";
+import { Footer } from "../../../Footer/Footer";
 function CE_dept() {
   return (
     <div className="Dept_Container">
@@ -12,93 +12,95 @@ function CE_dept() {
         <div className="Dept_Tittle">
           <h1>Department</h1>
         </div>
-        <div className="Dept_name">
-          <h1 className="DeptName_header">Department of Civil Engineering</h1>
-        </div>
+          <div className="Dept_name">
+            <h1 className="DeptName_header">Department of Civil Engineering</h1>
+          </div>
         <div className="Dept_Wrapper">
-          <div className="Dept_main">
-            <div className="Dept_info">
-              <h2>
-                Civil Engineering department presently offers the following
-                programmes:
-              </h2>
-              <div className="Dept_info_align">
-                <ol>
-                  <li>B.E. in Civil Engineering</li>
-                  <li>M. Tech. in the following specialisations</li>
-                  <ul>
-                    <li>Structural Engineering</li>
-                    <li>Geotechnical Engineering</li>
-                    <li>Water Resources Engineering</li>
-                    <li>Transportation Engineering</li>
-                    <li>Environmental Engineering</li>
-                  </ul>
-                  <li>Ph. D. in Civil Engineering</li>
-                </ol>
-              </div>
-            </div>
-            <div className="Dept_moreInfo">
-              <h3>Vision:</h3>
-              <p>
-                To be a leader in Civil Engineering education by imparting
-                quality technical knowledge to achieve excellence in academic
-                research, industry and entrepreneurship.
-              </p>
-              <br />
-              <h3>Mission:</h3>
-              <ol>
-                <li>
-                  To empower students and faculty with broad knowledge in Civil
-                  Engineering and applications.
-                </li>
-                <li>
-                  To produce Civil engineers, capable of handling technical and
-                  social challenges.
-                </li>
-                <li>
-                  To produce entrepreneurs capable of solving present problems
-                  of the society.
-                </li>
-                <li>
-                  To provide technological services which are sustainable and
-                  environment friendly.
-                </li>
-              </ol>
-              <br />
-              <h3>Programme Educational Objectives (PEOs):</h3>
-              <ol>
-                <li>
-                  Graduates will be actively engaged in a professional career as
-                  a civil engineer or a related field, an entrepreneur or
-                  pursuing higher study.
-                </li>
-                <li>
-                  Graduates will understand professional practice and
-                  demonstrate a commitment to act as a responsible, effective
-                  and ethical citizen undertaking lifelong learning
-                </li>
-                <li>
-                  Graduates guided by principles of sustainable development will
-                  understand how their activities as a civil engineer or an
-                  entrepreneur or in a related field affect society and
-                  environment.
-                </li>
-                <li>
-                  Graduates will develop their communication skills when working
-                  as team members or leaders, so that they can actively
-                  participate in their communities and their profession.
-                </li>
-              </ol>
-              <div className="workshop_img">
-                <div className="img_align">
-                  <img src="./Images/Department/CE/lab_1.jpg" alt=""></img>
-                  <img src="./Images/Department/CE/lab_2.jpg" alt=""></img>
+          <div className="Dept_main_Wrapper">
+            <div className="Dept_main">
+              <div className="Dept_info">
+                <h2>
+                  Civil Engineering department presently offers the following
+                  programmes:
+                </h2>
+                <div className="Dept_info_align">
+                  <ol>
+                    <li>B.E. in Civil Engineering</li>
+                    <li>M. Tech. in the following specialisations</li>
+                    <ul>
+                      <li>Structural Engineering</li>
+                      <li>Geotechnical Engineering</li>
+                      <li>Water Resources Engineering</li>
+                      <li>Transportation Engineering</li>
+                      <li>Environmental Engineering</li>
+                    </ul>
+                    <li>Ph. D. in Civil Engineering</li>
+                  </ol>
                 </div>
               </div>
-              <br />
-            </div>
-            <div className="Dept_staff">
-              <h2>Faculty Members : </h2>
+              <div className="Dept_moreInfo">
+                <h3>Vision:</h3>
+                <p>
+                  To be a leader in Civil Engineering education by imparting
+                  quality technical knowledge to achieve excellence in academic
+                  research, industry and entrepreneurship.
+                </p>
+                <br />
+                <h3>Mission:</h3>
+                <ol>
+                  <li>
+                    To empower students and faculty with broad knowledge in
+                    Civil Engineering and applications.
+                  </li>
+                  <li>
+                    To produce Civil engineers, capable of handling technical
+                    and social challenges.
+                  </li>
+                  <li>
+                    To produce entrepreneurs capable of solving present problems
+                    of the society.
+                  </li>
+                  <li>
+                    To provide technological services which are sustainable and
+                    environment friendly.
+                  </li>
+                </ol>
+                <br />
+                <h3>Programme Educational Objectives (PEOs):</h3>
+                <ol>
+                  <li>
+                    Graduates will be actively engaged in a professional career
+                    as a civil engineer or a related field, an entrepreneur or
+                    pursuing higher study.
+                  </li>
+                  <li>
+                    Graduates will understand professional practice and
+                    demonstrate a commitment to act as a responsible, effective
+                    and ethical citizen undertaking lifelong learning
+                  </li>
+                  <li>
+                    Graduates guided by principles of sustainable development
+                    will understand how their activities as a civil engineer or
+                    an entrepreneur or in a related field affect society and
+                    environment.
+                  </li>
+                  <li>
+                    Graduates will develop their communication skills when
+                    working as team members or leaders, so that they can
+                    actively participate in their communities and their
+                    profession.
+                  </li>
+                </ol>
+                <div className="workshop_img">
+                  <div className="img_align">
+                    <img src="./Images/Department/CE/lab_1.jpg" alt=""></img>
+                    <img src="./Images/Department/CE/lab_2.jpg" alt=""></img>
+                  </div>
+                </div>
+                <br />
+              </div>
+              <div className="Dept_staff">
+                <h2>Faculty Members : </h2>
                 <div className="Members_align">
                   <div className="Members_container">
                     <div className="Box_1">
@@ -340,37 +342,38 @@ function CE_dept() {
                     </div>
                   </div>
                 </div>
-            </div>
-            <div className="Dept_lab">
-              <h2>Concrete lab.</h2>
-              <div className="DepLab_wrapper">
-                <div className="DeptLab_container">
-                  <div className="DeptLab_pic">
-                    <img src="./Images/Department/CE/lab_3.jpg" alt="" />
+              </div>
+              <div className="Dept_lab">
+                <h2>Concrete lab.</h2>
+                <div className="DepLab_wrapper">
+                  <div className="DeptLab_container">
+                    <div className="DeptLab_pic">
+                      <img src="./Images/Department/CE/lab_3.jpg" alt="" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="DeptLab_info">
-                <h3>Other Major Equipments are:-</h3>
-                <ol>
-                  <li>Microprocessor based UV-visible Spectrophotometer</li>
-                  <li>Tri-Axial testing Apparatus</li>
-                  <li>Portable DO Meter</li>
-                  <li>Digital Control BOD Incubator</li>
-                  <li>Trimble Total Station</li>
-                  <li>Digital Flame Photometer</li>
-                  <li>Electrical Analogy Apparatus</li>
-                  <li>Hele-Shaw Apparatus</li>
-                  <li>Water Hammer Surge Apparatus</li>
-                  <li>Marshal Apparatus</li>
-                </ol>
+                <div className="DeptLab_info">
+                  <h3>Other Major Equipments are:-</h3>
+                  <ol>
+                    <li>Microprocessor based UV-visible Spectrophotometer</li>
+                    <li>Tri-Axial testing Apparatus</li>
+                    <li>Portable DO Meter</li>
+                    <li>Digital Control BOD Incubator</li>
+                    <li>Trimble Total Station</li>
+                    <li>Digital Flame Photometer</li>
+                    <li>Electrical Analogy Apparatus</li>
+                    <li>Hele-Shaw Apparatus</li>
+                    <li>Water Hammer Surge Apparatus</li>
+                    <li>Marshal Apparatus</li>
+                  </ol>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="Right_main">
-            <LeftNotification />
-            <LeftDownload />
-            <LeftInformation />
+            <div className="Right_main">
+              <LeftNotification />
+              <LeftDownload />
+              <LeftInformation />
+            </div>
           </div>
         </div>
       </div>

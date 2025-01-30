@@ -1,7 +1,7 @@
 .lN_w2{
   background-color: #fff;
   padding: 1rem;
-  border: 1px solid black;
+  border: 10px solid black;
 }
 .LeftNavigation_options{
   padding:.8rem .3rem;
@@ -14,7 +14,8 @@
   color: #5ca20d;
 }
 .LeftNavigation_wrapper {
-  border: 1px solid black;
+  border-width: 2px 5px 0px 1px ;
+  border-color: black white; 
   padding: 1rem;
   background-color: #fff;
 }

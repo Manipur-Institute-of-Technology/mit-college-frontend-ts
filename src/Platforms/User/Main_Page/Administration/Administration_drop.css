@@ -23,3 +23,6 @@
   background-color: #d8d0c2;
   border-radius: 0rem 0rem 1rem 1rem;
 }
+.Administration_table_links a{
+  cursor: pointer;
+}

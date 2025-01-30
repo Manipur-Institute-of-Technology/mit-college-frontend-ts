@@ -1,0 +1,34 @@
+{
+  "imageSlider":[
+    {
+      "id": 1,
+      "title": "Image_1",
+      "description" : "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+      "images": "https://imgs.search.brave.com/Tsk-4sqBVNUcMkZZn2mzu9CGhii3-dQ3jNtEjiTh_7E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/ZnJlZS1waG90by9h/ZnJpY2FuLWFtZXJp/Y2FuLXRlYWNoZXIt/YXNzaXN0aW5nLWhl/ci1zdHVkZW50cy1j/bGFzcy1lbGVtZW50/YXJ5LXNjaG9vbF82/MzcyODUtODYyOC5q/cGc_c2VtdD1haXNf/aHlicmlk"
+    },
+    {
+      "id": 2,
+      "title": "Image_1",
+      "description" : "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+      "images": "https://img.freepik.com/premium-photo/education-american-school-building_87720-120498.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Image_1",
+      "description" : "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+      "images": "https://img.freepik.com/premium-photo/homework-walking-into-school_87720-94097.jpg"
+    },
+    {
+      "id": 4,
+      "title": "Image_1",
+      "description" : "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+      "images": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKrpTRpO3fwS3XyA9NsWXi7RDN0aJY5xCbCA&s"
+    },
+    {
+      "id": 5,
+      "title": "Image_1",
+      "description" : "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+      "images": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKmc7KYIfrPLeMw3vhtcaE8K5dbE-LlsclYBTnnHwbYGgoSeyZHQ4Ze5f1sgPOLQm8ui0&usqp=CAU"
+    }
+  ]
+}

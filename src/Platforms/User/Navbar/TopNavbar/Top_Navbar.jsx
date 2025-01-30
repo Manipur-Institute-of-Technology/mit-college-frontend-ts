@@ -17,11 +17,6 @@ export function Top_Navbar() {
             <button onClick={() => alert("Under Maintenance")}>Teaches</button>
           </div>
         </div>
-        {/* <div className="Font_sizer">
-          <div className="Link_1 decrease_font"></div>
-          <div className="Link_1 normal_font"></div>
-          <div className="Link_1 increase_font"></div>
-        </div> */}
         <div className="Theme_box">
           <div className="theme_btn">
             <button onClick={() => alert("Under Maintenance")}>-</button>

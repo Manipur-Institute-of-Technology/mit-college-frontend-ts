@@ -18,6 +18,8 @@ function CSE_dept() {
           </h1>
         </div>
         <div className="Dept_Wrapper">
+          <div className="Dept_main_Wrapper">
+
           <div className="Dept_main">
             <div className="Dept_info">
               <h3>The Department presently offers the following programmes:</h3>
@@ -222,6 +224,7 @@ function CSE_dept() {
             <LeftNotification />
             <LeftDownload />
             <LeftInformation />
+          </div>
           </div>
         </div>
       </div>
