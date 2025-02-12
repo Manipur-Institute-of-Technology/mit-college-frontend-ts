@@ -1,43 +1,51 @@
-.HomePage{
+.HomePage {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 1rem;
 }
-.HomePage_align{
+
+.HomePage_align {
   width: 100%;
 }
-.HomePage_wrapper{
+
+.HomePage_wrapper {
   margin-top: 2rem;
   margin-bottom: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.HomePage_container{
+
+.HomePage_container {
   width: 90%;
 }
-.HomePage_top_link{
+
+.HomePage_top_link {
   text-align: center;
   margin-bottom: 1rem;
 }
-.HomePage_top_link a{
+
+.HomePage_top_link a {
   font-size: 16px;
   font-weight: 500;
   color: #5ca20d;
 }
-.Home_Align{
+
+.Home_Align {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
-.Right_Side{
+
+.Right_Side {
   width: 100%;
 }
-.left_Side{
+
+.left_Side {
   width: 30%;
   height: 100vh;
   overflow: auto;
   overflow-y: scroll;
-  border-left: 1px solid black ;
-  border-bottom: 2px solid black ;
+  border-left: 1px solid black;
+  border-bottom: 2px solid black;
 }
