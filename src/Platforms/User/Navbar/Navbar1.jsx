@@ -193,7 +193,7 @@ const Navbar = () => {
 			{/* MobileNav */}
 			<div className="lg:hidden max-h-[100vh] overflow-y-auto">
 				{/* Mobile menu button */}
-				<div className="lg:hidden relative w-[100%] text-center">
+				<div className="lg:hidden sticky top-0 w-[100%] text-center bg-rose-600/70 backdrop-blur-sm">
 					<div className="inline-block rounded-full w-fit bg-white p-1 my-1">
 						<img
 							src="/Manipur_University_Logo.png"
@@ -216,10 +216,6 @@ const Navbar = () => {
 				</div>
 
 				{/* Mobile menu */}
-				{/* <div
-					className={`lg:hidden ${
-						isOpen ? "block" : "hidden"
-					} rounded-lg border border-rose-100`}> */}
 				<div
 					className={`lg:hidden ${
 						isOpen ? "h-auto" : "h-0"
