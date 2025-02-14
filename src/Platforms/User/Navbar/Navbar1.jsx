@@ -9,17 +9,7 @@ const Navbar = () => {
 
 	const navigation = [
 		{ name: "Home", href: "/" },
-		{
-			name: "Projects",
-			href: "#",
-			childrens: [],
-		},
 		{ name: "Admission", href: "#" },
-		{
-			name: "Exam",
-			href: "https://www.manipuruniv.ac.in/examform2021/",
-			target: "_blank",
-		},
 		{
 			name: "Department",
 			href: "#",
@@ -111,9 +101,18 @@ const Navbar = () => {
 			name: "Extras",
 			href: "#",
 			childrens: [
+				{
+					name: "Exam",
+					href: "https://www.manipuruniv.ac.in/examform2021/",
+					target: "_blank",
+				},
 				{ name: "NIRF", href: "/NIRF" },
 				{ name: "Gallery", href: "/gallery" },
 				{ name: "Contact Us", href: "/Contact_Us" },
+				{
+					name: "Projects",
+					href: "#",
+				},
 			],
 		},
 	];
@@ -141,36 +140,6 @@ const Navbar = () => {
 						</div>
 					</div>
 
-					{/* Mobile menu button */}
-					<div className="lg:hidden relative w-[100%] text-center">
-						<div className="inline-block rounded-full w-fit bg-white p-1 my-1">
-							<img
-								src="/Manipur_University_Logo.png"
-								alt="mu logo"
-								height={60}
-								width={60}
-							/>
-						</div>
-						<div className="absolute right-2 top-[50%] translate-y-[-50%] rounded">
-							<button
-								className="block outline-none mobile-menu-button"
-								onClick={() => setIsOpen(!isOpen)}>
-								{isOpen ? (
-									<X className="text-gray-200" size={32} />
-								) : (
-									<Menu className="text-gray-200" size={32} />
-								)}
-							</button>
-						</div>
-					</div>
-					{/* <div className="md:hidden flex items-center p-2 text-center border border-yellow-500 w-full">
-						<button
-							className="block outline-none mobile-menu-button border border-green-200"
-							onClick={() => setIsOpen(!isOpen)}>
-							<Menu className="h-6 w-6 text-gray-200" />
-						</button>
-					</div> */}
-
 					{/* Desktop menu */}
 					<div className="hidden lg:flex items-center space-x-1">
 						{navigation.map((item, index) => (
@@ -181,10 +150,15 @@ const Navbar = () => {
 											onClick={() => toggleDropdown(index)}
 											className="relative py-4 px-2 text-gray-100 font-bold hover:bg-rose-500 transition duration-300 flex flex-row flex-nowrap items-center justify-center">
 											<span className="block">{item.name}</span>
-											<ChevronDown size={20} />
+											<ChevronDown
+												size={20}
+												className={`${
+													activeDropdown === index ? "rotate-180" : "rotate-0"
+												} transition-transform duration-300`}
+											/>
 										</button>
 										{activeDropdown === index && (
-											<div className="absolute z-[999] left-0 mt-0 w-48 rounded-md bg-rose-600 ring-1 ring-black ring-opacity-5 shadow-md">
+											<div className="absolute z-[999] right-0 mt-0 w-48 rounded-md bg-rose-600 ring-1 ring-black ring-opacity-5 shadow-md">
 												<div className="py-1 ">
 													{item.childrens.map((child, indx) => (
 														<a
@@ -216,46 +190,80 @@ const Navbar = () => {
 				</div>
 			</div>
 
-			{/* Mobile menu */}
-			<div className={`lg:hidden ${isOpen ? "block" : "hidden"}`}>
-				{navigation.map((item, index) => (
-					<div key={item.name}>
-						{item.childrens?.length > 0 ? (
-							<div>
-								{/* <button
-									onClick={() => toggleDropdown(index)}
-									className="block py-2 px-4 text-sm hover:bg-gray-200 w-full text-left">
-									{item.name}
-								</button> */}
-								<button
-									onClick={() => toggleDropdown(index)}
-									className="border-b-rose-100 border-b-2  w-full relative py-2 px-4 text-gray-100 font-bold hover:bg-rose-600 transition duration-300 flex flex-row flex-nowrap items-center justify-between">
-									<span className="block">{item.name}</span>
-									<ChevronDown size={20} />
-								</button>
-								{activeDropdown === index && (
-									<div className="bg-rose-500">
-										{item.childrens.map((child) => (
-											<a
-												key={child.name}
-												href={child.href}
-												className="block py-2 px-8 text-sm text-gray-100 hover:bg-rose-400">
-												{child.name}
-											</a>
-										))}
-									</div>
-								)}
-							</div>
-						) : (
-							<a
-								href={item.href}
-								target={item.target ? item.target : "_self"}
-								className="block py-2 px-4 text-sm font-bold text-gray-100 hover:bg-rose-200 border-b-rose-100 border-b-2">
-								{item.name}
-							</a>
-						)}
+			{/* MobileNav */}
+			<div className="lg:hidden max-h-[100vh] overflow-y-auto">
+				{/* Mobile menu button */}
+				<div className="lg:hidden relative w-[100%] text-center">
+					<div className="inline-block rounded-full w-fit bg-white p-1 my-1">
+						<img
+							src="/Manipur_University_Logo.png"
+							alt="mu logo"
+							height={60}
+							width={60}
+						/>
 					</div>
-				))}
+					<div className="absolute right-2 top-[50%] translate-y-[-50%] rounded">
+						<button
+							className="block outline-none mobile-menu-button"
+							onClick={() => setIsOpen(!isOpen)}>
+							{isOpen ? (
+								<X className="text-gray-200" size={32} />
+							) : (
+								<Menu className="text-gray-200" size={32} />
+							)}
+						</button>
+					</div>
+				</div>
+
+				{/* Mobile menu */}
+				{/* <div
+					className={`lg:hidden ${
+						isOpen ? "block" : "hidden"
+					} rounded-lg border border-rose-100`}> */}
+				<div
+					className={`lg:hidden ${
+						isOpen ? "h-auto" : "h-0"
+					} rounded-lg border border-rose-100 transition-all duration-1000`}>
+					{navigation.map((item, index) => (
+						<div key={item.name}>
+							{item.childrens?.length > 0 ? (
+								<div>
+									<button
+										onClick={() => toggleDropdown(index)}
+										className="border-b-rose-100 border-b-2  w-full relative py-2 px-4 text-gray-100 font-bold hover:bg-rose-600 transition duration-300 flex flex-row flex-nowrap items-center justify-between">
+										<span className="block">{item.name}</span>
+
+										<ChevronDown
+											size={20}
+											className={`${
+												activeDropdown === index ? "rotate-180" : "rotate-0"
+											} transition-transform duration-300`}
+										/>
+									</button>
+									{activeDropdown === index && (
+										<div className="bg-rose-500">
+											{item.childrens.map((child) => (
+												<a
+													key={child.name}
+													href={child.href}
+													className="block py-2 px-8 text-sm text-gray-100 hover:bg-rose-400 border-b border-b-rose-100">
+													{child.name}
+												</a>
+											))}
+										</div>
+									)}
+								</div>
+							) : (
+								<a
+									href={item.href}
+									target={item.target ? item.target : "_self"}
+									className="block py-2 px-4 text-sm font-bold text-gray-100 hover:bg-rose-200 border-b-rose-100 border-b-2">
+									{item.name}
+								</a>
+							)}
+						</div>
+					))}
+				</div>
 			</div>
 			<div className="w-full h-2 bg-yellow-500"></div>
 			<div className="bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 w-full h-2 animate-gradient-bg"></div>
