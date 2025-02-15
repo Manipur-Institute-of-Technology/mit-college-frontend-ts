@@ -39,7 +39,7 @@ export default function ImageCarousel() {
 
 	return (
 		<div
-			className="relative w-full max-h-[100vh] h-[600px] overflow-hidden rounded-lg"
+			className="relative w-full max-h-[100vh] md:h-[600px] h-[60vh] overflow-hidden rounded-lg"
 			onMouseEnter={() => setIsAutoPlaying(false)}
 			onMouseLeave={() => setIsAutoPlaying(true)}>
 			{/* Blur Background */}
@@ -65,9 +65,6 @@ export default function ImageCarousel() {
 
 				{/* Overlay with text */}
 				<div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 backdrop-blur-md text-white p-6 rounded-md">
-					{/* <h2 className="text-2xl font-semibold mb-2">
-						{imageSlider[currentIndex].title}
-					</h2> */}
 					<p className="text-sm md:text-base text-center">
 						{imageSlider[currentIndex].description}
 					</p>
@@ -93,17 +90,19 @@ export default function ImageCarousel() {
 			</button>
 
 			{/* Dots Navigation */}
-			<div className="absolute bottom-24 left-0 right-0">
-				<div className="flex justify-center gap-2">
-					{imageSlider.map((_, index) => (
-						<button
-							key={index}
-							onClick={() => goToSlide(index)}
-							className={`h-2 w-2 rounded-full transition-all ${
-								currentIndex === index ? "bg-white w-4" : "bg-white/50"
-							}`}
-						/>
-					))}
+			<div className="absolute bottom-24 w-full flex justify-center">
+				<div className="w-fit p-1 rounded-full bg-gray-600/50 backdrop-blur-md">
+					<div className="flex justify-center gap-2">
+						{imageSlider.map((_, index) => (
+							<button
+								key={index}
+								onClick={() => goToSlide(index)}
+								className={`h-2 w-2 rounded-full transition-all ${
+									currentIndex === index ? "bg-white w-4" : "bg-white/70"
+								}`}
+							/>
+						))}
+					</div>
 				</div>
 			</div>
 		</div>
