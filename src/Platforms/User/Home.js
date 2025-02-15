@@ -18,9 +18,6 @@ function Home() {
 			<div className="HomePage_align">
 				<TopNavbar />
 				<Navbar />
-				{/* <div className="HomePage_Nav">
-					<OrigNavbar />
-				</div> */}
 
 				<div className="HomePage_wrapper">
 					{/* <Image_slider /> */}
@@ -37,22 +34,20 @@ function Home() {
 							</a>
 						</div>
 						<div className="flex flex-col sm:flex-row">
-							<div className="w-full sm:w-[30vw] my-1 flex flex-col gap-y-2 ">
+							<div className="w-full sm:w-[30vw] my-1 sm:flex sm:flex-col gap-y-2 hidden">
 								<LeftNotification />
 								<LeftInformation />
 								<LeftDownload />
 							</div>
-							{/* <div className="left_Side">
-                <LeftNotification />
-                <LeftInformation />
-                <LeftDownload />
-              </div> */}
+
 							<div className="overflow-auto w-full">
 								<MainContent />
 							</div>
-							{/* <div className="Right_Side">
-								<MainContent />
-							</div> */}
+							<div className="w-full sm:hidden flex flex-col flex-wrap gap-y-2">
+								<LeftNotification />
+								<LeftInformation />
+								<LeftDownload />
+							</div>
 						</div>
 					</div>
 				</div>
