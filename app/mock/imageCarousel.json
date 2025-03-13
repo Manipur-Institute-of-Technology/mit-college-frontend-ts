@@ -1,0 +1,53 @@
+{
+	"imageSlider": [
+		{
+			"id": 1,
+			"title": "Image_1",
+			"description": "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+			"images": "/Images/Main_page/mit_week.png",
+			"time": "2025-02-16T15:23:28.000Z"
+		},
+		{
+			"id": 2,
+			"title": "Image_1",
+			"description": "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+			"images": "/Images/Main_page/img_2.jpg",
+			"time": "2025-02-16T15:23:28.000Z"
+		},
+		{
+			"id": 3,
+			"title": "Image_1",
+			"description": "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+			"images": "/Images/Main_page/img_3.jpg",
+			"time": "2025-02-16T15:23:28.000Z"
+		},
+		{
+			"id": 5,
+			"title": "Image_1",
+			"description": "Massachusset Institute of Technology",
+			"images": "/image.png",
+			"time": "2025-02-16T15:23:28.000Z"
+		},
+		{
+			"id": 6,
+			"title": "Image_1",
+			"description": "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+			"images": "/Images/Main_page/mit_week3.png",
+			"time": "2025-02-16T15:23:28.000Z"
+		},
+		{
+			"id": 7,
+			"title": "Image_1",
+			"description": "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+			"images": "/Images/Main_page/mit_week4.png",
+			"time": "2025-02-16T15:23:28.000Z"
+		},
+		{
+			"id": 7,
+			"title": "Image_1",
+			"description": "MIT WEEK 2018 OPENING CEREMONY (12th NOV, 2018)",
+			"images": "/Images/Main_page/mit_week5.png",
+			"time": "2025-02-16T15:23:28.000Z"
+		}
+	]
+}
