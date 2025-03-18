@@ -9,10 +9,12 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { navigationData } from "./mock/navbar";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/Navbar/PublicContentNav";
 import Footer from "./components/Footer/PublicFooter";
 import NotFound from "./pages/NotFound";
+import { getPublicNavContent } from "./mock/services/navbar";
+import { useEffect, useState } from "react";
+import type { NavbarData } from "./types/api/navbar";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -59,15 +61,19 @@ export function HydrateFallback() {
 	);
 }
 
-// TODO: Make this a generic error displaying page, which carch all error including non 404
+// TODO: Make this a generic error displaying page, which catch all error including non 404
 // TODO: add catch all route for cms prefix route
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+	const [navData, setNavData] = useState<NavbarData>();
 	const backgroundImageUrl = "/404_bg.jpg";
+	useEffect(() => {
+		(async () => setNavData(await getPublicNavContent()))();
+	}, []);
 
 	if (isRouteErrorResponse(error) && error.status === 404) {
 		return (
 			<>
-				<Navbar navigation={navigationData} />
+				{navData && <Navbar navigation={navData} />}
 				<main
 					className="bg-slate-800  bg-blend-overlay bg-fixed bg-center bg-no-repeat bg-cover"
 					style={{ backgroundImage: `url('${backgroundImageUrl}')` }}>
@@ -77,6 +83,20 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 				</main>
 				<Footer />
 			</>
+		);
+	} else if (import.meta.env.DEV && error && error instanceof Error) {
+		const details = error.message;
+		const stack = error.stack;
+		return (
+			<main className="pt-16 p-4 container mx-auto">
+				<h1>{"Oops!"}</h1>
+				<p>{details}</p>
+				{stack && (
+					<pre className="w-full p-4 overflow-x-auto">
+						<code>{stack}</code>
+					</pre>
+				)}
+			</main>
 		);
 	} else {
 		console.log("Non 404 error occur: ", error);

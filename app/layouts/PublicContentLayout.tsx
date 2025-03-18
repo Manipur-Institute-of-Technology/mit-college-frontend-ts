@@ -1,28 +1,37 @@
-import { Outlet, useLocation } from "react-router";
-import { navigationData as navigation } from "../mock/navbar";
-import Navbar from "../components/Navbar/Navbar";
+import { Await, Outlet, useLocation } from "react-router";
+import Navbar from "../components/Navbar/PublicContentNav";
 import Footer from "../components/Footer/PublicFooter";
-import ImageCarousel from "../components/ImageCarousel/ImageCarrousel";
+import ImageCarousel, {
+	ImageCarouselSkeleton,
+} from "../components/ImageCarousel/ImageCarrousel";
 import type { Route } from "./+types/PublicContentLayout";
+import { getImageCarouselContent } from "~/mock/services/imageCarousel";
+import { Suspense } from "react";
 
-export default function PublicLayout() {
-	const location = useLocation();
+import "./background.css";
 
+export const clientLoader = ({}: Route.ClientLoaderArgs) => {
+	const loc = useLocation();
+	const { pathname } = loc;
+	// TODO: fetch carousel data from api return route lists
+	if (pathname === "/") {
+		const data = getImageCarouselContent();
+		return { data };
+	}
+	return undefined;
+};
+
+export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 	return (
 		<>
-			<Navbar navigation={navigation} />
-			<main
-				style={{
-					backgroundImage: `radial-gradient(circle at center, rgba(200, 200, 200, 0.8) 0 1px, transparent 1px 18px), 
-									radial-gradient(circle at center, transparent 30%, rgba(200, 200, 200, 0.8))`,
-					backgroundRepeat: "repeat",
-					backgroundSize: "18px 18px, 100vw 100vh",
-					backgroundAttachment: "fixed",
-				}}>
-				{location.pathname === "/" && (
-					<div className="mt-8 mb-2">
-						<ImageCarousel />
-					</div>
+			<Navbar />
+			<main className="pub-cont-layout-bg">
+				{loaderData && (
+					<Suspense fallback={<ImageCarouselSkeleton />}>
+						<Await resolve={loaderData.data}>
+							{(val) => (val.length > 0 ? <ImageCarousel data={val} /> : null)}
+						</Await>
+					</Suspense>
 				)}
 
 				<div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">

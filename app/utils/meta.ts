@@ -9,8 +9,6 @@
 &amp;lt;meta content=&quot;This is a basic text&quot; property=&quot;og:title&quot; /&amp;gt;
 What does this property attribute stand for, and what is its purpose?"> */
 
-import { useLocation } from "react-router";
-
 // TODO: Create a Meta util function that have all the field by default and takes in fields to be changes as parameters
 type PageMetaData = {
 	title?: string;

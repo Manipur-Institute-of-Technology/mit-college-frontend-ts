@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import data from "../../mock/imageCarousel.json";
+import type { ImageCarouselData } from "~/types/api/imageCarousel";
 
-export default function ImageCarousel({
-	slideInterval = 3000,
-}: {
+const ImageCarousel: React.FC<{
+	data: ImageCarouselData[];
 	slideInterval?: number;
-}) {
+}> = ({ data, slideInterval = 3000 }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-	const imageSlider = data.imageSlider;
+	const imageSlider = data;
 
 	useEffect(() => {
 		let interval: number;
@@ -47,7 +46,7 @@ export default function ImageCarousel({
 				className="absolute w-full h-[100%] border border-green-400 rounded-lg"
 				style={{
 					backgroundColor: `rgba(0, 0, 0, 0.9)`,
-					backgroundImage: `url("${imageSlider[currentIndex].images}")`,
+					backgroundImage: `url("${imageSlider[currentIndex].imageURL}")`,
 					backgroundAttachment: "scroll",
 					backgroundSize: "cover",
 					backgroundRepeat: "no-repeat",
@@ -58,7 +57,7 @@ export default function ImageCarousel({
 			{/* Main Image */}
 			<div className="absolute h-full w-full bg-gray-600/70 backdrop-blur-sm rounded-lg">
 				<img
-					src={imageSlider[currentIndex].images}
+					src={imageSlider[currentIndex].imageURL}
 					alt={imageSlider[currentIndex].title}
 					className="w-full h-full object-contain md:object-contain rounded-lg"
 				/>
@@ -79,8 +78,8 @@ export default function ImageCarousel({
 			</div>
 
 			<div className="absolute top-4 right-2 p-1 rounded-lg text-slate-300 bg-slate-800/50 backdrop-blur-sm text-sm">
-				{imageSlider[currentIndex].time &&
-					new Date(imageSlider[currentIndex].time).toLocaleDateString()}
+				{imageSlider[currentIndex].createdAt &&
+					new Date(imageSlider[currentIndex].createdAt).toLocaleDateString()}
 			</div>
 
 			{/* Navigation Arrows */}
@@ -114,4 +113,16 @@ export default function ImageCarousel({
 			</div>
 		</div>
 	);
-}
+};
+
+export default ImageCarousel;
+
+export const ImageCarouselSkeleton = () => {
+	return (
+		<div className="relative w-full max-h-[100vh] md:h-[600px] h-[60vh] overflow-hidden rounded-lg">
+			<div className="flex w-full h-[100%] items-center justify-center">
+				<div className="text-white ">Loading...</div>
+			</div>
+		</div>
+	);
+};
