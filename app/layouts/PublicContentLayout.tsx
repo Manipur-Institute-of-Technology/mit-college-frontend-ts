@@ -1,4 +1,4 @@
-import { Await, Outlet, useLocation } from "react-router";
+import { Await, Outlet, useAsyncError, useLocation } from "react-router";
 import Navbar from "../components/Navbar/PublicContentNav";
 import Footer from "../components/Footer/PublicFooter";
 import ImageCarousel, {
@@ -9,27 +9,36 @@ import { getImageCarouselContent } from "~/mock/services/imageCarousel";
 import { Suspense } from "react";
 
 import "./background.css";
+import { getPublicNavContent } from "~/mock/services/navbar";
+import { FetchError } from "~/types/api/FetchError";
 
-export const clientLoader = ({}: Route.ClientLoaderArgs) => {
-	const loc = useLocation();
-	const { pathname } = loc;
+export const clientLoader = async ({}: Route.ClientLoaderArgs) => {
 	// TODO: fetch carousel data from api return route lists
-	if (pathname === "/") {
-		const data = getImageCarouselContent();
-		return { data };
-	}
-	return undefined;
+	const imgCarouselData = getImageCarouselContent();
+	const navData = getPublicNavContent();
+	return { imgCarouselData, navData } as const;
 };
 
 export default function PublicLayout({ loaderData }: Route.ComponentProps) {
+	const loc = useLocation();
 	return (
 		<>
-			<Navbar />
+			{loaderData && (
+				<Suspense fallback={<>Loading navbar...</>}>
+					<Await resolve={loaderData.navData} errorElement={<>Navbar Error</>}>
+						{(val) => <Navbar navigation={val} />}
+					</Await>
+				</Suspense>
+			)}
 			<main className="pub-cont-layout-bg">
-				{loaderData && (
+				{loc.pathname === "/" && (
 					<Suspense fallback={<ImageCarouselSkeleton />}>
-						<Await resolve={loaderData.data}>
-							{(val) => (val.length > 0 ? <ImageCarousel data={val} /> : null)}
+						<Await
+							resolve={loaderData.imgCarouselData}
+							errorElement={<ErrorBoundary />}>
+							{(val) => {
+								return val.length > 0 ? <ImageCarousel data={val} /> : null;
+							}}
 						</Await>
 					</Suspense>
 				)}
@@ -42,3 +51,30 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 		</>
 	);
 }
+
+const ErrorBoundary = () => {
+	const err = useAsyncError();
+	if (err instanceof FetchError) {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error</div>
+				<div className="text-lg font-bold">{err.getStatusCode()}</div>
+				<div className="text-md">{err.getStatusText()}</div>
+			</div>
+		);
+	} else if (err instanceof Error) {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error </div>
+				<div>{err.message}</div>
+			</div>
+		);
+	} else {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error</div>
+				<div>An unknown error occur</div>
+			</div>
+		);
+	}
+};

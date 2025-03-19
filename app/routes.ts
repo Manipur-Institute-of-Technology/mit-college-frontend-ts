@@ -8,6 +8,7 @@ import {
 
 export default [
 	// public routes
+	route("/test", "./routes/test.tsx"),
 	layout("./layouts/PublicContentLayout.tsx", [
 		index("routes/home.tsx"),
 		route("/home", "./routes/home.tsx", { id: "home1" }),

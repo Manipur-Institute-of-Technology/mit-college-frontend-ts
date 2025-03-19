@@ -53,9 +53,19 @@ export default function App() {
 
 export function HydrateFallback() {
 	return (
-		<div className="fixed bg-slate-700/50 backdrop-blur-md w-[100vw] h-[100vh]">
-			<div className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] font-mono w-fit">
-				This is some hydration...
+		<div className="fixed bg-slate-200/50 backdrop-blur-md w-full h-full">
+			<div className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] font-mono w-fit text-center">
+				<div className="relative w-[14rem] h-[14rem] mx-auto">
+					<div className="absolute w-[14rem] h-[14rem] rounded-full p-2 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-[conic-gradient(from_0deg,transparent_10%,theme(colors.rose.600)_50%,transparent_90%)] animate-[spin_1s_linear_infinite]" />
+					<img
+						src="/Manipur_University_Logo.png"
+						alt="MU Logo"
+						className="w-[13rem] h-[13rem] max-w-full max-h-full bg-white rounded-full z-10 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+					/>
+				</div>
+				<div className="text-sm my-2">
+					Welcome to MIT College <br /> Please wait while we load the website...
+				</div>
 			</div>
 		</div>
 	);

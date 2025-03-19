@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 import { useState } from "react";
 
 import type { RawNavData } from "~/components/SideTray/SideTray";
-import type { AccountInfo } from "~/components/Navbar/CMSPrivateNav";
+import type { AccountInfo } from "~/types/api/AccountInfo";
 
 import CMSPrivateNav from "~/components/Navbar/CMSPrivateNav";
 import {
@@ -36,9 +36,13 @@ const CMSLayout: React.FC<CMSLayoutProps> = ({
 					setSidePanelOpen={setSidePanelOpen}
 				/>
 				{/* Mobile side tray */}
-				<MobileSideTray navigation={navigation} sidePanelOpen={sidePanelOpen} />
+				{/* <MobileSideTray navigation={navigation} sidePanelOpen={sidePanelOpen} /> */}
 
 				<div className="relative md:flex md:flex-nowrap">
+					<MobileSideTray
+						navigation={navigation}
+						sidePanelOpen={sidePanelOpen}
+					/>
 					{/* Desktop side tray */}
 					<DesktopSideTray
 						navigation={navigation}
@@ -46,7 +50,15 @@ const CMSLayout: React.FC<CMSLayoutProps> = ({
 					/>
 					<div className="w-full">
 						{/* Main Content Start */}
-						<Outlet />
+						<main
+							className="w-full min-h-[100vh] p-2"
+							style={{
+								backgroundRepeat: "noRepeat",
+								backgroundAttachment: "fixed",
+								backgroundImage: `repeating-linear-gradient(0deg, transparent 0 19px, #ddd 19px 20px), repeating-linear-gradient(90deg, transparent 0 19px, #ddd 19px 20px), radial-gradient(circle at center, transparent 50%, #eee 80%)`,
+							}}>
+							<Outlet />
+						</main>
 					</div>
 				</div>
 			</div>

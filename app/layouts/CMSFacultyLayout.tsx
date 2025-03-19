@@ -2,7 +2,7 @@ import CMSPrivLayout from "./CMSPrivateLayout";
 import { BookOpen, LayoutDashboard, Wrench } from "lucide-react";
 import { type RawNavData } from "./../components/SideTray/SideTray";
 import type { Route } from "./+types/CMSFacultyLayout";
-import type { AccountInfo } from "./CMSPrivateLayout copy";
+import type { AccountInfo } from "~/types/api/AccountInfo";
 
 // Navdata for admin
 const rawNavData: RawNavData[] = [

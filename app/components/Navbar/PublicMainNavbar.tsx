@@ -15,7 +15,7 @@ export default ({ navigation }: { navigation: NavbarData }) => {
 				setActiveDropdown(index);
 			}
 		},
-		[setActiveDropdown],
+		[activeDropdown, setActiveDropdown],
 	);
 
 	return (
@@ -147,7 +147,7 @@ const MobileNav: React.FC<{
 				</div>
 				<div className="absolute right-2 top-[50%] translate-y-[-50%] rounded">
 					<button
-						className="block outline-none mobile-menu-button"
+						className="block outline-none mobile-menu-button hover:cursor-pointer"
 						onClick={() => setIsOpen(!isOpen)}>
 						{isOpen ? (
 							<X className="text-gray-200" size={32} />
@@ -180,7 +180,7 @@ const MobileMenu: React.FC<{
 						<div>
 							<button
 								onClick={() => toggleDropdown(index)}
-								className="border-b-rose-100 border-b-2  w-full relative py-2 px-4 text-gray-100 font-bold hover:bg-rose-600 transition duration-300 flex flex-row flex-nowrap items-center justify-between">
+								className="hover:cursor-pointer border-b-rose-100 border-b-2  w-full relative py-2 px-4 text-gray-100 font-bold hover:bg-rose-600 transition duration-300 flex flex-row flex-nowrap items-center justify-between">
 								<span className="block">{item.name}</span>
 
 								<ChevronDown

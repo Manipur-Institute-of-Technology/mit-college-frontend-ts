@@ -3,7 +3,7 @@ import "./navbar.css";
 export default function CMSPublicNav() {
 	return (
 		<>
-			<nav className="bg-rose-700/90 shadow-lg sticky top-0 z-[999] m-0 w-full">
+			<nav className="bg-rose-700/90 backdrop-blur-md shadow-lg sticky top-0 z-[999] m-0 w-full">
 				<div className="md:w-10/12 relative flex flex-row flex-nowrap items-center gap-2 py-2 px-2 md:pl-8 m-auto">
 					<div className="border-4 border-rose-700/90 shadow-lg bg-white rounded-full p-1 relative md:absolute md:top-[0%] md:translate-y-[-0%]">
 						<img

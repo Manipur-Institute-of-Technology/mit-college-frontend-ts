@@ -24,7 +24,7 @@ export const genPageMetaData = ({
 }: PageMetaData) => {
 	// const loc = useLocation();
 	const baseURL = "https://mitimphal.manipuruniv.ac.in";
-
+	// <link rel="icon" href="/aj.png">
 	const defaultMetaData = [
 		{
 			title,

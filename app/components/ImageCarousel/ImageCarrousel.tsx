@@ -119,10 +119,18 @@ export default ImageCarousel;
 
 export const ImageCarouselSkeleton = () => {
 	return (
-		<div className="relative w-full max-h-[100vh] md:h-[600px] h-[60vh] overflow-hidden rounded-lg">
-			<div className="flex w-full h-[100%] items-center justify-center">
-				<div className="text-white ">Loading...</div>
-			</div>
+		<div className="relative w-full max-h-[100vh] md:h-[600px] h-[60vh] overflow-hidden rounded-lg bg-gray-200">
+			<div className="relative bg-gray-800/50 animate-pulse w-full h-full" />
 		</div>
 	);
 };
+
+// export const ImageCarouselSkeleton = () => {
+// 	return (
+// 		<div className="relative w-full max-h-[100vh] md:h-[600px] h-[60vh] overflow-hidden rounded-lg bg-rose-600">
+// 			<div className="flex w-full h-[100%] items-center justify-center">
+// 				<div className="text-white ">Loading...</div>
+// 			</div>
+// 		</div>
+// 	);
+// };
