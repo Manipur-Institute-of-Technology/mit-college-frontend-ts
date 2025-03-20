@@ -31,7 +31,7 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 				</Suspense>
 			)}
 			<main className="pub-cont-layout-bg">
-				{loc.pathname === "/" && (
+				{/* {loc.pathname === "/" && (
 					<Suspense fallback={<ImageCarouselSkeleton />}>
 						<Await
 							resolve={loaderData.imgCarouselData}
@@ -41,9 +41,9 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 							}}
 						</Await>
 					</Suspense>
-				)}
+				)} */}
 
-				<div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
+				<div className="mx-auto max-w-7xl px-0 py-6 lg:px-0 min-h-[100vh] relative">
 					<Outlet />
 				</div>
 			</main>

@@ -1,3 +1,8 @@
+// Add Dashboard title
 export default () => {
-	return <div>This is admin Dashboard</div>;
+	return (
+		<div>
+			<div className="font-2xl font-extrabold text-black">Dashboard</div>
+		</div>
+	);
 };

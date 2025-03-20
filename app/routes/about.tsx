@@ -1,3 +1,5 @@
+import { XPreviewEditor } from "./test1";
+
 export default () => {
-	return <div>About</div>;
+	return <XPreviewEditor />;
 };
