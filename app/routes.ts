@@ -8,8 +8,8 @@ import {
 
 export default [
 	// public routes
-	route("/test", "./routes/test.tsx"),
-	route("/test1", "./routes/test1.tsx"),
+	// route("/test", "./routes/test.tsx"),
+	// route("/test1", "./routes/test1.tsx"),
 	layout("./layouts/PublicContentLayout.tsx", [
 		index("routes/home.tsx"),
 		route("/home", "./routes/home.tsx", { id: "home1" }),
@@ -36,6 +36,9 @@ export default [
 		...prefix("admin", [
 			layout("./layouts/CMSAdminLayout.tsx", [
 				index("./routes/cms/admin.dashboard.tsx"),
+				route("dashboard", "./routes/cms/admin.dashboard.tsx", {
+					id: "adminDashboard1",
+				}),
 			]),
 		]),
 	]),

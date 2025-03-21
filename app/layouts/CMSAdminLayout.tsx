@@ -11,24 +11,24 @@ const rawNavData: RawNavData[] = [
 		lists: [
 			{
 				name: "Dashboard",
-				href: "/cms/dashboard",
+				href: "/cms/admin/dashboard",
 				icon: LayoutDashboard,
 				// icon: <LayoutDashboard size={24} stroke="white" />,
 			},
 			{
 				name: "Pages",
-				href: "/cms/pages",
+				href: "/cms/admin/pages",
 				icon: BookOpen,
 				// icon: <BookOpen size={24} stroke="rgb(30,129,206)" />,
 				lists: [
-					{ name: "Tools", href: "/cms/tools", icon: Wrench },
+					{ name: "Tools", href: "/cms/admin/tools", icon: Wrench },
 					{ name: "Tools", href: "/cms/tools", icon: Wrench },
 					{ name: "Tools", href: "/cms/tools", icon: Wrench },
 				],
 			},
 			{
 				name: "Tools",
-				href: "/cms/tools",
+				href: "/cms/admin/tools",
 				icon: Wrench,
 			},
 		],
