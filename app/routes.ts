@@ -11,6 +11,7 @@ export default [
 	layout("./layouts/PublicContentLayout.tsx", [
 		index("routes/home.tsx"),
 		route("/home", "./routes/home.tsx", { id: "home1" }),
+		route("/Vice-Chancellor","./routes/vice_chancellor.tsx"),
 		route("/contact", "./routes/contact.tsx"),
 		route("/editor", "./routes/editor.tsx"),
 	]),

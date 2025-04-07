@@ -1,5 +1,5 @@
 import ImageCarousel from "./ImageCarousel/ImageCarrousel";
-import Informations from "~/Common/Download/Informations";
+import Informations from "~/Common/Informations/Informations";
 
 export default function Home() {
   return (

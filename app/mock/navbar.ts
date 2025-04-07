@@ -11,7 +11,16 @@ export type NavigationData = {
 
 export const navigationData: NavigationData[] = [
 	{ name: "Home", href: "/" },
-	{ name: "Admission", href: "/admission" },
+	{
+		name: "Administration",
+		href: "#",
+		childrens: [
+			{ name: "Vice Chancellor", href: "/Vice-Chancellor" },
+			{ name: "Principal", href: "/Principal_0" },
+			{ name: "Institute Administration", href: "/Institute_Administration" },
+			{ name: "Hostel Administration", href: "/Hostel_admin_0" },
+		],
+	},
 	{
 		name: "Department",
 		href: "#",
@@ -40,16 +49,6 @@ export const navigationData: NavigationData[] = [
 				name: "Department of Mechanical Engineering",
 				href: "/ME_dept",
 			},
-		],
-	},
-	{
-		name: "Administrative",
-		href: "#",
-		childrens: [
-			{ name: "Vice Chancellor", href: "/Vice-Chancellor" },
-			{ name: "Principal", href: "/Principal_0" },
-			{ name: "Institute Administration", href: "/Institute_Administration" },
-			{ name: "Hostel Administration", href: "/Hostel_admin_0" },
 		],
 	},
 	{
@@ -98,7 +97,7 @@ export const navigationData: NavigationData[] = [
 			},
 		],
 	},
-
+	{ name: "Form Fillup", href: "https://www.manipuruniv.ac.in/examform2021/" },
 	{
 		name: "Extras",
 		href: "#",

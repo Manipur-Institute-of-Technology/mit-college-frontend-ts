@@ -26,7 +26,7 @@ export default function PublicLayout() {
           </div>
         )} */}
 
-        <div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
+        <div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 min-h-[100vh]">
           <Outlet />
         </div>
       </main>
