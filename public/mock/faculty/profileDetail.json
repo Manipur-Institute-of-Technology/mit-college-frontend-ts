@@ -1,0 +1,217 @@
+{
+	"initial": "professor",
+	"firstName": "Nicolas",
+	"lastName": "Papernot",
+	"avatarUrl": "https://discover.research.utoronto.ca/12183-nicolas-papernot/thumbnail",
+	"personalWebsite": "https://www.papernot.fr/",
+	"address": [
+		{
+			"streetAddress": "10 King’s College Road",
+			"city": "Toronto",
+			"state": "Ontario",
+			"zipCode": "M5S 3G4",
+			"country": "Canada"
+		}
+	],
+	"email": ["tina@fr.ac"],
+	"bio": "I am an Assistant Professor at the University of Toronto, in the Department of Electrical and Computer Engineering and the Department of Computer Science. I am also a faculty member at the Vector Institute where I hold a Canada CIFAR AI Chair, and a faculty affiliate at the Schwartz Reisman Institute. In 2022, I was named an Alfred P. Sloan Research Fellow in Computer Science.<br /><br />My research interests are at the intersection of security, privacy, and machine learning. If you would like to learn more about my research, I recommend reading the blog posts I co-authored on cleverhans.io, for example about proof-of-learning, collaborative learning beyond federation, dataset inference, machine unlearning, differentially private ML, or adversarial examples.<br /><br />My research has been cited in the press, including the New York Times, Popular Science, and Wired. I currently serve as a Program Committee Chair of the IEEE Conference on Secure and Trustworthy Machine Learning (SaTML), an Associate Chair of the IEEE Symposium on Security and Privacy (S&amp;P), and an Area Chair of NeurIPS. I earned my Ph.D. in Computer Science and Engineering at the Pennsylvania State University, working with Prof. Patrick McDaniel and supported by a Google PhD Fellowship. Upon graduating, I spent a year at Google Brain where I still spend some of my time.<br /><br />Media availability: TV, Radio, Print/Online",
+	"academicDegrees": [
+		{
+			"name": "PhD",
+			"institution": {
+				"organisation": "Pennsylvania State University",
+				"city": "State College",
+				"state": "Lousiana",
+				"country": "United States"
+			},
+			"subject": "Neural Rendering",
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": "2025-04-01T14:53:22.121Z"
+		},
+		{
+			"name": "Master",
+			"institution": {
+				"organisation": "Pennsylvania State University",
+				"city": "State College",
+				"state": "Wisconsin",
+				"country": "United States"
+			},
+			"subject": "Deep Learning with Specialisation in Generative Adversial Network",
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": "2025-04-01T14:53:22.121Z"
+		},
+		{
+			"name": "Bachelor",
+			"institution": {
+				"organisation": "Carnegie Mellon University",
+				"city": "State College",
+				"state": "Arkansas",
+				"country": "United States"
+			},
+			"subject": "Computer Science and Engineering",
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": "2025-04-01T14:53:22.121Z"
+		}
+	],
+	"academicPositions": [
+		{
+			"position": "Assistant Professor",
+			"department": "computer science and engineering",
+			"institution": {
+				"organisation": "University of Toronto",
+				"city": "Toronto",
+				"state": "Roth Island",
+				"country": "Canada"
+			},
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": null
+		},
+		{
+			"position": "Teaching Assistant",
+			"department": "computer science and engineering",
+			"institution": {
+				"organisation": "University of Toronto",
+				"city": "Toronto",
+				"state": "Brooklyn",
+				"country": "Canada"
+			},
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": "2025-04-01T14:53:22.121Z"
+		}
+	],
+	"nonAcademicPositions": [
+		{
+			"employer": {
+				"organisation": "Vector Institute",
+				"city": "Toronto",
+				"state": "Old Massachusset",
+				"country": "Canada"
+			},
+			"position": "Canada CIFAR AI Chair and Faculty Member",
+			"department": "computer science and engineering",
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": "2025-04-01T14:53:22.121Z"
+		},
+		{
+			"employer": {
+				"organisation": "Google Brain",
+				"city": "State College",
+				"state": "Queens",
+				"country": "United States"
+			},
+			"position": "Research Scientist",
+			"department": "computer science and engineering",
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": null
+		},
+		{
+			"employer": {
+				"organisation": "Deep Mind",
+				"city": "London",
+				"state": "Philadelphia",
+				"country": "United Kingdom"
+			},
+			"position": "Research Scientist",
+			"startDate": "2025-04-01T14:53:22.121Z",
+			"endDate": null
+		}
+	],
+	"teachings": {
+		"teachingInterests": "I am passionate about teaching advanced concepts in machine learning security, privacy-preserving computing, and computer systems security. My teaching philosophy emphasizes hands-on experience through practical projects and real-world applications. I particularly enjoy mentoring graduate students in research methodologies and guiding undergraduate students through complex security concepts.",
+		"taughtCourses": [
+			{
+				"courseCode": "CS-224n",
+				"courseName": "Neural Rendering",
+				"courseLink": "",
+				"description": "This course covers advanced techniques in neural rendering, exploring the intersection of computer graphics and deep learning. Topics include neural radiance fields (NeRF), differentiable rendering, neural scene representations, and implicit surface reconstruction. Students will learn to implement state-of-the-art methods for novel view synthesis and 3D scene understanding."
+			},
+			{
+				"courseCode": "ECE-568H1",
+				"courseName": "Computer Security",
+				"courseLink": "https://google.com",
+				"description": "This course focuses on fundamental principles of computer security and privacy. Topics include cryptography basics, network security, software security, trusted computing, privacy-preserving machine learning, and adversarial machine learning. Students will learn both theoretical foundations and practical applications through hands-on projects."
+			},
+			{
+				"courseCode": "ECE-1784H",
+				"courseName": "Trustworthy Machine Learning",
+				"courseLink": "",
+				"description": "Advanced course covering the intersection of machine learning and security. Topics include adversarial examples, model poisoning attacks, privacy in ML, differential privacy, federated learning, and robust ML systems. Students will implement defensive techniques and evaluate ML systems against various security threats."
+			},
+			{
+				"courseCode": "CS-221",
+				"courseName": "Artificial Intelligence",
+				"courseLink": "https://google.com",
+				"description": "Will meanly deal with theoretical aspect of AI. Topics we'll mainly discuss are of computational algorithm that are popular before neural network domain appear. Especial focuss will be given on RL and game playing AI"
+			},
+			{
+				"courseCode": "CSC-2541",
+				"courseName": "Privacy Preserving Machine Learning",
+				"courseLink": "",
+				"description": "Graduate-level course on protecting privacy in machine learning systems. Covers differential privacy mechanisms, secure multi-party computation, homomorphic encryption, privacy accounting, and privacy-utility tradeoffs in ML. Includes research paper discussions and a significant implementation project."
+			}
+		]
+	},
+	"researchDetail": {
+		"topicOfResearchInterests": [
+			"Machine Learning",
+			"Distributed System",
+			"Optimization",
+			"Econometrics",
+			"Numerical Computation"
+		],
+		"researchInterests": "My research focuses on advancing the frontiers of machine learning security and privacy. I explore novel approaches to protect ML systems from adversarial attacks while ensuring data privacy through differential privacy mechanisms. Current projects include developing robust federated learning frameworks, investigating privacy-preserving deep learning architectures, and creating verifiable ML systems. I'm particularly interested in the theoretical foundations of trustworthy AI and its practical applications in critical systems.<br/><br/>Recent work has concentrated on scalable privacy-preserving ML techniques, adversarial robustness in neural networks, and secure multi-party computation for distributed learning. My lab also investigates zero-knowledge proofs for ML model verification and novel approaches to dataset privacy.",
+		"publications": [
+			{
+				"paperTitle": "SecureFL: A Robust Framework for Privacy-Preserving Federated Learning",
+				"type": "journal",
+				"doi": "10.1109/tnnls.2024.1234567",
+				"publicationDate": "2024-02-15",
+				"link": "https://google.com",
+				"authors": [
+					{
+						"name": "Nicolas Papernot",
+						"profileLink": "https://www.papernot.fr/"
+					},
+					{ "name": "Sarah Chen", "profileLink": "https://example.com/schen" }
+				]
+			},
+			{
+				"paperTitle": "Differential Privacy in Deep Learning: An Empirical Study",
+				"type": "conference",
+				"doi": "10.1145/3567890.1234567",
+				"publicationDate": "2023-10-10",
+				"authors": [
+					{
+						"name": "Nicolas Papernot",
+						"profileLink": "https://www.papernot.fr/"
+					},
+					{ "name": "Michael Ross", "profileLink": "https://example.com/mross" }
+				]
+			}
+		],
+		"awards": [
+			{
+				"date": "2024-01-15",
+				"title": "ACM SIGAI Outstanding Early Career Award",
+				"by": "ACM Special Interest Group on Artificial Intelligence"
+			},
+			{
+				"date": "2023-06-20",
+				"title": "Best Paper Award at IEEE S&P 2023",
+				"by": "IEEE Symposium on Security and Privacy"
+			}
+		],
+		"conferences": [
+			{
+				"title": "Keynote Speaker at International Conference on Machine Learning (ICML)",
+				"date": "2024-07-15"
+			},
+			{
+				"title": "Program Chair, IEEE Conference on Secure and Trustworthy Machine Learning",
+				"date": "2023-12-10"
+			}
+		]
+	},
+	"updatedAt": "2025-04-01T14:53:22.121Z",
+	"userProfileUrl": "/faculty/Pascal+Poupart-12183"
+}

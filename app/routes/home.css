@@ -1,0 +1,14 @@
+.animate-bg {
+    background-size: 300%;
+    animation: bg-move 1.5s linear infinite forwards;
+}
+
+@keyframes bg-move {
+    from {
+        background-position-x: 0%;
+    }
+
+    to {
+        background-position-x: 100%;
+    }
+}
