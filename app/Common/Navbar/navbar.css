@@ -1,19 +1,27 @@
 @keyframes gradient-anim {
-    0% {
-        background-position: 0% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
 
-    50% {
-        background-position: 100% 50%;
-    }
+  50% {
+    background-position: 100% 50%;
+  }
 
-    100% {
-        background-position: 0% 50%;
-    }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-
 .animate-gradient-bg {
-    animation: gradient-anim 5s ease infinite alternate;
-    background-size: 400% 400%;
+  animation: gradient-anim 5s ease infinite alternate;
+  background-size: 400% 400%;
+}
+
+/* index.css or App.css */
+.grayscale-mode {
+  filter: grayscale(100%) contrast(120%);
+}
+
+.high-contrast-mode {
+  filter: saturate(200%) contrast(200%) brightness(90%);
 }

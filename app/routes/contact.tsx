@@ -1,10 +1,11 @@
+import Contact_Us from "~/Platform/User/Contact Us/Contact_us";
 import type { Route } from "./+types/contact";
 import { genPageMetaData } from "~/utils/meta";
 
 export function meta({}: Route.MetaArgs) {
-	return genPageMetaData({ title: "MIT | Contact" });
+  return genPageMetaData({ title: "MIT | Contact" });
 }
 
 export default function Contact() {
-	return <div>Contact Me</div>;
+  return <Contact_Us />;
 }

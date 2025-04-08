@@ -1,7 +1,7 @@
 export const Information_data = [
   {
     File_name: "AICTE Feedback",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "https://www.aicte-india.org/feedback/",
   },
   {
     File_name: "Fire Safety Certificate",

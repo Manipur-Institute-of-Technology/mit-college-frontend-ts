@@ -1,4 +1,4 @@
-import { VC_data } from "~/DB_Sample/VC";
+import { Administration_data } from "~/DB_Sample/Admin";
 
 type commonProps = {
   name: string;
@@ -16,36 +16,36 @@ export default function Common({ name }: commonProps) {
 }
 
 function AdministrationData({ name }: commonProps) {
-  if (name == "Vice Chancellor")
-    return (
-      <>
-        {VC_data.map((item, index) => {
-          return (
-            <>
-              <div className="min-h-screen flex flex-col justify-center items-center gap-6 ">
-                <img
-                  src={item?.photo}
-                  alt="Vice-Chancler"
-                  className="w-60 h-80"
-                />
-                <div className="flex flex-col justify-center items-center gap-2 text-lg tracking-wide">
-                  {item?.about.split("\n").map((line, index) => (
-                    <p key={index}>
-                      {line}
-                      <br />
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </>
-          );
-        })}
-      </>
-    );
-  else if ((name = "Principal"))
-    return (
-      <>
-        <div></div>
-      </>
-    );
+  const selectedAdmin = Administration_data.find(
+    (item) => item.Admin.toLowerCase() === name.toLowerCase()
+  );
+
+  return (
+    selectedAdmin && (
+      <div className="min-h-screen flex flex-col justify-center items-center gap-6">
+        <img
+          src={selectedAdmin.photo}
+          alt={selectedAdmin.Admin}
+          className="w-60 h-80"
+        />
+
+        <div className="flex flex-col justify-center items-center gap-0.5 text-lg tracking-wide">
+          <p className="font-bold tracking-wide">
+            <span>About The {selectedAdmin.Admin}</span>
+          </p>
+          {selectedAdmin.about.split("\n").map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
+        </div>
+
+        {selectedAdmin.message && (
+          <div className="leading-7 tracking-wide">
+            {selectedAdmin.message.split("\n").map((line, index) => (
+              <p key={index}>&emsp;&emsp;{line}</p>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  );
 }
