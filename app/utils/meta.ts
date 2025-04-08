@@ -14,13 +14,13 @@ type PageMetaData = {
 	title?: string;
 	description?: string;
 	summary?: string;
-	logoURL?: string;
+	imgURL?: string;
 };
 export const genPageMetaData = ({
 	title = "Manipur Institute of Technology",
 	description = "Website for MIT College",
 	summary = "Website for MIT College",
-	logoURL = "https://mitimphal.manipuruniv.ac.in/Manipur_University_Logo.png",
+	imgURL = "https://mitimphal.manipuruniv.ac.in/Manipur_University_Logo.png",
 }: PageMetaData) => {
 	// const loc = useLocation();
 	const baseURL = "https://mitimphal.manipuruniv.ac.in";
@@ -37,7 +37,7 @@ export const genPageMetaData = ({
 		{
 			property: "og:image",
 			itemProp: "image primaryImageOfPage",
-			content: logoURL,
+			content: imgURL,
 		},
 		// Twitter
 		{ name: "twitter:card", content: summary },
