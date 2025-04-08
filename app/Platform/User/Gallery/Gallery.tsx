@@ -3,6 +3,7 @@ import { FcOpenedFolder } from "react-icons/fc";
 import { IoCloseSharp } from "react-icons/io5";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
+import "./gallery.css";
 import { Gallery_Data } from "~/DB_Sample/Gallery";
 
 // 🔍 Modal component (folder is typed as `any`)
@@ -21,7 +22,11 @@ function GalleryModal({
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={closeModal}>
+      <Dialog
+        as="div"
+        className="relative z-50 front_most"
+        onClose={closeModal}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -40,7 +45,7 @@ function GalleryModal({
                 </div>
               </Dialog.Title>
 
-              <div className="mt-4 min-h-[60vh] overflow-y-auto scrollbar-hide">
+              <div className="mt-4 min-h-[60vh] overflow-y-scroll scrollbar-hide overflow-x-hidden hide-scrollbar">
                 {folder?.images?.length ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {folder.images.map((img: string, idx: number) => (
@@ -103,7 +108,7 @@ export default function Gallery() {
               className="cursor-pointer hover:scale-105 transition-transform text-center"
             >
               <FcOpenedFolder className="text-9xl mx-auto" />
-              <div className="mt-2">{item.folder_name}</div>
+              <div className="mt-2 text-lg uppercase">{item.folder_name}</div>
             </div>
           ))}
         </div>

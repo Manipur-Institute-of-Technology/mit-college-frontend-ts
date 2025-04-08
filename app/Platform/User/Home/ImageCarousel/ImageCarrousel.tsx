@@ -74,16 +74,16 @@ export default function ImageCarousel({
       </div>
 
       {/* Slide Animation Indicator */}
-      <div className="absolute top-4 left-2">
+      {/* <div className="absolute top-4 left-2">
         <div className="bg-gray-500/70 backdrop-blur-sm rounded-full p-1 border border-gray-100">
           {isAutoPlaying ? <Pause size={24} /> : <Play size={24} />}
         </div>
-      </div>
+      </div> */}
 
-      <div className="absolute top-4 right-2 p-1 rounded-lg text-slate-300 bg-slate-800/50 backdrop-blur-sm text-sm">
+      {/* <div className="absolute top-4 right-2 p-1 rounded-lg text-slate-300 bg-slate-800/50 backdrop-blur-sm text-sm">
         {imageSlider[currentIndex].time &&
           new Date(imageSlider[currentIndex].time).toLocaleDateString()}
-      </div>
+      </div> */}
 
       {/* Navigation Arrows */}
       <button
