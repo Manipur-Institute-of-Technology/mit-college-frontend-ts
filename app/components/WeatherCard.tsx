@@ -166,11 +166,6 @@ const WeatherCard = ({
 						className="font-semibold hover:cursor-pointer"
 						onClick={() => setDetailView((s) => !s)}>
 						{detailView ? "Less" : "More..."}
-						{/* nancy lynch Distributed system, rust, go termgui, elo rating, 
-                        discusX, graphic(raytracing, tiff), git, dfa, json parser, hotp extension, shazam, fileVault, compression, 
-                        chess engine - AI, RL, CRNN, Network - (tracert, packet sniffer), 3d reconstruction, NEAT,
-                        memoryDB, imgResizer, fileSharing, distributedSystem-FileSystem, dbDiagram, familyTree, print4me, 
-                        ResearchPaper - inpainting, Svelte - personalWebsite */}
 					</div>
 				</div>
 			</div>

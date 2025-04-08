@@ -1,7 +1,44 @@
-import { useCallback, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type JSX } from "react";
+import { ChevronDown, Hammer, Menu, X } from "lucide-react";
 import { Link, NavLink } from "react-router";
-import type { NavbarData } from "~/types/api/navbar";
+import type { NavbarData } from "~/types/api/resData.type";
+
+export const useScrollDirection = () => {
+	const lastScrollRef = useRef<number>(
+		window.pageYOffset || document.documentElement.scrollTop,
+	);
+	const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(
+		null,
+	);
+
+	const removeScrollListener = () =>
+		window.removeEventListener("scroll", () => {});
+
+	useEffect(() => {
+		const factor = 10;
+		window.addEventListener("scroll", () => {
+			const y = window.pageYOffset || document.documentElement.scrollTop;
+			// console.log(y, lastScrollRef.current);
+			if (y > lastScrollRef.current + factor) {
+				// scroll down
+				setScrollDirection("down");
+				lastScrollRef.current = y < 0 ? 0 : y;
+			} else if (y < lastScrollRef.current - factor) {
+				// scroll up
+				setScrollDirection("up");
+				lastScrollRef.current = y < 0 ? 0 : y;
+			}
+			// lastScrollRef.current = y < 0 ? 0 : y;
+		});
+		return removeScrollListener;
+	}, []);
+
+	useEffect(() => {
+		console.log(scrollDirection);
+	}, [lastScrollRef.current]);
+
+	return { scrollDirection, removeScrollListener };
+};
 
 export default ({ navigation }: { navigation: NavbarData }) => {
 	const [isOpen, setIsOpen] = useState(false); // Hamburger menu open/close
@@ -18,8 +55,15 @@ export default ({ navigation }: { navigation: NavbarData }) => {
 		[activeDropdown, setActiveDropdown],
 	);
 
+	const toggleHamMenu = () => {
+		setIsOpen((s) => {
+			return !s;
+		});
+	};
+
 	return (
-		<nav className="bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg sticky top-0 z-[999] m-0">
+		<nav
+			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-[999] m-0 sticky top-0 transition-[top] duration-700`}>
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="max-w-6xl mx-auto px-4">
 					<div className="flex justify-between">
@@ -50,7 +94,10 @@ export default ({ navigation }: { navigation: NavbarData }) => {
 					logoURL={navigation.logoURL}
 					navbarTitle={navigation.navbarTitle}
 					isOpen={isOpen}
-					setIsOpen={setIsOpen}>
+					activeDropdown={activeDropdown}
+					scrollDirection={"down"}
+					toggleHamMenu={toggleHamMenu}
+					mobNavViz={true}>
 					<MobileMenu
 						isOpen={isOpen}
 						navigation={navigation}
@@ -58,6 +105,212 @@ export default ({ navigation }: { navigation: NavbarData }) => {
 						toggleDropdown={toggleDropdown}
 					/>
 				</MobileNav>
+			</div>
+			<div className="w-full h-2 bg-yellow-500"></div>
+			<div className="bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 w-full h-2 animate-gradient-bg"></div>
+		</nav>
+	);
+};
+
+// export const defaulter =  ({ navigation }: { navigation: NavbarData }) => {
+// 	const { scrollDirection } = useScrollDirection();
+// 	const [isOpen, setIsOpen] = useState(false); // Hamburger menu open/close
+// 	const [activeDropdown, setActiveDropdown] = useState<number | null>(null); // menu dropdown
+// 	const [mobNavViz, setMobNavViz] = useState<boolean>(true);
+// 	const [deskNavViz, setDeskNavViz] = useState<boolean>(true);
+
+// 	useEffect(() => {
+// 		window.addEventListener("scroll", () => {
+// 			if (scrollDirection === "down") {
+// 				if (window.innerWidth < 1024) {
+// 					if (!isOpen) {
+// 						setDeskNavViz(false);
+// 						setMobNavViz(false);
+// 					} else {
+// 						setDeskNavViz(true);
+// 						setMobNavViz(true);
+// 					}
+// 				} else {
+// 					if (activeDropdown === null) setDeskNavViz(false);
+// 				}
+// 			} else {
+// 				setDeskNavViz(true);
+// 				setMobNavViz(true);
+// 			}
+// 		});
+// 		return () => window.removeEventListener("scroll", () => {});
+// 	}, [scrollDirection, activeDropdown, isOpen]);
+
+// 	const toggleDropdown = useCallback(
+// 		(index: number) => {
+// 			if (activeDropdown === index) {
+// 				setActiveDropdown(null);
+// 				setMobNavViz(true);
+// 				setDeskNavViz(true);
+// 			} else {
+// 				setActiveDropdown(index);
+// 			}
+// 		},
+// 		[activeDropdown, setActiveDropdown],
+// 	);
+
+// 	const toggleHamMenu = () => {
+// 		setIsOpen((s) => {
+// 			setMobNavViz(true);
+// 			setDeskNavViz(true);
+
+// 			return !s;
+// 		});
+// 	};
+
+// 	return (
+// 		<nav
+// 			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-[999] m-0 sticky ${!deskNavViz ? "top-[-100%]" : "top-0"} transition-[top] duration-700`}>
+// 			{deskNavViz ? "true" : "false"} | {mobNavViz ? "true" : "false"}
+// 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+// 				<div className="max-w-6xl mx-auto px-4">
+// 					<div className="flex justify-between">
+// 						<div className="space-x-7 hidden lg:flex">
+// 							<Link to={"/"}>
+// 								<div className="bg-white absolute border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 origin-top transition-transform duration-300">
+// 									<img
+// 										src={navigation.logoURL}
+// 										alt={`logo of ${navigation.navbarTitle}`}
+// 										height={60}
+// 										width={60}
+// 									/>
+// 								</div>
+// 							</Link>
+// 						</div>
+
+// 						{/* Desktop menu */}
+// 						<DeskMenu
+// 							navigation={navigation}
+// 							activeDropdown={activeDropdown}
+// 							toggleDropdown={toggleDropdown}
+// 						/>
+// 					</div>
+// 				</div>
+
+// 				{/* MobileNav */}
+// 				<MobileNav
+// 					logoURL={navigation.logoURL}
+// 					navbarTitle={navigation.navbarTitle}
+// 					isOpen={isOpen}
+// 					activeDropdown={activeDropdown}
+// 					scrollDirection={scrollDirection}
+// 					toggleHamMenu={toggleHamMenu}
+// 					mobNavViz={mobNavViz}>
+// 					<MobileMenu
+// 						isOpen={isOpen}
+// 						navigation={navigation}
+// 						activeDropdown={activeDropdown}
+// 						toggleDropdown={toggleDropdown}
+// 					/>
+// 				</MobileNav>
+// 			</div>
+// 			<div className="w-full h-2 bg-yellow-500"></div>
+// 			<div className="bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 w-full h-2 animate-gradient-bg"></div>
+// 		</nav>
+// 	);
+// };
+
+// export const defaulter = ({ navigation }: { navigation: NavbarData }) => {
+// 	const [isOpen, setIsOpen] = useState(false); // Hamburger menu open/close
+// 	const [activeDropdown, setActiveDropdown] = useState<number | null>(null); // menu dropdown
+// 	const [mobNavViz, setMobNavViz] = useState<boolean>(true);
+// 	const [deskNavViz, setDeskNavViz] = useState<boolean>(true);
+
+// useEffect(() => {
+// 	window.addEventListener("scroll", () => {
+// 		if (scrollDirection === "down") {
+// 			if (window.innerWidth < 1024) {
+// 				if (!isOpen) {
+// 					setDeskNavViz(false);
+// 					setMobNavViz(false);
+// 				} else {
+// 					setDeskNavViz(true);
+// 					setMobNavViz(true);
+// 				}
+// 			} else {
+// 				if (activeDropdown === null) setDeskNavViz(false);
+// 			}
+// 		} else {
+// 			setDeskNavViz(true);
+// 			setMobNavViz(true);
+// 		}
+// 	});
+// 	return () => window.removeEventListener("scroll", () => {});
+// }, [scrollDirection, activeDropdown, isOpen]);
+
+// 	const toggleDropdown = useCallback(
+// 		(index: number) => {
+// 			if (activeDropdown === index) {
+// 				setActiveDropdown(null);
+// 				setMobNavViz(true);
+// 				setDeskNavViz(true);
+// 			} else {
+// 				setActiveDropdown(index);
+// 			}
+// 		},
+// 		[activeDropdown, setActiveDropdown],
+// 	);
+
+// 	const toggleHamMenu = () => {
+// 		setIsOpen((s) => {
+// 			if (s) {
+// 				setMobNavViz(true);
+// 				setDeskNavViz(true);
+// 			}
+// 			return !s;
+// 		});
+// 	};
+
+// 	return (
+// 		<>
+// 			<DeskNav
+// 				logoURL={navigation.logoURL}
+// 				navbarTitle={navigation.navbarTitle}>
+// 				<DeskMenu
+// 					navigation={navigation}
+// 					activeDropdown={activeDropdown}
+// 					toggleDropdown={toggleDropdown}
+// 				/>
+// 			</DeskNav>
+// 		</>
+// 	);
+// };
+
+const DeskNav: React.FC<{
+	logoURL: string;
+	navbarTitle: string;
+	children: JSX.Element;
+}> = ({ logoURL, navbarTitle, children }) => {
+	const [deskNavViz, setDeskNavViz] = useState<boolean>(true);
+
+	return (
+		<nav
+			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-[999] m-0 sticky ${!deskNavViz ? "top-[-100%]" : "top-0"} transition-[top] duration-700`}>
+			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="max-w-6xl mx-auto px-4">
+					<div className="flex justify-between">
+						<div className="space-x-7 hidden lg:flex">
+							<Link to={"/"}>
+								<div className="bg-white absolute border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 origin-top transition-transform duration-300">
+									<img
+										src={logoURL}
+										alt={`logo of ${navbarTitle}`}
+										height={60}
+										width={60}
+									/>
+								</div>
+							</Link>
+						</div>
+
+						{/* Desktop menu */}
+						{children}
+					</div>
+				</div>
 			</div>
 			<div className="w-full h-2 bg-yellow-500"></div>
 			<div className="bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 w-full h-2 animate-gradient-bg"></div>
@@ -88,7 +341,7 @@ const DeskMenu: React.FC<{
 								/>
 							</button>
 							{activeDropdown === index && (
-								<div className="absolute z-[999] right-0 mt-0 w-48 rounded-md bg-rose-600 ring-1 ring-black ring-opacity-5 shadow-md">
+								<div className="absolute z-[999] right-0 mt-0 w-48 rounded-md bg-rose-600 ring-1 ring-rose-300 ring-opacity-5 shadow-md">
 									<div className="py-1 ">
 										{item.childrens.map((child, indx) => (
 											<NavLink
@@ -128,13 +381,26 @@ const MobileNav: React.FC<{
 	logoURL: string;
 	navbarTitle: string;
 	isOpen: boolean;
-	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	activeDropdown: null | number;
+	scrollDirection: null | "up" | "down";
+	toggleHamMenu: () => void;
+	mobNavViz: boolean;
 	children: React.JSX.Element;
-}> = ({ logoURL, navbarTitle, isOpen, setIsOpen, children }) => {
+}> = ({
+	logoURL,
+	navbarTitle,
+	isOpen,
+	toggleHamMenu,
+	activeDropdown,
+	scrollDirection,
+	mobNavViz,
+	children,
+}) => {
 	return (
-		<div className="lg:hidden max-h-[100vh] overflow-y-auto">
+		<div className="lg:hidden max-h-[100vh] overflow-y-auto sticky">
 			{/* Mobile menu button */}
-			<div className="lg:hidden sticky top-0 w-[100%] text-center bg-rose-600/70 backdrop-blur-sm z-[99]">
+			<div
+				className={`lg:hidden sticky top-0 transition-[top] duration-700 w-[100%] text-center bg-rose-600/70 backdrop-blur-sm z-[99]`}>
 				<div className="inline-block rounded-full w-fit bg-white p-1 my-1">
 					<Link to={"/"}>
 						<img
@@ -148,7 +414,7 @@ const MobileNav: React.FC<{
 				<div className="absolute right-2 top-[50%] translate-y-[-50%] rounded">
 					<button
 						className="block outline-none mobile-menu-button hover:cursor-pointer"
-						onClick={() => setIsOpen(!isOpen)}>
+						onClick={() => toggleHamMenu()}>
 						{isOpen ? (
 							<X className="text-gray-200" size={32} />
 						) : (

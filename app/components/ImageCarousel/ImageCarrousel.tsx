@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import type { ImageCarouselData } from "~/types/api/imageCarousel";
+import type { ImageCarouselData } from "~/types/api/resData.type";
 
 const ImageCarousel: React.FC<{
 	data: ImageCarouselData[];
@@ -115,7 +115,7 @@ const ImageCarousel: React.FC<{
 	);
 };
 
-export default ImageCarousel;
+export default React.memo(ImageCarousel);
 
 export const ImageCarouselSkeleton = () => {
 	return (
@@ -124,13 +124,3 @@ export const ImageCarouselSkeleton = () => {
 		</div>
 	);
 };
-
-// export const ImageCarouselSkeleton = () => {
-// 	return (
-// 		<div className="relative w-full max-h-[100vh] md:h-[600px] h-[60vh] overflow-hidden rounded-lg bg-rose-600">
-// 			<div className="flex w-full h-[100%] items-center justify-center">
-// 				<div className="text-white ">Loading...</div>
-// 			</div>
-// 		</div>
-// 	);
-// };

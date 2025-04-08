@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { MenuIcon, PanelRight, PanelRightOpen, Search, X } from "lucide-react";
-import type { AccountInfo } from "~/types/api/AccountInfo";
+import type { AccountInfo } from "~/types/api/resData.type";
 
 const userNavigation = [
 	{ name: "Your Profile", href: "#" },

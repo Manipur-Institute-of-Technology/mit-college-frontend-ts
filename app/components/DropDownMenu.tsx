@@ -1,5 +1,3 @@
-// TODO: Refactor this compoenent, remove the avatar from the menu lists and pass props similar to DropDownMenus ComponentProps
-// TODO: Refactor this components to used as similar to DropDownMenus component
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import React, { memo, useState } from "react";
 
