@@ -20,6 +20,7 @@ export default [
     route("/Internet_Facility", "./routes/internet_faclility.tsx"),
     route("/Language_Lab", "./routes/language_facility.tsx"),
     route("/Contact_Us", "./routes/contact.tsx"),
+    route("/gallery", "./routes/gallery.tsx"),
     route("/editor", "./routes/editor.tsx"),
   ]),
   // CMS Route

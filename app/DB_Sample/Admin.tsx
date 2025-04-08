@@ -1,14 +1,14 @@
 export const Administration_data = [
   {
     Admin: "Vice Chancellor",
-    photo: "public/Images/Vice_Chancellor/VC.jpg",
+    photo: "Images/Vice_Chancellor/VC.jpg",
     about:
       "Prof. Naorem Lokendra Singh\nVice-Chancellor, Manipur University\nChairman, Governing Body of MIT",
     message: "",
   },
   {
     Admin: "Principal",
-    photo: "public/Images/Principal/principal.jpeg",
+    photo: "Images/Principal/principal.jpeg",
     about:
       "Professor N Basanta Singh\nPrincipal i/c (w.e.f: 1st July, 2020)\nMember Secretary, Governing Body of MIT",
     message:
