@@ -22,14 +22,14 @@ export default () => {
 						<button
 							onClick={() => setUserType("faculty")}
 							className={`p-2 font-bold rounded-l-md w-[8rem] hover:cursor-pointer border-r-0 ${
-								userType === "faculty" ? "bg-blue-400 text-white" : "text-black"
+								userType === "faculty" ? "bg-blue-500 text-white" : "text-black"
 							}`}>
 							Faculty
 						</button>
 						<button
 							onClick={() => setUserType("admin")}
 							className={`p-2 font-bold rounded-r-md w-[8rem] hover:cursor-pointer  border-l-0 ${
-								userType === "admin" ? "bg-blue-400 text-white" : "text-black"
+								userType === "admin" ? "bg-blue-500 text-white" : "text-black"
 							}`}>
 							Admin
 						</button>

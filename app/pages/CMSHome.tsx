@@ -46,7 +46,8 @@ export default function CMSHome() {
 				</div>
 				<div className="relative w-full text-center my-8 hover:cursor-pointer">
 					<div className="relative inline-block l-[50%] px-4 py-2 font-poppins rounded-lg font-light bg-gray-200 text-black w-fit">
-						About MIT CMS <ChevronDown size={18} className="inline-block" />
+						About MIT CMS{" "}
+						<ChevronDown size={18} className="inline-block animate-bounce" />
 					</div>
 				</div>
 			</div>

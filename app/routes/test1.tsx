@@ -7,7 +7,11 @@ export default function Editor() {
 	return <EditorWrapper />;
 }
 
-export const XPreviewEditor = () => {
+export const XPreviewEditor = ({
+	loadSaveText,
+}: {
+	loadSaveText: () => Promise<string>;
+}) => {
 	const [editorState, setEditorState] = useState<string>();
 	const [toc, setToc] = useState<
 		{
@@ -19,9 +23,12 @@ export const XPreviewEditor = () => {
 	const [curTocIndx, setCurTocIndx] = useState<number>(-1);
 	const [previewMode, setPreviewMode] = useState<boolean>(false);
 
-	const loadSaveText = (): string | undefined => {
-		return window.localStorage.getItem("edState") || undefined;
-	};
+	// const loadSaveText = async () => {
+	// 	// Add artifical Delay to simulate network request
+	// 	// const val = window.localStorage.getItem("edState") || undefined;
+	// 	const v = await fetch("/mock/homeContent.json");
+	// 	return JSON.stringify(await v.json());
+	// };
 
 	useEffect(() => {
 		document.addEventListener("scroll", () => {
