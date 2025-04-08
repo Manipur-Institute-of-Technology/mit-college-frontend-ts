@@ -9,24 +9,22 @@
 &amp;lt;meta content=&quot;This is a basic text&quot; property=&quot;og:title&quot; /&amp;gt;
 What does this property attribute stand for, and what is its purpose?"> */
 
-import { useLocation } from "react-router";
-
 // TODO: Create a Meta util function that have all the field by default and takes in fields to be changes as parameters
 type PageMetaData = {
 	title?: string;
 	description?: string;
 	summary?: string;
-	logoURL?: string;
+	imgURL?: string;
 };
 export const genPageMetaData = ({
 	title = "Manipur Institute of Technology",
 	description = "Website for MIT College",
 	summary = "Website for MIT College",
-	logoURL = "https://mitimphal.manipuruniv.ac.in/Manipur_University_Logo.png",
+	imgURL = "https://mitimphal.manipuruniv.ac.in/Manipur_University_Logo.png",
 }: PageMetaData) => {
 	// const loc = useLocation();
 	const baseURL = "https://mitimphal.manipuruniv.ac.in";
-
+	// <link rel="icon" href="/aj.png">
 	const defaultMetaData = [
 		{
 			title,
@@ -39,7 +37,7 @@ export const genPageMetaData = ({
 		{
 			property: "og:image",
 			itemProp: "image primaryImageOfPage",
-			content: logoURL,
+			content: imgURL,
 		},
 		// Twitter
 		{ name: "twitter:card", content: summary },

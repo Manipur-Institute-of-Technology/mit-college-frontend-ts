@@ -34,6 +34,29 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
+
+
+### Starting up the frontend application
+
+Before, you `npm run dev` the frontend app, make sure you start the backend api server, or else it will configured the routes without the user defined routes. 
+Route to fetched user defined routes from the backend api should be defined in `app.config.env` env file. Here, is a [sample env file](#env-file-sample) to start working
+#### Development
+If you are working on user defined routed specifically start the backend api first before running the frontend, otherwise you can run the frontend without the configured routes. 
+For quick testing, you can used the `server/server.js` to start a mock server.
+#### Production
+- Build: Start the backend api first before running the frontend, then build it 
+
+#### ENV file sample
+```env
+# API endpoint for routes
+ROUTE_API_URL=http://localhost:3001/api/routes   # Route from which the user define routes will be fetched, it'll be served from backend 
+REACT_APP_ENV=development
+NODE_ENV=development
+```
+
+
+
+
 ## Building for Production
 
 Create a production build:

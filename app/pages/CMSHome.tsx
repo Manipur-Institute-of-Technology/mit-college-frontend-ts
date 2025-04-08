@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { Link } from "react-router";
 
 export default function CMSHome() {
@@ -7,7 +8,7 @@ export default function CMSHome() {
 			<div className="font-semibold text-4xl my-2 text-slate-700 font-poppins text-center w-full">
 				MIT Content Management System
 			</div>
-			<div className="w-full min-h-[80vh]  flex flex-col justify-center items-center">
+			<div className="w-full min-h-[80vh] flex flex-col justify-center items-center">
 				<div className="w-full md:flex md:flex-row md:flex-nowrap justify-around items-center my-4">
 					<div className="relative w-fit md:m-0 m-auto md:w-max">
 						<img
@@ -16,11 +17,11 @@ export default function CMSHome() {
 							className="w-[18rem] max-w-[100vw] contrast-75"
 						/>
 					</div>
-					<div className="font-nunita p-1 text-center text-slate-700 md:max-w-[24rem] md:w-fit w-full">
+					<div className="font-poppins p-1 text-center text-slate-700 md:max-w-[24rem] md:w-fit w-full">
 						{/* <div className="font-semibold text-2xl my-2">
 						MIT Content Management System
 					</div> */}
-						<div className="font-nunita text-slate-500 text-md">
+						<div className="font-poppins text-slate-500 text-md">
 							An open-source content management system for Manipur Institute of
 							Technology
 						</div>
@@ -45,10 +46,12 @@ export default function CMSHome() {
 				</div>
 				<div className="relative w-full text-center my-8 hover:cursor-pointer">
 					<div className="relative inline-block l-[50%] px-4 py-2 font-poppins rounded-lg font-light bg-gray-200 text-black w-fit">
-						About MIT CMS
+						About MIT CMS{" "}
+						<ChevronDown size={18} className="inline-block animate-bounce" />
 					</div>
 				</div>
 			</div>
+			<hr className="border border-slate-300 w-8/12 mx-auto" />
 		</>
 	);
 }

@@ -1,35 +1,104 @@
-import { Outlet, useLocation } from "react-router";
-import { navigationData as navigation } from "../mock/navbar";
-import Navbar from "../components/Navbar/Navbar";
+import { Await, Outlet, useAsyncError, useLocation } from "react-router";
+import Navbar from "../components/Navbar/PublicContentNav";
 import Footer from "../components/Footer/PublicFooter";
-import ImageCarousel from "../components/ImageCarousel/ImageCarrousel";
+import ImageCarousel, {
+	ImageCarouselSkeleton,
+} from "../components/ImageCarousel/ImageCarrousel";
 import type { Route } from "./+types/PublicContentLayout";
+import { getImageCarouselContent } from "~/mock/services/imageCarousel";
+import { Suspense } from "react";
 
-export default function PublicLayout() {
-	const location = useLocation();
+import "./background.css";
+import { getPublicNavContent } from "~/mock/services/navbar";
+import { FetchError } from "~/types/api/FetchError";
+import { getFooterData } from "~/mock/services/fetchMockData";
+import PublicFooterSkel from "~/components/Footer/PublicFooterSkel";
+import CustomRoutesProvider from "~/context/CustomRoutesProvider";
+
+export const links: Route.LinksFunction = () => {
+	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
+};
+
+export const clientLoader = async ({}: Route.ClientLoaderArgs) => {
+	// TODO: fetch carousel data from api return route lists
+	// TODO: Fetch footer data here
+	const imgCarouselData = getImageCarouselContent();
+	const navData = getPublicNavContent();
+	const footerData = getFooterData();
+	return { imgCarouselData, navData, footerData } as const;
+};
+
+export default function PublicLayout({ loaderData }: Route.ComponentProps) {
+	// const loc = useLocation();
+
+	const routeUrl = import.meta.env.VITE_ROUTE_API_URL;
 
 	return (
-		<>
-			<Navbar navigation={navigation} />
-			<main
-				style={{
-					backgroundImage: `radial-gradient(circle at center, rgba(200, 200, 200, 0.8) 0 1px, transparent 1px 18px), 
-									radial-gradient(circle at center, transparent 30%, rgba(200, 200, 200, 0.8))`,
-					backgroundRepeat: "repeat",
-					backgroundSize: "18px 18px, 100vw 100vh",
-					backgroundAttachment: "fixed",
-				}}>
-				{location.pathname === "/" && (
-					<div className="mt-8 mb-2">
-						<ImageCarousel />
-					</div>
+		<CustomRoutesProvider routeSrcUrl={routeUrl!}>
+			<>
+				{loaderData && (
+					<Suspense fallback={<>Loading navbar...</>}>
+						<Await
+							resolve={loaderData.navData}
+							errorElement={<>Navbar Error</>}>
+							{(val) => <Navbar navigation={val} />}
+						</Await>
+					</Suspense>
 				)}
+				<main className="pub-cont-layout-bg">
+					{/* {loc.pathname === "/" && (
+					<Suspense fallback={<ImageCarouselSkeleton />}>
+						<Await
+							resolve={loaderData.imgCarouselData}
+							errorElement={<ErrorBoundary />}>
+							{(val) => {
+								return val.length > 0 ? <ImageCarousel data={val} /> : null;
+							}}
+						</Await>
+					</Suspense>
+				)} */}
 
-				<div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
-					<Outlet />
-				</div>
-			</main>
-			<Footer />
-		</>
+					<div className="mx-auto max-w-7xl px-0 py-6 lg:px-0 min-h-[100vh] relative">
+						<Outlet />
+					</div>
+				</main>
+				{loaderData && (
+					<Suspense fallback={<PublicFooterSkel />}>
+						<Await
+							resolve={loaderData.footerData}
+							errorElement={<>Footer Error</>}>
+							{(val) => <Footer footerData={val} />}
+						</Await>
+					</Suspense>
+				)}
+			</>
+		</CustomRoutesProvider>
 	);
 }
+
+const ErrorBoundary = () => {
+	const err = useAsyncError();
+	if (err instanceof FetchError) {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error</div>
+				<div className="text-lg font-bold">{err.getStatusCode()}</div>
+				<div className="text-md">{err.getStatusText()}</div>
+			</div>
+		);
+	} else if (err instanceof Error) {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error </div>
+				<div>{err.message}</div>
+			</div>
+		);
+	} else {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error</div>
+				<div>An unknown error occur</div>
+			</div>
+		);
+	}
+};

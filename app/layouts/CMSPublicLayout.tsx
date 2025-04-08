@@ -1,5 +1,11 @@
 import { Outlet } from "react-router";
-import Navbar from "../components/Navbar/Navbar";
+import Navbar from "../components/Navbar/CMSPublicNav";
+import CMSFooter from "~/components/Footer/CMSFooter";
+import type { Route } from "./+types/CMSPublicLayout";
+
+export const links: Route.LinksFunction = () => {
+	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
+};
 
 export default function CMSLayout() {
 	return (
@@ -11,6 +17,7 @@ export default function CMSLayout() {
 					<Outlet />
 				</div>
 			</main>
+			<CMSFooter />
 		</div>
 	);
 }
