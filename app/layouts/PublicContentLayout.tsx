@@ -11,27 +11,44 @@ import { Suspense } from "react";
 import "./background.css";
 import { getPublicNavContent } from "~/mock/services/navbar";
 import { FetchError } from "~/types/api/FetchError";
+import { getFooterData } from "~/mock/services/fetchMockData";
+import PublicFooterSkel from "~/components/Footer/PublicFooterSkel";
+import CustomRoutesProvider from "~/context/CustomRoutesProvider";
 
+export const links: Route.LinksFunction = () => {
+	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
+};
+
+// TODO: Thermodynamics Course - Stanford
+// TODO: Timetable Generator, earthquake, blackout, food order app, reed solomon, compression, chess sprite
 export const clientLoader = async ({}: Route.ClientLoaderArgs) => {
 	// TODO: fetch carousel data from api return route lists
+	// TODO: Fetch footer data here
 	const imgCarouselData = getImageCarouselContent();
 	const navData = getPublicNavContent();
-	return { imgCarouselData, navData } as const;
+	const footerData = getFooterData();
+	return { imgCarouselData, navData, footerData } as const;
 };
 
 export default function PublicLayout({ loaderData }: Route.ComponentProps) {
-	const loc = useLocation();
+	// const loc = useLocation();
+
+	const routeUrl = import.meta.env.VITE_ROUTE_API_URL;
+
 	return (
-		<>
-			{loaderData && (
-				<Suspense fallback={<>Loading navbar...</>}>
-					<Await resolve={loaderData.navData} errorElement={<>Navbar Error</>}>
-						{(val) => <Navbar navigation={val} />}
-					</Await>
-				</Suspense>
-			)}
-			<main className="pub-cont-layout-bg">
-				{/* {loc.pathname === "/" && (
+		<CustomRoutesProvider routeSrcUrl={routeUrl!}>
+			<>
+				{loaderData && (
+					<Suspense fallback={<>Loading navbar...</>}>
+						<Await
+							resolve={loaderData.navData}
+							errorElement={<>Navbar Error</>}>
+							{(val) => <Navbar navigation={val} />}
+						</Await>
+					</Suspense>
+				)}
+				<main className="pub-cont-layout-bg">
+					{/* {loc.pathname === "/" && (
 					<Suspense fallback={<ImageCarouselSkeleton />}>
 						<Await
 							resolve={loaderData.imgCarouselData}
@@ -43,12 +60,21 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 					</Suspense>
 				)} */}
 
-				<div className="mx-auto max-w-7xl px-0 py-6 lg:px-0 min-h-[100vh] relative">
-					<Outlet />
-				</div>
-			</main>
-			<Footer />
-		</>
+					<div className="mx-auto max-w-7xl px-0 py-6 lg:px-0 min-h-[100vh] relative">
+						<Outlet />
+					</div>
+				</main>
+				{loaderData && (
+					<Suspense fallback={<PublicFooterSkel />}>
+						<Await
+							resolve={loaderData.footerData}
+							errorElement={<>Footer Error</>}>
+							{(val) => <Footer footerData={val} />}
+						</Await>
+					</Suspense>
+				)}
+			</>
+		</CustomRoutesProvider>
 	);
 }
 
