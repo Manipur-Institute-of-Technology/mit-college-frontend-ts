@@ -77,7 +77,7 @@ export const navigationData: NavigationData[] = [
       { name: "Classroom", href: "/Classroom_0" },
       {
         name: "Online Grievance Redressal",
-        href: "/Online_Grievance_Redressal",
+        href: "https://manipuruniv.samarth.ac.in/index.php/pgportal/grievance-public/public",
       },
     ],
   },
@@ -103,17 +103,13 @@ export const navigationData: NavigationData[] = [
     href: "#",
     childrens: [
       {
-        name: "Exam",
-        href: "https://www.manipuruniv.ac.in/examform2021/",
+        name: "Confrence",
+        href: "/confrence",
         target: "_blank",
       },
       { name: "NIRF", href: "/NIRF" },
       { name: "Gallery", href: "/gallery" },
       { name: "Contact Us", href: "/Contact_Us" },
-      {
-        name: "Projects",
-        href: "#",
-      },
     ],
   },
 ];

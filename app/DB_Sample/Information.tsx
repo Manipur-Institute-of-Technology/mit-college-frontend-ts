@@ -33,6 +33,7 @@ export const Information_data = [
   },
   {
     File_name: "Online Grievance Redressal",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links:
+      "https://manipuruniv.samarth.ac.in/index.php/pgportal/grievance-public/public",
   },
 ];
