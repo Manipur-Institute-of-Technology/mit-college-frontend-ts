@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { Link } from "react-router";
 import {
@@ -8,20 +8,33 @@ import {
 	Fullscreen,
 	RefreshCcw,
 } from "lucide-react";
+import type { NoticeData } from "~/types/api/resData.type";
+import { useXFetcher } from "~/hooks/useXFetcher";
+import { throttle } from "~/utils/util";
 
 const CardBulletin: React.FC<{
 	cardTitle: string;
-	lists: {
-		href: string;
-		linkText: string;
-		publishedDate: Date;
-		urgency: "high" | "medium" | "low";
-	}[];
-}> = ({ cardTitle, lists }) => {
+	lists: NoticeData[];
+	moreViewLink: string;
+	refreshFetcher: () => Promise<NoticeData[]>;
+}> = ({ cardTitle, lists, refreshFetcher }) => {
+	const [listItems, setListItems] = useState<NoticeData[]>(lists);
+	const { data, state, error, xFetch } = useXFetcher<NoticeData[]>();
+
 	const [showScrollIndicator, setShowScrollIndicator] = useState<boolean>(true);
+
 	const cardBodyRef = useRef<HTMLDivElement | null>(null);
 	const lastListRef = useRef<HTMLDivElement | null>(null);
-	const animRef = useRef<Animation | null>(null);
+
+	const tRefFetcher = useCallback(throttle(refreshFetcher, 2000), [
+		refreshFetcher,
+	]); // Throttle function for 2sec
+
+	useEffect(() => {
+		if (data && data.length > 0) {
+			setListItems(data);
+		}
+	}, [data]);
 
 	useEffect(() => {
 		let observer: IntersectionObserver;
@@ -69,24 +82,15 @@ const CardBulletin: React.FC<{
 	} as const;
 
 	return (
-		<div
-			onMouseEnter={() => {
-				if (animRef.current && animRef.current.playState === "running") {
-					animRef.current.pause();
-				}
-			}}
-			onMouseLeave={() => {
-				if (animRef.current && animRef.current.playState === "paused") {
-					animRef.current.play();
-				}
-			}}
-			className="relative border border-gray-300 shadow-md rounded-md bg-gray-50 w-full overflow-y-clip">
+		<div className="relative border border-gray-300 shadow-md rounded-md bg-gray-50 w-full overflow-y-clip">
 			<div
 				className="bg-gray-50 border border-gray-300 shadow-lg p-2 flex items-center justify-between max-w-[100vw] rounded-t-md z-[99] sticky"
 				style={{
 					boxShadow: "0 2px 4px 0 rgba(0,0,0,0.1)",
 				}}>
-				<div className="text-lg font-bold">{cardTitle}</div>
+				<div className="text-lg font-bold">
+					{cardTitle}: {error && <>{error.toString()}</>}
+				</div>
 				<div className="flex flex-nowrap w-fit gap-x-2">
 					<div
 						className="border border-gray-300 rounded-full  hover:bg-gray-300 p-1"
@@ -100,12 +104,16 @@ const CardBulletin: React.FC<{
 						</Link>
 					</div>
 					<button
-						className="hover:cursor-pointer border border-gray-300 hover:bg-gray-300 rounded-full p-1"
+						onClick={() => {
+							xFetch(tRefFetcher);
+						}}
+						disabled={state === "loading"}
+						className="hover:cursor-pointer border border-gray-300 hover:bg-gray-300 rounded-full p-1 disabled:cursor-progress"
 						title="Refresh Notices">
 						<RefreshCcw
 							size={18}
 							stroke="gray"
-							className="hover:stroke-gray-600"
+							className={`hover:stroke-gray-600 ${state === "loading" ? "animate-spin [animation-direction:reverse]" : ""}`}
 						/>
 					</button>
 				</div>
@@ -114,7 +122,7 @@ const CardBulletin: React.FC<{
 				ref={cardBodyRef}
 				className={`relative md:max-h-[30vh] max-h-[50vh] overflow-y-auto z-[0]`}
 				style={{ ...scrollbarStyle }}>
-				{lists.map((list, i) => (
+				{listItems.map((list, i) => (
 					<div
 						key={i}
 						className={`border-b border-gray-300 p-2 w-full ${list.urgency === "high" ? "bg-red-50" : list.urgency === "medium" ? "bg-yellow-50" : "bg-white"}`}>
@@ -128,13 +136,13 @@ const CardBulletin: React.FC<{
 								<div className="inline-flex gap-x-1.5 items-center justify-start text-sm font-thin w-fit">
 									<Calendar size={12} stroke="grey" />
 									<div className="text-[12px] font-thin">
-										{list.publishedDate.toLocaleDateString()}
+										{new Date(list.publishedDate).toLocaleDateString()}
 									</div>
 								</div>
 								<div className="inline-flex gap-x-1.5 items-center justify-start text-sm font-thin w-fit">
 									<Clock size={12} stroke="grey" />
 									<div className="text-[12px] font-thin">
-										{list.publishedDate.toLocaleTimeString()}
+										{new Date(list.publishedDate).toLocaleTimeString()}
 									</div>
 								</div>
 							</div>

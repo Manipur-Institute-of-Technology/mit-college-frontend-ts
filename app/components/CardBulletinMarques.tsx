@@ -2,15 +2,11 @@ import { useEffect, useRef } from "react";
 import moment from "moment";
 import { Link } from "react-router";
 import { Calendar, Clock, Fullscreen, RefreshCcw } from "lucide-react";
+import type { NoticeData } from "~/types/api/resData.type";
 
 const CardBulletinMarques: React.FC<{
 	cardTitle: string;
-	lists: {
-		href: string;
-		linkText: string;
-		publishedDate: Date;
-		urgency: "high" | "medium" | "low";
-	}[];
+	lists: NoticeData[];
 	animeIntervalDelay?: number;
 }> = ({ cardTitle, lists, animeIntervalDelay = 2000 }) => {
 	const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -105,13 +101,13 @@ const CardBulletinMarques: React.FC<{
 								<div className="inline-flex gap-x-1.5 items-center justify-start text-sm font-thin w-fit">
 									<Calendar size={12} stroke="grey" />
 									<div className="text-[12px] font-thin">
-										{list.publishedDate.toLocaleDateString()}
+										{new Date(list.publishedDate).toLocaleDateString()}
 									</div>
 								</div>
 								<div className="inline-flex gap-x-1.5 items-center justify-start text-sm font-thin w-fit">
 									<Clock size={12} stroke="grey" />
 									<div className="text-[12px] font-thin">
-										{list.publishedDate.toLocaleTimeString()}
+										{new Date(list.publishedDate).toLocaleTimeString()}
 									</div>
 								</div>
 							</div>
