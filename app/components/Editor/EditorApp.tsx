@@ -42,7 +42,7 @@ import MyOnChangePlugin from "./plugins/OnChangePlugin";
 import LoadInitTextPlugin from "./plugins/LoadInitTextPlugin";
 
 import "./index.css";
-import "./style.css";
+// import "./style.css";
 
 // function $prepopulatedRichText() {
 // 	const root = $getRoot();
