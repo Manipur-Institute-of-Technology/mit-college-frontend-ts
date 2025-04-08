@@ -74,7 +74,7 @@ export const navigationData: NavigationData[] = [
       },
       { name: "Placement", href: "/Placement" },
       { name: "Campus", href: "/Campus" },
-      { name: "Classroom", href: "/Classroom_0" },
+      { name: "Classroom", href: "/Classroom" },
       {
         name: "Online Grievance Redressal",
         href: "https://manipuruniv.samarth.ac.in/index.php/pgportal/grievance-public/public",
@@ -97,7 +97,11 @@ export const navigationData: NavigationData[] = [
       },
     ],
   },
-  { name: "Form Fillup", href: "https://www.manipuruniv.ac.in/examform2021/" },
+  {
+    name: "Form Fillup",
+    href: "https://www.manipuruniv.ac.in/examform2021/",
+    target: "_blank",
+  },
   {
     name: "Extras",
     href: "#",
@@ -105,7 +109,6 @@ export const navigationData: NavigationData[] = [
       {
         name: "Confrence",
         href: "/confrence",
-        target: "_blank",
       },
       { name: "NIRF", href: "/NIRF" },
       { name: "Gallery", href: "/gallery" },

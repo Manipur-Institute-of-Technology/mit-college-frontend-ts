@@ -25,8 +25,8 @@ export default function TopNavbar() {
     }
   }, [colorModeIndex]);
 
-  const increaseFont = () => setFontSize((prev) => Math.min(prev + 8, 32));
-  const decreaseFont = () => setFontSize((prev) => Math.max(prev - 8, 8));
+  const increaseFont = () => setFontSize((prev) => Math.min(prev + 0.7, 20));
+  const decreaseFont = () => setFontSize((prev) => Math.max(prev - 0.7, 12));
   const cycleColorBlindMode = () =>
     setColorModeIndex((prev) => (prev + 1) % colorBlindModes.length);
 
