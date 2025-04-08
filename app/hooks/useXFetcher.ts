@@ -8,6 +8,32 @@ type XFetcher<T> = {
 	xFetch: (cb: () => Promise<T>) => Promise<void>;
 };
 
+/**
+ * Custom hook for handling asynchronous data fetching operations with state management.
+ *
+ * @template T - The type of data to be fetched (defaults to any)
+ *
+ * @returns {Object} An object containing:
+ * - data: The fetched data of type T
+ * - state: Current state of the fetch operation ('idle' | 'loading')
+ * - error: Error message if any error occurred during fetching
+ * - load: Function to fetch JSON data from a URL
+ * - xFetch: Function to execute custom fetch callbacks
+ *
+ * @example
+ * ```typescript
+ * const { data, state, error, load, xFetch } = useXFetcher<UserData>();
+ *
+ * // Using load to fetch JSON
+ * await load('https://api.example.com/users');
+ *
+ * // Using xFetch with custom callback
+ * await xFetch(async () => {
+ *   const response = await getPetLists();
+ *   return await response.json()
+ * });
+ * ```
+ */
 export const useXFetcher = <T = any>(): XFetcher<T> => {
 	const [data, setData] = useState<T>();
 	const [error, setError] = useState<string>();
