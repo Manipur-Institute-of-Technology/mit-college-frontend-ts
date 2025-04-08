@@ -2,8 +2,13 @@ export class FetchError extends Error {
 	private status: number;
 	private statusText: string;
 
-	constructor(message: string, status: number, statusText: string) {
-		super(message);
+	constructor(
+		message: string,
+		status: number,
+		statusText: string,
+		options?: ErrorOptions,
+	) {
+		super(message, options);
 		this.status = status;
 		this.statusText = statusText;
 	}
@@ -19,3 +24,10 @@ export class FetchError extends Error {
 		return this.statusText;
 	}
 }
+
+export const createFetchError = (
+	errMsg: string,
+	response: Response,
+	errOptions?: ErrorOptions,
+): FetchError =>
+	new FetchError(errMsg, response.status, response.statusText, errOptions);
