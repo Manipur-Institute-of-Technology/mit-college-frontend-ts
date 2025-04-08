@@ -19,8 +19,6 @@ export const links: Route.LinksFunction = () => {
 	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
 };
 
-// TODO: Thermodynamics Course - Stanford
-// TODO: Timetable Generator, earthquake, blackout, food order app, reed solomon, compression, chess sprite
 export const clientLoader = async ({}: Route.ClientLoaderArgs) => {
 	// TODO: fetch carousel data from api return route lists
 	// TODO: Fetch footer data here

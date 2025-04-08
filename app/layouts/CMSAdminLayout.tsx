@@ -2,7 +2,11 @@ import CMSPrivLayout from "./CMSPrivateLayout";
 import { BookOpen, LayoutDashboard, Wrench } from "lucide-react";
 import { type RawNavData } from "./../components/SideTray/SideTray";
 import type { Route } from "./+types/CMSAdminLayout";
-import type { AccountInfo } from "~/types/api/AccountInfo";
+import type { AccountInfo } from "~/types/api/resData.type";
+
+export const links: Route.LinksFunction = () => {
+	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
+};
 
 // Navdata for admin
 const rawNavData: RawNavData[] = [

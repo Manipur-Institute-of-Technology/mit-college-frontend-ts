@@ -1,5 +1,5 @@
 {
-	"exclude": ["./old/**/*"],
+	"exclude": ["./server/**/*"],
 	"include": [
 		"**/*",
 		"**/.server/**/*",
