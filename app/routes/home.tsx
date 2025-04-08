@@ -1,9 +1,7 @@
 import type { Route } from "./+types/home";
-import moment from "moment";
-import HomePage from "../pages/Home";
 import { genPageMetaData } from "~/utils/meta";
 import { getImageCarouselContent } from "~/mock/services/imageCarousel";
-import { Await, data, Link } from "react-router";
+import { Await, data, Link, useAsyncError } from "react-router";
 import ImageCarousel, {
 	ImageCarouselSkeleton,
 } from "~/components/ImageCarousel/ImageCarrousel";
@@ -15,16 +13,16 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import {
-	Calendar,
-	ChevronDown,
-	Clock,
-	Fullscreen,
-	RefreshCcw,
-} from "lucide-react";
+
 import { XPreviewEditor } from "./test1";
 import CardBulletin from "~/components/CardBulletin";
 import CardBulletinMarques from "~/components/CardBulletinMarques";
+import { getNoticeList } from "~/mock/services/fetchMockData";
+
+import "./home.css";
+import { FetchError } from "~/types/api/FetchError";
+import type { ImageCarouselData, NoticeData } from "~/types/api/resData.type";
+import { useXFetcher } from "~/hooks/useXFetcher";
 
 export function meta({}: Route.MetaArgs) {
 	return genPageMetaData({});
@@ -47,83 +45,57 @@ export const links: Route.LinksFunction = () => [
 	{ rel: "icon", href: "./Manipur_University_Logo.png" },
 ];
 
-const lists: {
-	href: string;
-	linkText: string;
-	publishedDate: Date;
-	urgency: "high" | "medium" | "low";
-}[] = [
-	{
-		href: "/notice/academic-calendar-2024",
-		linkText: "Academic Calendar 2024 Released",
-		publishedDate: new Date("2024-01-10"),
-		urgency: "high",
-	},
-	{
-		href: "/notice/admission-2024",
-		linkText: "Admission Open for 2024-25 Academic Session",
-		publishedDate: new Date("2024-01-15"),
-		urgency: "high",
-	},
-	{
-		href: "/notice/exam-schedule",
-		linkText: "End Semester Examination Schedule",
-		publishedDate: new Date("2024-01-20"),
-		urgency: "medium",
-	},
-	{
-		href: "/notice/scholarship",
-		linkText: "Merit Scholarship Applications Now Open",
-		publishedDate: new Date("2024-01-25"),
-		urgency: "medium",
-	},
-	{
-		href: "/notice/workshop",
-		linkText: "Technical Workshop on AI & Machine Learning",
-		publishedDate: new Date("2024-02-01"),
-		urgency: "low",
-	},
-	{
-		href: "/notice/academic-calendar-2024",
-		linkText: "Academic Calendar 2024 Released",
-		publishedDate: new Date("2024-01-10"),
-		urgency: "high",
-	},
-	{
-		href: "/notice/admission-2024",
-		linkText: "Admission Open for 2024-25 Academic Session",
-		publishedDate: new Date("2024-01-15"),
-		urgency: "high",
-	},
-	{
-		href: "/notice/exam-schedule",
-		linkText: "End Semester Examination Schedule",
-		publishedDate: new Date("2024-01-20"),
-		urgency: "medium",
-	},
-	{
-		href: "/notice/scholarship",
-		linkText: "Merit Scholarship Applications Now Open",
-		publishedDate: new Date("2024-01-25"),
-		urgency: "medium",
-	},
-	{
-		href: "/notice/workshop",
-		linkText: "Technical Workshop on AI & Machine Learning",
-		publishedDate: new Date("2024-02-01"),
-		urgency: "low",
-	},
-];
-export const clientLoader = () => {
-	return { data: getImageCarouselContent() };
-	// try {
-	// } catch (err) {
-	// 	return data({ err });
-	// }
+export const clientLoader = async () => {
+	// Fetch data separately to handle errors independently
+	const imageCarouselPromise = getImageCarouselContent().catch((error) => {
+		console.log("carousel err from loader");
+		return { error };
+	});
+
+	const noticeListPromise = getNoticeList().catch((error) => {
+		console.log("notice err from loader");
+		return { error };
+	});
+
+	const getHomePageContent = async () => {
+		await new Promise((res) => setTimeout(res, 7000));
+		const res = await fetch("/mock/homeContent.json");
+		const d = await res.json();
+		return d;
+	};
+	const homeContent = getHomePageContent().catch((error) => {
+		console.log("home content fetch error");
+		return { error };
+	});
+
+	return {
+		imageCarouseldata: imageCarouselPromise,
+		noticeListData: noticeListPromise,
+		homeContentData: homeContent,
+	};
+	// // Wait for both promises to resolve
+	// const [imageCarouselResult, noticeListResult] = await Promise.all([
+	// 	imageCarouselPromise,
+	// 	noticeListPromise,
+	// ]);
+
+	// // Return the data and errors using react-router's data utility
+	// return data({
+	// 	imageCarouseldata: imageCarouselResult.data ?? imageCarouselResult.error,
+	// 	noticeListData: noticeListResult.data ?? noticeListResult.error,
+	// });
 };
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-	const { data } = loaderData;
+	const { imageCarouseldata, noticeListData, homeContentData } = loaderData;
+	const { state, error, xFetch } = useXFetcher<string>();
+
+	const getHomePageContent = async () => {
+		await new Promise((res) => setTimeout(res, 7000));
+		const res = await fetch("/mock/homeContent.json");
+		const d = await res.json();
+		return JSON.stringify(d);
+	};
 
 	const scrollbarStyle = {
 		scrollbarWidth: "thin",
@@ -142,7 +114,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 	} as const;
 
 	return (
-		<div className="px-2">
+		<div className="px-0 md:px-2">
 			{/* <Suspense fallback={<ImageCarouselSkeleton />}>
 				<Await resolve={data} errorElement={<>An error occured...</>}>
 					{(val) => (val.length > 0 ? <ImageCarousel data={val} /> : null)}
@@ -150,32 +122,221 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 			</Suspense> */}
 
 			{/* TODO: Add announcememt here and top of page for very important alert/notice */}
-			<div className="w-full bg-violet-100 h-[2rem] my-2"></div>
+			<div className="w-full px-1">
+				<div className="w-full bg-blue-500 text-blue-50 p-1 my-2 text-center font-semibold rounded-md shadow-sm shadow-blue-400">
+					<Link to={"/xx"} className="inline-block">
+						Civil Engineering (UG Program) accredited by NBA under Tier-II for
+						the Academic Year 2020-2021 to 2022-2023 i.e. upto 30-06-2023
+					</Link>
+				</div>
+			</div>
 
 			{/* Desktop View */}
 			<div className="hidden md:grid grid-cols-12 w-full gap-0.5 px-1 relative">
 				<div
 					className="col-span-3 space-y-1.5 overflow-y-auto sticky top-[4rem] h-[90vh]"
 					style={{ ...scrollbarStyle }}>
-					<CardBulletin cardTitle="Notice" lists={lists} />
-					<CardBulletin cardTitle="Notice" lists={lists} />
-					<CardBulletinMarques cardTitle="Information" lists={lists} />
+					<Suspense fallback={<Skel />}>
+						<Await resolve={noticeListData}>
+							{(vals) => {
+								if (Array.isArray(vals) && vals.length > 0)
+									return (
+										<CardBulletin
+											cardTitle="Notice"
+											lists={vals}
+											moreViewLink="/xxx"
+											refreshFetcher={getNoticeList}
+										/>
+									);
+								else if (Array.isArray(vals) && vals.length === 0)
+									return (
+										<EmptyList
+											detail={"There is no notice to display"}
+											mssg="No Notice"
+										/>
+									);
+								else return <ErrBnd err={(vals as { error: any }).error} />;
+							}}
+						</Await>
+					</Suspense>
+					<Suspense fallback={<Skel />}>
+						<Await resolve={noticeListData}>
+							{(vals) => {
+								if (Array.isArray(vals) && vals.length > 0)
+									return (
+										<CardBulletin
+											cardTitle="Notice"
+											lists={vals}
+											moreViewLink="/xxx"
+											refreshFetcher={getNoticeList}
+										/>
+									);
+								else if (Array.isArray(vals) && vals.length === 0)
+									return (
+										<EmptyList
+											detail={"There is no notice to display"}
+											mssg="No Notice"
+										/>
+									);
+								else return <ErrBnd err={(vals as { error: any }).error} />;
+							}}
+						</Await>
+					</Suspense>
+
+					<Suspense fallback={<Skel />}>
+						<Await resolve={noticeListData}>
+							{(vals) => {
+								if (Array.isArray(vals) && vals.length > 0)
+									return (
+										<CardBulletinMarques cardTitle="Information" lists={vals} />
+									);
+								else if (Array.isArray(vals) && vals.length === 0)
+									return (
+										<EmptyList
+											detail={"There is no notice to display"}
+											mssg="No Notice"
+										/>
+									);
+								else return <ErrBnd err={(vals as { error: any }).error} />;
+							}}
+						</Await>
+					</Suspense>
 				</div>
 				<div className="col-span-9 min-h-full">
-					<XPreviewEditor />
+					<XPreviewEditor loadSaveText={getHomePageContent} />
 				</div>
 			</div>
 			{/* MobileView */}
-			<div className="md:hidden w-full relative gap-0.5 px-1">
+			<div className="md:hidden w-full relative space-y-2 px-1">
 				<div className="h-full">
-					<XPreviewEditor />
+					<XPreviewEditor loadSaveText={getHomePageContent} />
 				</div>
-				<div className="space-y-2 space-x-2">
-					<CardBulletin cardTitle="Notice" lists={lists} />
-					<CardBulletin cardTitle="Notice" lists={lists} />
-					<CardBulletinMarques cardTitle="Information" lists={lists} />
+				<div className="space-y-2">
+					<Suspense fallback={<Skel />}>
+						<Await resolve={noticeListData}>
+							{(vals) => {
+								if (Array.isArray(vals) && vals.length > 0)
+									return (
+										<CardBulletin
+											cardTitle="Notice"
+											lists={vals}
+											moreViewLink="/xxx"
+											refreshFetcher={getNoticeList}
+										/>
+									);
+								else if (Array.isArray(vals) && vals.length === 0)
+									return (
+										<EmptyList
+											detail={"There is no notice to display"}
+											mssg="No Notice"
+										/>
+									);
+								else return <ErrBnd err={(vals as { error: any }).error} />;
+							}}
+						</Await>
+					</Suspense>
+					<Suspense fallback={<Skel />}>
+						<Await resolve={noticeListData}>
+							{(vals) => {
+								if (Array.isArray(vals) && vals.length > 0)
+									return (
+										<CardBulletin
+											cardTitle="Notice"
+											lists={vals}
+											moreViewLink="/xxx"
+											refreshFetcher={getNoticeList}
+										/>
+									);
+								else if (Array.isArray(vals) && vals.length === 0)
+									return (
+										<EmptyList
+											detail={"There is no notice to display"}
+											mssg="No Notice"
+										/>
+									);
+								else return <ErrBnd err={(vals as { error: any }).error} />;
+							}}
+						</Await>
+					</Suspense>
+
+					<Suspense fallback={<Skel />}>
+						<Await resolve={noticeListData}>
+							{(vals) => {
+								if (Array.isArray(vals) && vals.length > 0)
+									return (
+										<CardBulletinMarques cardTitle="Information" lists={vals} />
+									);
+								else if (Array.isArray(vals) && vals.length === 0)
+									return (
+										<EmptyList
+											detail={"There is no notice to display"}
+											mssg="No Notice"
+										/>
+									);
+								else return <ErrBnd err={(vals as { error: any }).error} />;
+							}}
+						</Await>
+					</Suspense>
 				</div>
 			</div>
 		</div>
 	);
 }
+
+const Skel = () => {
+	return (
+		<div className="w-full max-h-[80vh] md:h-[50vh] border border-gray-300 rounded-md p-2 overflow-y-hidden">
+			{Array.from({ length: 7 }, (_, i) => (
+				<div
+					key={i}
+					className="w-full h-[4rem] bg-gray-300 my-1 rounded-md animate-bg"
+					style={{
+						backgroundImage:
+							"linear-gradient(90deg, #d1d5dc 0%, #aaa 50%, #d1d5dc 100%)",
+					}}
+				/>
+			))}
+		</div>
+	);
+};
+
+const ErrBnd = ({ err }: { err: unknown }) => {
+	if (err instanceof FetchError) {
+		return (
+			<div className="text-center w-full h-[40vh] md:h-[40vh] border border-gray-400 bg-gray-50 rounded-md p-2 overflow-y-hidden flex flex-col justify-center">
+				<div className="font-bold text-xl text-rose-600">Error</div>
+				<div className="font-bold text-4xl text-rose-600 drop-shadow-[0_1.2px_1.2px_rgba(220,38,38,0.8)]">
+					{err.getStatusCode()}
+				</div>
+				<div className="font-semibold text-md text-rose-600">
+					{err.getStatusText()}
+				</div>
+				<div className="text-sm text-rose-600">{err.message}</div>
+			</div>
+		);
+	} else if (err instanceof Error) {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error </div>
+				<div>{err.message}</div>
+			</div>
+		);
+	} else {
+		return (
+			<div className="text-center">
+				<div className="font-bold">Error</div>
+			</div>
+		);
+	}
+};
+
+const EmptyList = ({ mssg, detail }: { mssg: string; detail: string }) => {
+	return (
+		<div className="text-center w-full h-[40vh] md:h-[40vh] border border-gray-400 bg-gray-50 rounded-md p-2 overflow-y-hidden flex flex-col justify-center">
+			<div className="text-md font-bold text-gray-600 drop-shadow-[0_1.2px_1.2px_rgba(100,100,100,0.8)]">
+				{mssg}
+			</div>
+			<div className="text-sm text-gray-400">{detail}</div>
+		</div>
+	);
+};
