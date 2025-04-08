@@ -14,7 +14,8 @@ import Footer from "./components/Footer/PublicFooter";
 import NotFound from "./pages/NotFound";
 import { getPublicNavContent } from "./mock/services/navbar";
 import { useEffect, useState } from "react";
-import type { NavbarData } from "./types/api/navbar";
+import { type FooterData, type NavbarData } from "./types/api/resData.type";
+import { getFooterData } from "./mock/services/fetchMockData";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,6 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	);
 }
 
+// Root Layout
 export default function App() {
 	return <Outlet />;
 }
@@ -56,7 +58,9 @@ export function HydrateFallback() {
 		<div className="fixed bg-slate-200/50 backdrop-blur-md w-full h-full">
 			<div className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] font-mono w-fit text-center">
 				<div className="relative w-[14rem] h-[14rem] mx-auto">
-					<div className="absolute w-[14rem] h-[14rem] rounded-full p-2 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-[conic-gradient(from_0deg,transparent_10%,theme(colors.rose.600)_50%,transparent_90%)] animate-[spin_1s_linear_infinite]" />
+					<div className="absolute w-[14rem] h-[14rem] rounded-full p-2 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-[conic-gradient(from_0deg,transparent_0%_25%,theme(colors.rose.600)_25%_50%,transparent_50%_100%)] animate-[spin_2s_linear_infinite]" />
+					<div className="absolute w-[14rem] h-[14rem] rounded-full p-2 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-[conic-gradient(from_0deg,transparent_0%_25%,theme(colors.rose.950)_25%_50%,transparent_50%_100%)] animate-[spin_2s_linear_infinite] [animation-direction:reverse]" />
+					<div className="absolute w-[14rem] h-[14rem] rounded-full p-2 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-[conic-gradient(from_0deg,transparent_0%_25%,theme(colors.yellow.400)_25%_50%,transparent_50%_100%)] animate-[spin_3s_linear_infinite]" />
 					<img
 						src="/Manipur_University_Logo.png"
 						alt="MU Logo"
@@ -73,11 +77,14 @@ export function HydrateFallback() {
 
 // TODO: Make this a generic error displaying page, which catch all error including non 404
 // TODO: add catch all route for cms prefix route
+// TODO: Create a conditional render on public layout routes with props of outlet or children components | outlet for normal rendering, children for error page rendering
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	const [navData, setNavData] = useState<NavbarData>();
+	const [footerData, setFooterData] = useState<FooterData>();
 	const backgroundImageUrl = "/404_bg.jpg";
 	useEffect(() => {
 		(async () => setNavData(await getPublicNavContent()))();
+		(async () => setFooterData(await getFooterData()))();
 	}, []);
 
 	if (isRouteErrorResponse(error) && error.status === 404) {
@@ -91,7 +98,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 						<NotFound />
 					</div>
 				</main>
-				<Footer />
+				{footerData && <Footer footerData={footerData} />}
 			</>
 		);
 	} else if (import.meta.env.DEV && error && error instanceof Error) {

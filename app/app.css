@@ -3,6 +3,12 @@
 
 @import "tailwindcss";
 
+* {
+  interpolate-size: allow-keywords;
+  scroll-behavior: smooth;
+  scroll-padding-top: 30vh;
+}
+
 /* @tailwind base;
 @tailwind components; */
 /* @tailwind utilities; */
@@ -23,12 +29,3 @@ body {
     color-scheme: dark;
   }
 } */
-
-
-
-
-
-
-* {
-  interpolate-size: numeric-only;
-}
