@@ -1,5 +1,5 @@
-import { FetchError } from "~/types/api/FetchError";
-import type { ImageCarouselData } from "~/types/api/imageCarousel";
+import { createFetchError } from "~/types/api/FetchError";
+import type { ImageCarouselData } from "~/types/api/resData.type";
 
 export const getImageCarouselContent = async (): Promise<
 	ImageCarouselData[]
@@ -19,6 +19,3 @@ export const getImageCarouselContent = async (): Promise<
 		throw error;
 	}
 };
-
-const createFetchError = (errMsg: string, response: Response): FetchError =>
-	new FetchError(errMsg, response.status, response.statusText);

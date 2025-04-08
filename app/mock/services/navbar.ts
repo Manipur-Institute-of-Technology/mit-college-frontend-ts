@@ -1,4 +1,4 @@
-import type { NavbarData } from "~/types/api/navbar";
+import type { NavbarData } from "~/types/api/resData.type";
 
 export const getPublicNavContent = async (): Promise<NavbarData> => {
 	try {
