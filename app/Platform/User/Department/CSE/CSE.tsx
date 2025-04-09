@@ -5,7 +5,7 @@ function CSE() {
   return (
       <>
         <Department name="Computer Science & Engineering" />
-        {/* <Informations /> */}
+        <Informations />
       </>
     );
 }

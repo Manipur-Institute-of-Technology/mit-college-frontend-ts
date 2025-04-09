@@ -4,26 +4,248 @@ export const Department_data = [
   {
     DeptCode: "CSE",
     DeptName: "Computer Science and Engineering",
-    Desc: "The Department presently offers the following programmes: \n1. B.E. in Computer Science & Engineering \n2. M. Tech in Computer Science & Engineering \n3. Ph. D. in Computer Science & Engineering",
+    Desc: "The Department presently offers the following programmes: \n\t  1. B.E. in Computer Science & Engineering \n\t  2. M. Tech in Computer Science & Engineering \n\t  3. Ph. D. in Computer Science & Engineering",
     Images: [
       {
-        caption: "asdasd",
-        link: "sadasdasd",
+        caption: "Lab_1",
+        link: "Images/Department/CSE/img_1.jpg",
+      },
+      {
+        caption: "Lab_1",
+        link: "Images/Department/CSE/img_2.jpg",
+      },
+    ],
+    MoreInfo: [
+      {
+        Facilities:
+          "The Department has several state of the art Computer Laboratories with a host of servers, workstation and a large number of i3 and i5 Desktop Computers connected to the Campus-wide LAN with access to the internet through NKN (National Knowledge Network). The system runs on wide variety of operating systems including Linux Red hat, Windows 7 Professional, Windows 8, High profile Anti-Virus, MySQL, Oracle, Visual Studio, Adobe Premier, Maya (Latest). The laboratories are equipped with up-to-date office automation software, file servers in addition to the various state-of-the-art compilers and programming environment i.e. Hardware Lab., Software Lab., Networking Lab., and Graphic Lab. well equipped with latest Core i3, i5 PC’s etc. The network laboratory is equipped with wireless networking system, LAN trainers and Wi-Fi connection. There is a hardware Lab. equipped with various training kits, experimental setup, analyser equipment etc. \n\n1. PCs: Core i3 and i5 Desktop Computers and Data Server are available in various laboratories. \n2. INTERNET :\n          High speed Internet access with separate Cable connectivity for academic, All Departments, Hostels, Library and browsing centre.\n          Wi-Fi Campus",
+      },
+    ],
+  },
+  // EE
+  {
+    DeptCode: "EE",
+    DeptName: "Department of Electrical Engineering",
+    Desc: "The Department is offering B.E. in Electrical Engineering (intake 30) from the academic session 2019-20.",
+    Images: [
+      {
+        caption: "",
+        link: "",
+      },
+      {
+        caption: "",
+        link: "",
+      },
+    ],
+    MoreInfo: [
+      {
+        Facilities:
+          "",
       },
     ],
   },
 ];
 
 export const Teachers = [
+  // CSE
   {
-    name: "asdas",
-    Department: "asdasd",
-    position: "asdasdasd",
-    Image: "./asawfsfasf",
-    HOD: "True/False",
-    email: "asdasd",
-    qualification: "asdasd",
-    Speacilisation: "asdasd",
+    name: "Dr. Th. Ibungomacha Singh",
+    Department: "CSE",
+    position: "Associate Professor & HoD (wef 7-11-2023)",
+    Image: "Images/Department/CSE/Members/img_1.jpeg",
+    HOD: 1,
+    email: "ibomcha.2007@rediffmail.com ",
+    qualification: "Ph.D.",
+    Specialization: "Image Processing",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Dr. Ranbir Soram",
+    Department: "CSE",
+    position: "Associate Professor",
+    Image: "Images/Department/CSE/Members/img_2.jpg",
+    HOD: 0,
+    email: "ranbirsoram@gmail.com ",
+    qualification: "Ph.D.",
+    Specialization: "Elliptic Curve Cryptography, WSN",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Dr. Sapam Jitu Singh",
+    Department: "CSE",
+    position: "Associate Professor",
+    Image: "Images/Department/CSE/Members/img_3.jpeg",
+    HOD: 0,
+    email: "sapamjitu@gmail.com",
+    qualification: "Ph.D.",
+    Specialization: "Robotics, AI",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Dr. Takhellambam Sonamani Singh",
+    Department: "CSE",
+    position: "Associate Professor",
+    Image: "Images/Department/CSE/Members/img_4.jpg",
+    HOD: 0,
+    email: "sona.cse2013@gmail.com",
+    qualification: "Ph.D.",
+    Specialization: "Wireless Sensor Network, Software Engineering",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Selina Khoirom",
+    Department: "CSE",
+    position: "Associate Professor",
+    Image: "Images/Department/CSE/Members/img_5.jpg",
+    HOD: 0,
+    email: "elinakh@gmail.com",
+    qualification: "M.Tech.",
+    Specialization: "OS, Cloud Computing. Java",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Dr. Rajeev Rajkumar",
+    Department: "CSE",
+    position: "Associate Professor",
+    Image: "Images/Department/CSE/Members/img_6.jpg",
+    HOD: 0,
+    email: "rajeev.bono@gmail.com",
+    qualification: "Ph.D.",
+    Specialization: "Digital Image Processing, Networking",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Pebam Binodini",
+    Department: "CSE",
+    position: "Guest Faculty",
+    Image: "Images/Department/CSE/Members/img_7.jpg",
+    HOD: 0,
+    email: "tambipebam@gmail.com",
+    qualification: "M.E.",
+    Specialization:
+      "Wireless Network, Computer Organisation, Computer Architecture",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  // EE
+  {
+    name: "Mr. Th. Sukadeba Singh",
+    Department: "EE",
+    position: "Assistant Professor",
+    Image: "Images/Department/EE/Members/img_1.jpg",
+    HOD: 0,
+    email: "sukacm@yahoo.com",
+    qualification: "M.E.",
+    Specialization: "Control System, Measurement",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Mr. Khwairakpam Chaoba Singh",
+    Department: "EE",
+    position: "Guest Faculty",
+    Image: "Images/Department/EE/Members/img_2.jpg",
+    HOD: 0,
+    email: "chaobasit@gmail.com",
+    qualification: "M.Tech.",
+    Specialization: "Power System",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Mr. Athokpam Bharatbushan Singh",
+    Department: "EE",
+    position: "Guest Faculty",
+    Image: "Images/Department/EE/Members/img_3.jpeg",
+    HOD: 0,
+    email: "Bbsan2043@gmail.com",
+    qualification: "Master in Power Electronics, Pursuing Ph.D.",
+    Specialization: "Power Electronics, Electrical Machines, Renewable Energy",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Mr. Sanasam Dhanabanta Singh",
+    Department: "EE",
+    position: "Guest Faculty",
+    Image: "Images/Department/EE/Members/img_4.jpg",
+    HOD: 0,
+    email: "dhanasanasam1@gmail.com",
+    qualification: "M.Tech, Pursuing Ph.D.",
+    Specialization: "Power and Control System",
+    paper: [
+      {
+        Name: "asdasd",
+        Desc: "asdasd",
+        Link: "asdasd",
+      },
+    ],
+  },
+  {
+    name: "Dr. Kshetrimayum Priyalakshmi Devi",
+    Department: "EE",
+    position: "Guest Faculty",
+    Image: "Images/Department/EE/Members/img_5.jpeg",
+    HOD: 0,
+    email: "priyakshetrimayum@gmail.com",
+    qualification: "Ph.D.",
+    Specialization: "Renewable energy, Fabrication of plasmonic device.",
     paper: [
       {
         Name: "asdasd",
