@@ -6,4 +6,4 @@ if [ "$BRANCH" = "main" ]; then
     npm run test
 fi
 
-npm run format
+npx lint-staged
