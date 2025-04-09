@@ -22,8 +22,8 @@ export default [
     route("/Contact_Us", "./routes/contact.tsx"),
     route("/gallery", "./routes/gallery.tsx"),
     route("/editor", "./routes/editor.tsx"),
-    route("CSE-dept","./routes/cse.tsx"),
-    route("EE-dept","./routes/ee.tsx"),
+    route("CSE-dept", "./routes/cse.tsx"),
+    route("EE-dept", "./routes/ee.tsx"),
   ]),
   // CMS Route
   ...prefix("cms", [
@@ -34,17 +34,20 @@ export default [
       route("signup", "./routes/cms/signup.tsx"),
       route("forgotpass", "./routes/cms/forgotpass.tsx"),
     ]),
-    // Routes Specific for Faculty
-    ...prefix("faculty", [
-      layout("./layouts/CMSFacultyLayout.tsx", [
-        index("./routes/cms/faculty.dashboard.tsx"),
-      ]),
-    ]),
     // Routes Specific for Admin
     ...prefix("admin", [
       layout("./layouts/CMSAdminLayout.tsx", [
         index("./routes/cms/admin.dashboard.tsx"),
       ]),
+    ]),
+  ]),
+  // Routes Specific for Faculty
+  ...prefix("faculty", [
+    layout("./layouts/CMSFacultyLayout.tsx", [
+      index("./routes/Faculty/teacher_home_page.tsx"),
+      route("/faculty", "./routes/Faculty/teacher_home_page.tsx", {
+        id: "FacultyHome1",
+      }),
     ]),
   ]),
 
