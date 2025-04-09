@@ -1,1 +1,9 @@
-npm test
+#!/bin/sh
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$BRANCH" = "main" ]; then
+    npm run test
+fi
+
+npm run format
