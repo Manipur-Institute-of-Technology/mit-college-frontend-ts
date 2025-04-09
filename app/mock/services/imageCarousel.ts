@@ -2,20 +2,20 @@ import { createFetchError } from "~/types/api/FetchError";
 import type { ImageCarouselData } from "~/types/api/resData.type";
 
 export const getImageCarouselContent = async (): Promise<
-	ImageCarouselData[]
+  ImageCarouselData[]
 > => {
-	try {
-		// Add delay
-		await new Promise((res) => setTimeout(res, 2000));
-		const res = await fetch("/mock/imageCarousel.json");
-		if (!res.ok) {
-			throw createFetchError("Error fetching image carousel data", res);
-		}
+  try {
+    // Add delay
+    await new Promise((res) => setTimeout(res, 2000));
+    const res = await fetch("/mock/imageCarousel.json");
+    if (!res.ok) {
+      throw createFetchError("Error fetching image carousel data", res);
+    }
 
-		const data = await res.json();
-		return data satisfies ImageCarouselData[];
-	} catch (error) {
-		console.error("Image Carousel fetch error:", error);
-		throw error;
-	}
+    const data = await res.json();
+    return data satisfies ImageCarouselData[];
+  } catch (error) {
+    console.error("Image Carousel fetch error:", error);
+    throw error;
+  }
 };

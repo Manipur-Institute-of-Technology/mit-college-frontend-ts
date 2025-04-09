@@ -6,9 +6,9 @@ import { genPageMetaData } from "~/utils/meta";
 import { XPreviewEditor } from "./test1";
 
 export function meta({}: Route.MetaArgs) {
-	return genPageMetaData({ title: "Editor Test" });
+  return genPageMetaData({ title: "Editor Test" });
 }
 
 export default function Editor() {
-	return <XPreviewEditor />;
+  return <XPreviewEditor />;
 }

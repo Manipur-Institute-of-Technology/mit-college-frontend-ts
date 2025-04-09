@@ -45,7 +45,7 @@ import {
 } from "./CollapsibleTitleNode";
 
 export const INSERT_COLLAPSIBLE_COMMAND = createCommand<void>(
-  "INSERT_COLLAPSIBLE_COMMAND"
+  "INSERT_COLLAPSIBLE_COMMAND",
 );
 
 export default function CollapsiblePlugin(): null {
@@ -60,7 +60,7 @@ export default function CollapsiblePlugin(): null {
       ])
     ) {
       throw new Error(
-        "CollapsiblePlugin: CollapsibleContainerNode, CollapsibleTitleNode, or CollapsibleContentNode not registered on editor"
+        "CollapsiblePlugin: CollapsibleContainerNode, CollapsibleTitleNode, or CollapsibleContentNode not registered on editor",
       );
     }
 
@@ -73,7 +73,7 @@ export default function CollapsiblePlugin(): null {
       ) {
         const container = $findMatchingParent(
           selection.anchor.getNode(),
-          $isCollapsibleContainerNode
+          $isCollapsibleContainerNode,
         );
 
         if ($isCollapsibleContainerNode(container)) {
@@ -96,7 +96,7 @@ export default function CollapsiblePlugin(): null {
       if ($isRangeSelection(selection) && selection.isCollapsed()) {
         const container = $findMatchingParent(
           selection.anchor.getNode(),
-          $isCollapsibleContainerNode
+          $isCollapsibleContainerNode,
         );
 
         if ($isCollapsibleContainerNode(container)) {
@@ -167,13 +167,13 @@ export default function CollapsiblePlugin(): null {
       editor.registerCommand(
         KEY_ARROW_DOWN_COMMAND,
         $onEscapeDown,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
 
       editor.registerCommand(
         KEY_ARROW_RIGHT_COMMAND,
         $onEscapeDown,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
 
       // When collapsible is the first child pressing up/left arrow will insert paragraph
@@ -183,13 +183,13 @@ export default function CollapsiblePlugin(): null {
       editor.registerCommand(
         KEY_ARROW_UP_COMMAND,
         $onEscapeUp,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
 
       editor.registerCommand(
         KEY_ARROW_LEFT_COMMAND,
         $onEscapeUp,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
 
       // Enter goes from Title to Content rather than a new line inside Title
@@ -200,7 +200,7 @@ export default function CollapsiblePlugin(): null {
           if ($isRangeSelection(selection)) {
             const titleNode = $findMatchingParent(
               selection.anchor.getNode(),
-              (node) => $isCollapsibleTitleNode(node)
+              (node) => $isCollapsibleTitleNode(node),
             );
 
             if ($isCollapsibleTitleNode(titleNode)) {
@@ -217,7 +217,7 @@ export default function CollapsiblePlugin(): null {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         INSERT_COLLAPSIBLE_COMMAND,
@@ -228,15 +228,15 @@ export default function CollapsiblePlugin(): null {
             $insertNodeToNearestRoot(
               $createCollapsibleContainerNode(true).append(
                 title.append(paragraph),
-                $createCollapsibleContentNode().append($createParagraphNode())
-              )
+                $createCollapsibleContentNode().append($createParagraphNode()),
+              ),
             );
             paragraph.select();
           });
           return true;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [editor]);
 

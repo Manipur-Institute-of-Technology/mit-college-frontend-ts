@@ -1,25 +1,31 @@
 @keyframes gradient-anim {
-    0% {
-        background-position: 0% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
 
-    100% {
-        background-position: 100% 100%;
-    }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
-
 .animate-gradient-bg {
-    animation: gradient-anim 5s ease infinite forwards;
-    background-size: 400% 400%;
+  animation: gradient-anim 5s ease infinite forwards;
+  background-size: 400% 400%;
 }
 
 .animate-gradient-skel-bg {
-    animation: gradient-anim 2s ease infinite forwards;
-    animation-fill-mode: both;
-    background-size: 400% 400%;
+  animation: gradient-anim 2s ease infinite forwards;
+  animation-fill-mode: both;
+  background-size: 400% 400%;
 }
 
 .skel-bg {
-    background-image: linear-gradient(45deg, #525252 0%, #b5b5b5 25%, #525252 50%, #b5b5b5 75%, #525252 100%);
+  background-image: linear-gradient(
+    45deg,
+    #525252 0%,
+    #b5b5b5 25%,
+    #525252 50%,
+    #b5b5b5 75%,
+    #525252 100%
+  );
 }

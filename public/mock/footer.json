@@ -1,135 +1,135 @@
 {
-	"logo": "/Manipur_University_Logo1.png",
-	"contactInfo": {
-		"location": {
-			"address": "Takyelpat",
-			"pinCode": "795001",
-			"country": "india",
-			"state": "manipur",
-			"district": "imphal west"
-		},
-		"phone": "+1 (555) 123-4567",
-		"email": "info@mit.mu.ac",
-		"webAddress": "mit.imphal.ac"
-	},
-	"links": [
-		{
-			"listHeader": "Departments",
-			"lists": [
-				{
-					"linkText": "Department of Civil Engineering",
-					"href": "/page/ce_dept"
-				},
-				{
-					"linkText": "Department of Electronics & Communication Engineering",
-					"href": "/pages/ece_dept"
-				},
-				{
-					"linkText": "Depatrment of Computer Sciences & Engineering",
-					"href": "/pages/cse_dept"
-				},
-				{
-					"linkText": "Department of Basic Sciences & Humanities",
-					"href": "/pages/bsc_dept"
-				},
-				{
-					"linkText": "Department of Mechanical Engineering",
-					"href": "/pages/me_dept"
-				},
-				{
-					"linkText": "Department of Electrical Engineering",
-					"href": "/pages/ee_dept"
-				}
-			]
-		},
-		{
-			"listHeader": "Facilities",
-			"lists": [
-				{
-					"linkText": "Library Facility",
-					"href": "/pages/ee_dept"
-				},
-				{
-					"linkText": "Internet Facility",
-					"href": "/pages/ee_dept"
-				},
-				{
-					"linkText": "Hostel Facility",
-					"href": "/pages/ee_dept"
-				},
-				{
-					"linkText": "Language Lab",
-					"href": "/pages/ee_dept"
-				}
-			]
-		},
-		{
-			"listHeader": "Information",
-			"lists": [
-				{
-					"linkText": "Fire Safety Certificate",
-					"href": "https://mitimphal.in/uploads/media/m1617252870.pdf"
-				},
-				{
-					"linkText": "Mandatory Disclosures",
-					"href": "https://mitimphal.in/uploads/media/m1645779721.pdf"
-				},
-				{
-					"linkText": "Ragging",
-					"href": "Ragging"
-				},
-				{
-					"linkText": "Faculty Development Program",
-					"href": "Faculty_Development_Program"
-				},
-				{
-					"linkText": "Placement",
-					"href": "Placement"
-				},
-				{
-					"linkText": "Campus",
-					"href": "Campus"
-				},
-				{
-					"linkText": "Classroom",
-					"href": "Classroom_0"
-				},
-				{
-					"linkText": "Online Grievance Redressal",
-					"href": "OGR_footer"
-				}
-			]
-		},
-		{
-			"listHeader": "Quick Links",
-			"lists": [
-				{ "linkText": "Home", "href": "/home" },
-				{ "linkText": "Admission", "href": "/admission" },
-				{ "linkText": "Fee", "href": "/fee" },
-				{ "linkText": "Notice", "href": "/notice" }
-			]
-		}
-	],
-	"socialMedia": [
-		{
-			"platform": "facebook",
-			"url": "https://facebook.com/mitcollege"
-		},
-		{
-			"platform": "twitter",
-			"url": "https://twitter.com/mitcollege"
-		},
-		{
-			"platform": "reddit",
-			"url": "https://reddit.com/school/mitcollege"
-		},
-		{
-			"platform": "linkedIn",
-			"url": "https://linkedin.com/school/mitcollege"
-		},
-		{
-			"platform": "bluesky",
-			"url": "https://bluesky.com/school/mitcollege"
-		}
-	]
+  "logo": "/Manipur_University_Logo1.png",
+  "contactInfo": {
+    "location": {
+      "address": "Takyelpat",
+      "pinCode": "795001",
+      "country": "india",
+      "state": "manipur",
+      "district": "imphal west"
+    },
+    "phone": "+1 (555) 123-4567",
+    "email": "info@mit.mu.ac",
+    "webAddress": "mit.imphal.ac"
+  },
+  "links": [
+    {
+      "listHeader": "Departments",
+      "lists": [
+        {
+          "linkText": "Department of Civil Engineering",
+          "href": "/page/ce_dept"
+        },
+        {
+          "linkText": "Department of Electronics & Communication Engineering",
+          "href": "/pages/ece_dept"
+        },
+        {
+          "linkText": "Depatrment of Computer Sciences & Engineering",
+          "href": "/pages/cse_dept"
+        },
+        {
+          "linkText": "Department of Basic Sciences & Humanities",
+          "href": "/pages/bsc_dept"
+        },
+        {
+          "linkText": "Department of Mechanical Engineering",
+          "href": "/pages/me_dept"
+        },
+        {
+          "linkText": "Department of Electrical Engineering",
+          "href": "/pages/ee_dept"
+        }
+      ]
+    },
+    {
+      "listHeader": "Facilities",
+      "lists": [
+        {
+          "linkText": "Library Facility",
+          "href": "/pages/ee_dept"
+        },
+        {
+          "linkText": "Internet Facility",
+          "href": "/pages/ee_dept"
+        },
+        {
+          "linkText": "Hostel Facility",
+          "href": "/pages/ee_dept"
+        },
+        {
+          "linkText": "Language Lab",
+          "href": "/pages/ee_dept"
+        }
+      ]
+    },
+    {
+      "listHeader": "Information",
+      "lists": [
+        {
+          "linkText": "Fire Safety Certificate",
+          "href": "https://mitimphal.in/uploads/media/m1617252870.pdf"
+        },
+        {
+          "linkText": "Mandatory Disclosures",
+          "href": "https://mitimphal.in/uploads/media/m1645779721.pdf"
+        },
+        {
+          "linkText": "Ragging",
+          "href": "Ragging"
+        },
+        {
+          "linkText": "Faculty Development Program",
+          "href": "Faculty_Development_Program"
+        },
+        {
+          "linkText": "Placement",
+          "href": "Placement"
+        },
+        {
+          "linkText": "Campus",
+          "href": "Campus"
+        },
+        {
+          "linkText": "Classroom",
+          "href": "Classroom_0"
+        },
+        {
+          "linkText": "Online Grievance Redressal",
+          "href": "OGR_footer"
+        }
+      ]
+    },
+    {
+      "listHeader": "Quick Links",
+      "lists": [
+        { "linkText": "Home", "href": "/home" },
+        { "linkText": "Admission", "href": "/admission" },
+        { "linkText": "Fee", "href": "/fee" },
+        { "linkText": "Notice", "href": "/notice" }
+      ]
+    }
+  ],
+  "socialMedia": [
+    {
+      "platform": "facebook",
+      "url": "https://facebook.com/mitcollege"
+    },
+    {
+      "platform": "twitter",
+      "url": "https://twitter.com/mitcollege"
+    },
+    {
+      "platform": "reddit",
+      "url": "https://reddit.com/school/mitcollege"
+    },
+    {
+      "platform": "linkedIn",
+      "url": "https://linkedin.com/school/mitcollege"
+    },
+    {
+      "platform": "bluesky",
+      "url": "https://bluesky.com/school/mitcollege"
+    }
+  ]
 }

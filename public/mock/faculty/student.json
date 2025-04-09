@@ -1,293 +1,293 @@
 [
-	{
-		"fullName": "John Doe",
-		"projectName": "Apple",
-		"paperLink": "",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/37.jpg",
-		"abstract": "Research focusing on machine learning applications in Apple technologies.",
-		"startYear": 2022,
-		"endYear": 2024,
-		"degree": "master",
-		"socialLinks": [
-			{ "platform": "x", "href": "http://x.com/johndoe" },
-			{ "platform": "linkedIn", "href": "https://linkedin.com/in/johndoe" },
-			{
-				"platform": "googleScholar",
-				"href": "https://scholar.google.com/johndoe"
-			}
-		],
-		"researchTopics": ["Machine Learning", "Mobile Computing", "AI"]
-	},
-	{
-		"fullName": "Emma Wilson",
-		"projectName": "Neural Network Security",
-		"paperLink": "https://example.com/paper1",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/12.jpg",
-		"abstract": "Investigating security vulnerabilities in neural networks and developing robust defense mechanisms.",
-		"startYear": 2021,
-		"endYear": 2023,
-		"degree": "master",
-		"socialLinks": [
-			{ "platform": "linkedIn", "href": "https://linkedin.com/in/emmawilson" },
-			{ "platform": "orchid", "href": "https://orcid.org/emmawilson" }
-		],
-		"researchTopics": ["Neural Networks", "Security", "Deep Learning"]
-	},
-	{
-		"fullName": "Michael Chen",
-		"projectName": "Privacy in ML",
-		"paperLink": "https://example.com/paper2",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/9.jpg",
-		"abstract": "Exploring privacy-preserving techniques for machine learning models and data protection.",
-		"startYear": 2022,
-		"endYear": 2024,
-		"degree": "master",
-		"socialLinks": [
-			{ "platform": "x", "href": "http://x.com/michaelchen" },
-			{
-				"platform": "googleScholar",
-				"href": "https://scholar.google.com/michaelchen"
-			},
-			{ "platform": "linkedIn", "href": "https://linkedin.com/in/michaelchen" }
-		],
-		"researchTopics": ["Privacy", "Machine Learning", "Data Protection"]
-	},
-	{
-		"fullName": "Sarah Rodriguez",
-		"projectName": "Adversarial Learning",
-		"paperLink": "https://example.com/paper3",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/29.jpg",
-		"abstract": "Studying adversarial attacks and defenses in machine learning systems.",
-		"startYear": 2021,
-		"endYear": 2023,
-		"degree": "master",
-		"socialLinks": [
-			{
-				"platform": "linkedIn",
-				"href": "https://linkedin.com/in/sarahrodriguez"
-			},
-			{
-				"platform": "mastodon",
-				"href": "https://mastodon.social/@sarahrodriguez"
-			}
-		],
-		"researchTopics": ["Adversarial Learning", "Security", "Machine Learning"]
-	},
-	{
-		"fullName": "John Doe",
-		"projectName": "Apple",
-		"paperLink": "",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/42.jpg",
-		"abstract": "Advanced research in Apple's machine learning infrastructure.",
-		"startYear": 2020,
-		"endYear": 2025,
-		"degree": "phd",
-		"socialLinks": [
-			{
-				"platform": "googleScholar",
-				"href": "https://scholar.google.com/johndoe-phd"
-			},
-			{ "platform": "orchid", "href": "https://orcid.org/johndoe-phd" },
-			{ "platform": "linkedIn", "href": "https://linkedin.com/in/johndoe-phd" }
-		],
-		"researchTopics": [
-			"Machine Learning Infrastructure",
-			"AI",
-			"Cloud Computing"
-		]
-	},
-	{
-		"fullName": "Emma Wilson",
-		"projectName": "Neural Network Security",
-		"paperLink": "https://example.com/paper1",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/2.jpg",
-		"abstract": "Developing novel security frameworks for deep learning systems.",
-		"startYear": 2019,
-		"endYear": 2024,
-		"degree": "phd",
-		"socialLinks": [
-			{ "platform": "x", "href": "http://x.com/emmawilson-phd" },
-			{ "platform": "orchid", "href": "https://orcid.org/emmawilson-phd" }
-		],
-		"researchTopics": ["Deep Learning Security", "Frameworks", "AI"]
-	},
-	{
-		"fullName": "Michael Chen",
-		"projectName": "Privacy in ML",
-		"paperLink": "https://example.com/paper2",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/30.jpg",
-		"abstract": "Implementing differential privacy in large-scale machine learning models.",
-		"startYear": 2021,
-		"endYear": 2026,
-		"degree": "phd",
-		"socialLinks": [
-			{
-				"platform": "googleScholar",
-				"href": "https://scholar.google.com/michaelchen-phd"
-			},
-			{
-				"platform": "linkedIn",
-				"href": "https://linkedin.com/in/michaelchen-phd"
-			},
-			{
-				"platform": "bluesky",
-				"href": "https://bsky.app/profile/michaelchen.bsky.social"
-			}
-		],
-		"researchTopics": [
-			"Differential Privacy",
-			"Large-Scale ML",
-			"Data Security"
-		]
-	},
-	{
-		"fullName": "Sarah Rodriguez",
-		"projectName": "Adversarial Learning",
-		"paperLink": "https://example.com/paper3",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/4.jpg",
-		"abstract": "Research on robust machine learning models against adversarial examples.",
-		"startYear": 2020,
-		"endYear": 2025,
-		"degree": "phd",
-		"socialLinks": [
-			{ "platform": "orchid", "href": "https://orcid.org/sarahrodriguez-phd" },
-			{
-				"platform": "googleScholar",
-				"href": "https://scholar.google.com/sarahrodriguez-phd"
-			}
-		],
-		"researchTopics": ["Robust ML Models", "Adversarial Examples", "AI"]
-	},
-	{
-		"fullName": "John Doe",
-		"projectName": "Apple",
-		"paperLink": "",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/4.jpg",
-		"abstract": "Introduction to machine learning applications in mobile computing.",
-		"startYear": 2020,
-		"endYear": 2024,
-		"degree": "bachelor",
-		"socialLinks": [
-			{
-				"platform": "instagram",
-				"href": "https://instagram.com/johndoe_student"
-			},
-			{
-				"platform": "linkedIn",
-				"href": "https://linkedin.com/in/johndoe-student"
-			}
-		],
-		"researchTopics": ["Mobile Computing", "Machine Learning", "Applications"]
-	},
-	{
-		"fullName": "Emma Wilson",
-		"projectName": "Neural Network Security",
-		"paperLink": "https://example.com/paper1",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/46.jpg",
-		"abstract": "Basic research in neural network security vulnerabilities.",
-		"startYear": 2021,
-		"endYear": 2025,
-		"degree": "bachelor",
-		"socialLinks": [
-			{
-				"platform": "instagram",
-				"href": "https://instagram.com/emmawilson_student"
-			},
-			{ "platform": "x", "href": "http://x.com/emmawilson_student" }
-		],
-		"researchTopics": [
-			"Neural Network Security",
-			"Vulnerabilities",
-			"Basic Research"
-		]
-	},
-	{
-		"fullName": "Michael Chen",
-		"projectName": "Privacy in ML",
-		"paperLink": "https://example.com/paper2",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/75.jpg",
-		"abstract": "Exploring fundamental concepts in machine learning privacy.",
-		"startYear": 2022,
-		"endYear": 2026,
-		"degree": "bachelor",
-		"socialLinks": [
-			{
-				"platform": "facebook",
-				"href": "https://facebook.com/michaelchen.student"
-			},
-			{
-				"platform": "instagram",
-				"href": "https://instagram.com/michaelchen_student"
-			},
-			{
-				"platform": "linkedIn",
-				"href": "https://linkedin.com/in/michaelchen-student"
-			}
-		],
-		"researchTopics": ["Machine Learning Privacy", "Fundamental Concepts"]
-	},
-	{
-		"fullName": "Sarah Rodriguez",
-		"projectName": "Adversarial Learning",
-		"paperLink": "https://example.com/paper3",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/4.jpg",
-		"abstract": "Understanding basic concepts in adversarial machine learning.",
-		"startYear": 2023,
-		"endYear": 2027,
-		"degree": "bachelor",
-		"socialLinks": [
-			{
-				"platform": "github",
-				"href": "https://github.com/sarahrodriguez-student"
-			},
-			{
-				"platform": "instagram",
-				"href": "https://instagram.com/sarahrodriguez_student"
-			},
-			{
-				"platform": "facebook",
-				"href": "https://facebook.com/sarahrodriguez.student"
-			}
-		],
-		"researchTopics": ["Adversarial Machine Learning", "Basic Concepts"]
-	},
-	{
-		"fullName": "John Doe",
-		"projectName": "Adversarial Learning",
-		"paperLink": "https://example.com/paper3",
-		"avatarUrl": "https://randomuser.me/api/portraits/men/4.jpg",
-		"abstract": "Understanding basic concepts in adversarial machine learning.",
-		"startYear": 2022,
-		"endYear": 2023,
-		"degree": "bachelor",
-		"socialLinks": [
-			{
-				"platform": "linkedIn",
-				"href": "https://linkedin.com/in/johndoe-researcher"
-			},
-			{ "platform": "x", "href": "http://x.com/johndoe_researcher" }
-		],
-		"researchTopics": ["Adversarial Machine Learning", "Basic Concepts"]
-	},
-	{
-		"fullName": "Emma Wilson",
-		"projectName": "Neural Network Security",
-		"paperLink": "https://example.com/paper1",
-		"avatarUrl": "https://randomuser.me/api/portraits/women/17.jpg",
-		"abstract": "Independent research in neural network security mechanisms.",
-		"startYear": 2021,
-		"endYear": 2022,
-		"degree": "other",
-		"socialLinks": [
-			{
-				"platform": "linkedIn",
-				"href": "https://linkedin.com/in/emmawilson-researcher"
-			},
-			{
-				"platform": "googleScholar",
-				"href": "https://scholar.google.com/emmawilson-researcher"
-			}
-		],
-		"researchTopics": ["Neural Network Security", "Independent Research"]
-	}
+  {
+    "fullName": "John Doe",
+    "projectName": "Apple",
+    "paperLink": "",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/37.jpg",
+    "abstract": "Research focusing on machine learning applications in Apple technologies.",
+    "startYear": 2022,
+    "endYear": 2024,
+    "degree": "master",
+    "socialLinks": [
+      { "platform": "x", "href": "http://x.com/johndoe" },
+      { "platform": "linkedIn", "href": "https://linkedin.com/in/johndoe" },
+      {
+        "platform": "googleScholar",
+        "href": "https://scholar.google.com/johndoe"
+      }
+    ],
+    "researchTopics": ["Machine Learning", "Mobile Computing", "AI"]
+  },
+  {
+    "fullName": "Emma Wilson",
+    "projectName": "Neural Network Security",
+    "paperLink": "https://example.com/paper1",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/12.jpg",
+    "abstract": "Investigating security vulnerabilities in neural networks and developing robust defense mechanisms.",
+    "startYear": 2021,
+    "endYear": 2023,
+    "degree": "master",
+    "socialLinks": [
+      { "platform": "linkedIn", "href": "https://linkedin.com/in/emmawilson" },
+      { "platform": "orchid", "href": "https://orcid.org/emmawilson" }
+    ],
+    "researchTopics": ["Neural Networks", "Security", "Deep Learning"]
+  },
+  {
+    "fullName": "Michael Chen",
+    "projectName": "Privacy in ML",
+    "paperLink": "https://example.com/paper2",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/9.jpg",
+    "abstract": "Exploring privacy-preserving techniques for machine learning models and data protection.",
+    "startYear": 2022,
+    "endYear": 2024,
+    "degree": "master",
+    "socialLinks": [
+      { "platform": "x", "href": "http://x.com/michaelchen" },
+      {
+        "platform": "googleScholar",
+        "href": "https://scholar.google.com/michaelchen"
+      },
+      { "platform": "linkedIn", "href": "https://linkedin.com/in/michaelchen" }
+    ],
+    "researchTopics": ["Privacy", "Machine Learning", "Data Protection"]
+  },
+  {
+    "fullName": "Sarah Rodriguez",
+    "projectName": "Adversarial Learning",
+    "paperLink": "https://example.com/paper3",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/29.jpg",
+    "abstract": "Studying adversarial attacks and defenses in machine learning systems.",
+    "startYear": 2021,
+    "endYear": 2023,
+    "degree": "master",
+    "socialLinks": [
+      {
+        "platform": "linkedIn",
+        "href": "https://linkedin.com/in/sarahrodriguez"
+      },
+      {
+        "platform": "mastodon",
+        "href": "https://mastodon.social/@sarahrodriguez"
+      }
+    ],
+    "researchTopics": ["Adversarial Learning", "Security", "Machine Learning"]
+  },
+  {
+    "fullName": "John Doe",
+    "projectName": "Apple",
+    "paperLink": "",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/42.jpg",
+    "abstract": "Advanced research in Apple's machine learning infrastructure.",
+    "startYear": 2020,
+    "endYear": 2025,
+    "degree": "phd",
+    "socialLinks": [
+      {
+        "platform": "googleScholar",
+        "href": "https://scholar.google.com/johndoe-phd"
+      },
+      { "platform": "orchid", "href": "https://orcid.org/johndoe-phd" },
+      { "platform": "linkedIn", "href": "https://linkedin.com/in/johndoe-phd" }
+    ],
+    "researchTopics": [
+      "Machine Learning Infrastructure",
+      "AI",
+      "Cloud Computing"
+    ]
+  },
+  {
+    "fullName": "Emma Wilson",
+    "projectName": "Neural Network Security",
+    "paperLink": "https://example.com/paper1",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/2.jpg",
+    "abstract": "Developing novel security frameworks for deep learning systems.",
+    "startYear": 2019,
+    "endYear": 2024,
+    "degree": "phd",
+    "socialLinks": [
+      { "platform": "x", "href": "http://x.com/emmawilson-phd" },
+      { "platform": "orchid", "href": "https://orcid.org/emmawilson-phd" }
+    ],
+    "researchTopics": ["Deep Learning Security", "Frameworks", "AI"]
+  },
+  {
+    "fullName": "Michael Chen",
+    "projectName": "Privacy in ML",
+    "paperLink": "https://example.com/paper2",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/30.jpg",
+    "abstract": "Implementing differential privacy in large-scale machine learning models.",
+    "startYear": 2021,
+    "endYear": 2026,
+    "degree": "phd",
+    "socialLinks": [
+      {
+        "platform": "googleScholar",
+        "href": "https://scholar.google.com/michaelchen-phd"
+      },
+      {
+        "platform": "linkedIn",
+        "href": "https://linkedin.com/in/michaelchen-phd"
+      },
+      {
+        "platform": "bluesky",
+        "href": "https://bsky.app/profile/michaelchen.bsky.social"
+      }
+    ],
+    "researchTopics": [
+      "Differential Privacy",
+      "Large-Scale ML",
+      "Data Security"
+    ]
+  },
+  {
+    "fullName": "Sarah Rodriguez",
+    "projectName": "Adversarial Learning",
+    "paperLink": "https://example.com/paper3",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/4.jpg",
+    "abstract": "Research on robust machine learning models against adversarial examples.",
+    "startYear": 2020,
+    "endYear": 2025,
+    "degree": "phd",
+    "socialLinks": [
+      { "platform": "orchid", "href": "https://orcid.org/sarahrodriguez-phd" },
+      {
+        "platform": "googleScholar",
+        "href": "https://scholar.google.com/sarahrodriguez-phd"
+      }
+    ],
+    "researchTopics": ["Robust ML Models", "Adversarial Examples", "AI"]
+  },
+  {
+    "fullName": "John Doe",
+    "projectName": "Apple",
+    "paperLink": "",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/4.jpg",
+    "abstract": "Introduction to machine learning applications in mobile computing.",
+    "startYear": 2020,
+    "endYear": 2024,
+    "degree": "bachelor",
+    "socialLinks": [
+      {
+        "platform": "instagram",
+        "href": "https://instagram.com/johndoe_student"
+      },
+      {
+        "platform": "linkedIn",
+        "href": "https://linkedin.com/in/johndoe-student"
+      }
+    ],
+    "researchTopics": ["Mobile Computing", "Machine Learning", "Applications"]
+  },
+  {
+    "fullName": "Emma Wilson",
+    "projectName": "Neural Network Security",
+    "paperLink": "https://example.com/paper1",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/46.jpg",
+    "abstract": "Basic research in neural network security vulnerabilities.",
+    "startYear": 2021,
+    "endYear": 2025,
+    "degree": "bachelor",
+    "socialLinks": [
+      {
+        "platform": "instagram",
+        "href": "https://instagram.com/emmawilson_student"
+      },
+      { "platform": "x", "href": "http://x.com/emmawilson_student" }
+    ],
+    "researchTopics": [
+      "Neural Network Security",
+      "Vulnerabilities",
+      "Basic Research"
+    ]
+  },
+  {
+    "fullName": "Michael Chen",
+    "projectName": "Privacy in ML",
+    "paperLink": "https://example.com/paper2",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/75.jpg",
+    "abstract": "Exploring fundamental concepts in machine learning privacy.",
+    "startYear": 2022,
+    "endYear": 2026,
+    "degree": "bachelor",
+    "socialLinks": [
+      {
+        "platform": "facebook",
+        "href": "https://facebook.com/michaelchen.student"
+      },
+      {
+        "platform": "instagram",
+        "href": "https://instagram.com/michaelchen_student"
+      },
+      {
+        "platform": "linkedIn",
+        "href": "https://linkedin.com/in/michaelchen-student"
+      }
+    ],
+    "researchTopics": ["Machine Learning Privacy", "Fundamental Concepts"]
+  },
+  {
+    "fullName": "Sarah Rodriguez",
+    "projectName": "Adversarial Learning",
+    "paperLink": "https://example.com/paper3",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/4.jpg",
+    "abstract": "Understanding basic concepts in adversarial machine learning.",
+    "startYear": 2023,
+    "endYear": 2027,
+    "degree": "bachelor",
+    "socialLinks": [
+      {
+        "platform": "github",
+        "href": "https://github.com/sarahrodriguez-student"
+      },
+      {
+        "platform": "instagram",
+        "href": "https://instagram.com/sarahrodriguez_student"
+      },
+      {
+        "platform": "facebook",
+        "href": "https://facebook.com/sarahrodriguez.student"
+      }
+    ],
+    "researchTopics": ["Adversarial Machine Learning", "Basic Concepts"]
+  },
+  {
+    "fullName": "John Doe",
+    "projectName": "Adversarial Learning",
+    "paperLink": "https://example.com/paper3",
+    "avatarUrl": "https://randomuser.me/api/portraits/men/4.jpg",
+    "abstract": "Understanding basic concepts in adversarial machine learning.",
+    "startYear": 2022,
+    "endYear": 2023,
+    "degree": "bachelor",
+    "socialLinks": [
+      {
+        "platform": "linkedIn",
+        "href": "https://linkedin.com/in/johndoe-researcher"
+      },
+      { "platform": "x", "href": "http://x.com/johndoe_researcher" }
+    ],
+    "researchTopics": ["Adversarial Machine Learning", "Basic Concepts"]
+  },
+  {
+    "fullName": "Emma Wilson",
+    "projectName": "Neural Network Security",
+    "paperLink": "https://example.com/paper1",
+    "avatarUrl": "https://randomuser.me/api/portraits/women/17.jpg",
+    "abstract": "Independent research in neural network security mechanisms.",
+    "startYear": 2021,
+    "endYear": 2022,
+    "degree": "other",
+    "socialLinks": [
+      {
+        "platform": "linkedIn",
+        "href": "https://linkedin.com/in/emmawilson-researcher"
+      },
+      {
+        "platform": "googleScholar",
+        "href": "https://scholar.google.com/emmawilson-researcher"
+      }
+    ],
+    "researchTopics": ["Neural Network Security", "Independent Research"]
+  }
 ]

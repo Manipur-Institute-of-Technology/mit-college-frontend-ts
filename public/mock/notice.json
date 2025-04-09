@@ -1,62 +1,62 @@
 [
-	{
-		"href": "/notice/academic-calendar-2024",
-		"linkText": "Academic Calendar 2024 Released",
-		"publishedDate": "2024-01-10T00:00:00.000Z",
-		"urgency": "high"
-	},
-	{
-		"href": "/notice/admission-2024",
-		"linkText": "Admission Open for 2024-25 Academic Session",
-		"publishedDate": "2024-01-15T00:00:00.000Z",
-		"urgency": "high"
-	},
-	{
-		"href": "/notice/exam-schedule",
-		"linkText": "End Semester Examination Schedule",
-		"publishedDate": "2024-01-20T00:00:00.000Z",
-		"urgency": "medium"
-	},
-	{
-		"href": "/notice/scholarship",
-		"linkText": "Merit Scholarship Applications Now Open",
-		"publishedDate": "2024-01-25T00:00:00.000Z",
-		"urgency": "medium"
-	},
-	{
-		"href": "/notice/workshop",
-		"linkText": "Technical Workshop on AI & Machine Learning",
-		"publishedDate": "2024-02-01T00:00:00.000Z",
-		"urgency": "low"
-	},
-	{
-		"href": "/notice/academic-calendar-2024",
-		"linkText": "Academic Calendar 2024 Released",
-		"publishedDate": "2024-01-10T00:00:00.000Z",
-		"urgency": "high"
-	},
-	{
-		"href": "/notice/admission-2024",
-		"linkText": "Admission Open for 2024-25 Academic Session",
-		"publishedDate": "2024-01-15T00:00:00.000Z",
-		"urgency": "high"
-	},
-	{
-		"href": "/notice/exam-schedule",
-		"linkText": "End Semester Examination Schedule",
-		"publishedDate": "2024-01-20T00:00:00.000Z",
-		"urgency": "medium"
-	},
-	{
-		"href": "/notice/scholarship",
-		"linkText": "Merit Scholarship Applications Now Open",
-		"publishedDate": "2024-01-25T00:00:00.000Z",
-		"urgency": "medium"
-	},
-	{
-		"href": "/notice/workshop",
-		"linkText": "Technical Workshop on AI & Machine Learning",
-		"publishedDate": "2024-02-01T00:00:00.000Z",
-		"urgency": "low"
-	}
+  {
+    "href": "/notice/academic-calendar-2024",
+    "linkText": "Academic Calendar 2024 Released",
+    "publishedDate": "2024-01-10T00:00:00.000Z",
+    "urgency": "high"
+  },
+  {
+    "href": "/notice/admission-2024",
+    "linkText": "Admission Open for 2024-25 Academic Session",
+    "publishedDate": "2024-01-15T00:00:00.000Z",
+    "urgency": "high"
+  },
+  {
+    "href": "/notice/exam-schedule",
+    "linkText": "End Semester Examination Schedule",
+    "publishedDate": "2024-01-20T00:00:00.000Z",
+    "urgency": "medium"
+  },
+  {
+    "href": "/notice/scholarship",
+    "linkText": "Merit Scholarship Applications Now Open",
+    "publishedDate": "2024-01-25T00:00:00.000Z",
+    "urgency": "medium"
+  },
+  {
+    "href": "/notice/workshop",
+    "linkText": "Technical Workshop on AI & Machine Learning",
+    "publishedDate": "2024-02-01T00:00:00.000Z",
+    "urgency": "low"
+  },
+  {
+    "href": "/notice/academic-calendar-2024",
+    "linkText": "Academic Calendar 2024 Released",
+    "publishedDate": "2024-01-10T00:00:00.000Z",
+    "urgency": "high"
+  },
+  {
+    "href": "/notice/admission-2024",
+    "linkText": "Admission Open for 2024-25 Academic Session",
+    "publishedDate": "2024-01-15T00:00:00.000Z",
+    "urgency": "high"
+  },
+  {
+    "href": "/notice/exam-schedule",
+    "linkText": "End Semester Examination Schedule",
+    "publishedDate": "2024-01-20T00:00:00.000Z",
+    "urgency": "medium"
+  },
+  {
+    "href": "/notice/scholarship",
+    "linkText": "Merit Scholarship Applications Now Open",
+    "publishedDate": "2024-01-25T00:00:00.000Z",
+    "urgency": "medium"
+  },
+  {
+    "href": "/notice/workshop",
+    "linkText": "Technical Workshop on AI & Machine Learning",
+    "publishedDate": "2024-02-01T00:00:00.000Z",
+    "urgency": "low"
+  }
 ]
