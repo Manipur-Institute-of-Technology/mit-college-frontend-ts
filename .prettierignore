@@ -1,0 +1,10 @@
+.DS_Store
+*.env
+node_modules/*
+server/*
+app/components/Editor/server-validation.js
+
+# React Router
+/.react-router/
+/build/
+/exp/*
