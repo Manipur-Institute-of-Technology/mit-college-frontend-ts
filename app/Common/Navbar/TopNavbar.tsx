@@ -66,10 +66,10 @@ export default function TopNavbar() {
             </button>
           </div>
           <div className="border-rose-300">
-            <Link to="/cms/">
+            <Link to="/faculty">
               <button className="text-slate-50 outline-none border-none m-auto relative flex flex-row flex-nowrap items-center gap-1 justify-center px-2 cursor-pointer">
                 <User size={18} />
-                System Login
+                Faculty
               </button>
             </Link>
           </div>
