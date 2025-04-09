@@ -22,6 +22,7 @@ export default [
     route("/Contact_Us", "./routes/contact.tsx"),
     route("/gallery", "./routes/gallery.tsx"),
     route("/editor", "./routes/editor.tsx"),
+    route("CSE-dept","./routes/cse.tsx"),
   ]),
   // CMS Route
   ...prefix("cms", [
