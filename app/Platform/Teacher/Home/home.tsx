@@ -3,7 +3,6 @@ import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 
 export default function Teacher_Home() {
   const { token, role } = useAuth();
-  console.log(token, role);
 
   //   if (token && role === "faculty") {
   if (0) {
