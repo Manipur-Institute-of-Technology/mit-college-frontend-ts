@@ -44,6 +44,7 @@ import { Outlet } from "react-router";
 import { useModal } from "~/hooks/useModal";
 import { FacultyBasicProfileDataContext } from "~/context/FacultyBasicProfileDataContext";
 import moment from "moment";
+import generateService from "~/sevice/Service";
 
 export const clientLoader = ({ params }: Route.ClientLoaderArgs) => {
   // TODO: Test with non existent or invalid ID
@@ -55,7 +56,8 @@ export const clientLoader = ({ params }: Route.ClientLoaderArgs) => {
     const { facultyId } = params;
     if (facultyId) {
       // TODO: Decode B66 encoded string here
-      const basicProfile = getFacultyBasicProfile(facultyId);
+      // const basicProfile = getFacultyBasicProfile(facultyId);
+      const basicProfile = generateService().getFacultyBasicProfile(facultyId);
       return { data: basicProfile };
     }
     throw new Error(
