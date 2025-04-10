@@ -11,49 +11,49 @@ What does this property attribute stand for, and what is its purpose?"> */
 
 // TODO: Create a Meta util function that have all the field by default and takes in fields to be changes as parameters
 type PageMetaData = {
-	title?: string;
-	description?: string;
-	summary?: string;
-	imgURL?: string;
+  title?: string;
+  description?: string;
+  summary?: string;
+  imgURL?: string;
 };
 export const genPageMetaData = ({
-	title = "Manipur Institute of Technology",
-	description = "Website for MIT College",
-	summary = "Website for MIT College",
-	imgURL = "https://mitimphal.manipuruniv.ac.in/Manipur_University_Logo.png",
+  title = "Manipur Institute of Technology",
+  description = "Website for MIT College",
+  summary = "Website for MIT College",
+  imgURL = "https://mitimphal.manipuruniv.ac.in/Manipur_University_Logo.png",
 }: PageMetaData) => {
-	// const loc = useLocation();
-	const baseURL = "https://mitimphal.manipuruniv.ac.in";
-	// <link rel="icon" href="/aj.png">
-	const defaultMetaData = [
-		{
-			title,
-		},
-		{ name: "description", content: description },
-		// Open Graph
-		{ name: "og:type", content: "website" },
-		{ property: "og:url", content: window.location.href },
-		{ property: "og:site_name", content: description },
-		{
-			property: "og:image",
-			itemProp: "image primaryImageOfPage",
-			content: imgURL,
-		},
-		// Twitter
-		{ name: "twitter:card", content: summary },
-		{ name: "twitter:domain", content: baseURL },
-		{
-			name: "twitter:title",
-			property: "og:title",
-			itemProp: "name",
-			content: description,
-		},
-		{
-			name: "twitter:description",
-			property: "og:description",
-			itemProp: "description",
-			content: description,
-		},
-	];
-	return defaultMetaData;
+  // const loc = useLocation();
+  const baseURL = "https://mitimphal.manipuruniv.ac.in";
+  // <link rel="icon" href="/aj.png">
+  const defaultMetaData = [
+    {
+      title,
+    },
+    { name: "description", content: description },
+    // Open Graph
+    { name: "og:type", content: "website" },
+    { property: "og:url", content: window.location.href },
+    { property: "og:site_name", content: description },
+    {
+      property: "og:image",
+      itemProp: "image primaryImageOfPage",
+      content: imgURL,
+    },
+    // Twitter
+    { name: "twitter:card", content: summary },
+    { name: "twitter:domain", content: baseURL },
+    {
+      name: "twitter:title",
+      property: "og:title",
+      itemProp: "name",
+      content: description,
+    },
+    {
+      name: "twitter:description",
+      property: "og:description",
+      itemProp: "description",
+      content: description,
+    },
+  ];
+  return defaultMetaData;
 };

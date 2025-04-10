@@ -26,7 +26,7 @@ Where:
 
 - \( \theta_t \) represents the current parameters.
 - \( \alpha \) is the learning rate, which controls the step size.
-- \( \nabla_\theta J(\theta_t) \) is the gradient of the cost function with respect to the parameters at time step \( t \).
+- \( \nabla\_\theta J(\theta_t) \) is the gradient of the cost function with respect to the parameters at time step \( t \).
 
 ### Convergence of Gradient Descent
 
@@ -121,6 +121,3 @@ $\hat{m}*{t+1} = \frac{m*{t+1}}{1 - \beta_1^t}$
 $\hat{v}*{t+1} = \frac{v*{t+1}}{1 - \beta_2^t}$
 
 $\theta_{t+1} = \theta_t - \frac{\alpha \hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \epsilon}$
-
-
-

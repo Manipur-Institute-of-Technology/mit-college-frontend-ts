@@ -1,5 +1,5 @@
 [
-	{ "routes": "/dept/cse", "contentId": "rand_cse_dep" },
-	{ "routes": "admin/principal", "contentId": "rand_principal_dep" },
-	{ "routes": "admin/exam", "contentId": "rand_exam_dep" }
+  { "routes": "/dept/cse", "contentId": "rand_cse_dep" },
+  { "routes": "admin/principal", "contentId": "rand_principal_dep" },
+  { "routes": "admin/exam", "contentId": "rand_exam_dep" }
 ]

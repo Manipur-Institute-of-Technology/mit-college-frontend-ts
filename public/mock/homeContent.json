@@ -1,584 +1,584 @@
 {
-	"root": {
-		"children": [
-			{
-				"children": [
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": "Manipur Institute of Technology",
-						"type": "text",
-						"version": 1
-					}
-				],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "heading",
-				"version": 1,
-				"tag": "h1"
-			},
-			{
-				"children": [
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": "The Manipur Institute of Technology (erstwhile Government College of Technology) was established on 28 August 1998 by the Government of Manipur as Pioneer Engineering College in the State. On 31 December 2003, the College was renamed as Manipur College of Technology and the management of the College was handed over to a Society headed by the Hon’ble Chief Minister of Manipur as Chairman. Further, the Institute was renamed as Manipur Institute of Technology (MIT) since 4 February 2005. MIT became a Constituent College of Manipur University w.e.f. 13 October 2005 and it is being maintained by the ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "Manipur University",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "Manipur University",
-						"url": "https://en.wikipedia.org/wiki/Manipur_University"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": "out of the funds made available to it by the",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "University Grants Commission",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "University Grants Commission (India)",
-						"url": "https://en.wikipedia.org/wiki/University_Grants_Commission_(India)"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": ".",
-						"type": "text",
-						"version": 1
-					}
-				],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "paragraph",
-				"version": 1,
-				"textStyle": "font-size: 14px;color: rgb(32, 33, 34);",
-				"textFormat": 0
-			},
-			{
-				"children": [],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "paragraph",
-				"version": 1,
-				"textStyle": "font-size: 14px;color: rgb(32, 33, 34);",
-				"textFormat": 0
-			},
-			{
-				"children": [
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": "History",
-						"type": "text",
-						"version": 1
-					}
-				],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "heading",
-				"version": 1,
-				"tag": "h2"
-			},
-			{
-				"children": [
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;",
-						"text": "It came into existence on 28 August 1998 with three engineering disciplines viz. ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "font-size: 14px;",
-								"text": "Computer Science & Engineering",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"textStyle": "font-size: 14px;",
-						"rel": null,
-						"target": null,
-						"title": "Computer Science & Engineering",
-						"url": "https://en.wikipedia.org/wiki/Computer_Science_%26_Engineering"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;",
-						"text": ", ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "font-size: 14px;",
-								"text": "Electronics & Communication Engineering",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"textStyle": "font-size: 14px;",
-						"rel": null,
-						"target": null,
-						"title": null,
-						"url": "https://en.wikipedia.org/wiki/Electronics_%26_Communication_Engineering"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;",
-						"text": " and ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "font-size: 14px;",
-								"text": "Civil Engineering",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"textStyle": "font-size: 14px;",
-						"rel": null,
-						"target": null,
-						"title": "Civil Engineering",
-						"url": "https://en.wikipedia.org/wiki/Civil_Engineering"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;",
-						"text": " for the promotion of higher technical education in the state. Classes of the 1st batch were started from 16 December 1998. The initial approved intake capacity as per ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "font-size: 14px;",
-								"text": "AICTE",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"textStyle": "font-size: 14px;",
-						"rel": null,
-						"target": null,
-						"title": "AICTE",
-						"url": "https://en.wikipedia.org/wiki/AICTE"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;",
-						"text": " is 150 (one hundred and fifty) students per year; however, the present approved by the State Govt. is 90 seats per year.",
-						"type": "text",
-						"version": 1
-					}
-				],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "paragraph",
-				"version": 1,
-				"textStyle": "font-size: 14px;",
-				"textFormat": 0
-			},
-			{
-				"children": [],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "paragraph",
-				"version": 1,
-				"textFormat": 0,
-				"textStyle": ""
-			},
-			{
-				"children": [
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": "Campus",
-						"type": "text",
-						"version": 1
-					}
-				],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "heading",
-				"version": 1,
-				"tag": "h2"
-			},
-			{
-				"children": [
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": "The campus is located at Takyelpat at a distance of 4 km from the heart of",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "Imphal",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "Imphal",
-						"url": "https://en.wikipedia.org/wiki/Imphal"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": ", the capital city of",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "Manipur",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "Manipur",
-						"url": "https://en.wikipedia.org/wiki/Manipur"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": "in a comfortable surrounding with the NH-53 running south of it. At present it shares a common campus with Government Polytechnic, Imphal. ITI Imphal and Oriental College is just beside it. The campus is around 8 km. from the",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "Imphal Airport",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "Imphal Airport",
-						"url": "https://en.wikipedia.org/wiki/Imphal_Airport"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": ". The nearest railway station is",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "Dimapur",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "Dimapur",
-						"url": "https://en.wikipedia.org/wiki/Dimapur"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": "in",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "",
-						"text": " ",
-						"type": "text",
-						"version": 1
-					},
-					{
-						"children": [
-							{
-								"detail": 0,
-								"format": 0,
-								"mode": "normal",
-								"style": "",
-								"text": "Nagaland",
-								"type": "text",
-								"version": 1
-							}
-						],
-						"direction": "ltr",
-						"format": "",
-						"indent": 0,
-						"type": "link",
-						"version": 1,
-						"rel": null,
-						"target": null,
-						"title": "Nagaland",
-						"url": "https://en.wikipedia.org/wiki/Nagaland"
-					},
-					{
-						"detail": 0,
-						"format": 0,
-						"mode": "normal",
-						"style": "font-size: 14px;color: rgb(32, 33, 34);",
-						"text": " (250 km. from Imphal).The institute has also a new campus inside Manipur University Campus, Canchipur.The University campus is spread over an area of 287 acres in the historic Canchipur which is the site of the old palace of Manipur \"The Langthabal Konung (Palace)\" which was established by Maharaja Ghambhir Singh in 1827 AD just after the liberation of Manipur from Burmese (Myanmar) occupation. Maharaja Gambhir Singh took his last breath at Canchipur. Canchipur is located along the National Highway (NH-2) at about 8 km. from the heart of the Imphal City and 12 km. from Imphal International Airport.",
-						"type": "text",
-						"version": 1
-					}
-				],
-				"direction": "ltr",
-				"format": "justify",
-				"indent": 0,
-				"type": "paragraph",
-				"version": 1,
-				"textStyle": "font-size: 14px;color: rgb(32, 33, 34);",
-				"textFormat": 0
-			}
-		],
-		"direction": "ltr",
-		"format": "",
-		"indent": 0,
-		"type": "root",
-		"version": 1,
-		"textStyle": "font-size: 14px;"
-	}
+  "root": {
+    "children": [
+      {
+        "children": [
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": "Manipur Institute of Technology",
+            "type": "text",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "heading",
+        "version": 1,
+        "tag": "h1"
+      },
+      {
+        "children": [
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": "The Manipur Institute of Technology (erstwhile Government College of Technology) was established on 28 August 1998 by the Government of Manipur as Pioneer Engineering College in the State. On 31 December 2003, the College was renamed as Manipur College of Technology and the management of the College was handed over to a Society headed by the Hon’ble Chief Minister of Manipur as Chairman. Further, the Institute was renamed as Manipur Institute of Technology (MIT) since 4 February 2005. MIT became a Constituent College of Manipur University w.e.f. 13 October 2005 and it is being maintained by the ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Manipur University",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "Manipur University",
+            "url": "https://en.wikipedia.org/wiki/Manipur_University"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": "out of the funds made available to it by the",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "University Grants Commission",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "University Grants Commission (India)",
+            "url": "https://en.wikipedia.org/wiki/University_Grants_Commission_(India)"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": ".",
+            "type": "text",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "paragraph",
+        "version": 1,
+        "textStyle": "font-size: 14px;color: rgb(32, 33, 34);",
+        "textFormat": 0
+      },
+      {
+        "children": [],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "paragraph",
+        "version": 1,
+        "textStyle": "font-size: 14px;color: rgb(32, 33, 34);",
+        "textFormat": 0
+      },
+      {
+        "children": [
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": "History",
+            "type": "text",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "heading",
+        "version": 1,
+        "tag": "h2"
+      },
+      {
+        "children": [
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;",
+            "text": "It came into existence on 28 August 1998 with three engineering disciplines viz. ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "font-size: 14px;",
+                "text": "Computer Science & Engineering",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "textStyle": "font-size: 14px;",
+            "rel": null,
+            "target": null,
+            "title": "Computer Science & Engineering",
+            "url": "https://en.wikipedia.org/wiki/Computer_Science_%26_Engineering"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;",
+            "text": ", ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "font-size: 14px;",
+                "text": "Electronics & Communication Engineering",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "textStyle": "font-size: 14px;",
+            "rel": null,
+            "target": null,
+            "title": null,
+            "url": "https://en.wikipedia.org/wiki/Electronics_%26_Communication_Engineering"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;",
+            "text": " and ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "font-size: 14px;",
+                "text": "Civil Engineering",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "textStyle": "font-size: 14px;",
+            "rel": null,
+            "target": null,
+            "title": "Civil Engineering",
+            "url": "https://en.wikipedia.org/wiki/Civil_Engineering"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;",
+            "text": " for the promotion of higher technical education in the state. Classes of the 1st batch were started from 16 December 1998. The initial approved intake capacity as per ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "font-size: 14px;",
+                "text": "AICTE",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "textStyle": "font-size: 14px;",
+            "rel": null,
+            "target": null,
+            "title": "AICTE",
+            "url": "https://en.wikipedia.org/wiki/AICTE"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;",
+            "text": " is 150 (one hundred and fifty) students per year; however, the present approved by the State Govt. is 90 seats per year.",
+            "type": "text",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "paragraph",
+        "version": 1,
+        "textStyle": "font-size: 14px;",
+        "textFormat": 0
+      },
+      {
+        "children": [],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "paragraph",
+        "version": 1,
+        "textFormat": 0,
+        "textStyle": ""
+      },
+      {
+        "children": [
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": "Campus",
+            "type": "text",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "heading",
+        "version": 1,
+        "tag": "h2"
+      },
+      {
+        "children": [
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": "The campus is located at Takyelpat at a distance of 4 km from the heart of",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Imphal",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "Imphal",
+            "url": "https://en.wikipedia.org/wiki/Imphal"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": ", the capital city of",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Manipur",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "Manipur",
+            "url": "https://en.wikipedia.org/wiki/Manipur"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": "in a comfortable surrounding with the NH-53 running south of it. At present it shares a common campus with Government Polytechnic, Imphal. ITI Imphal and Oriental College is just beside it. The campus is around 8 km. from the",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Imphal Airport",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "Imphal Airport",
+            "url": "https://en.wikipedia.org/wiki/Imphal_Airport"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": ". The nearest railway station is",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Dimapur",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "Dimapur",
+            "url": "https://en.wikipedia.org/wiki/Dimapur"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": "in",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Nagaland",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "rel": null,
+            "target": null,
+            "title": "Nagaland",
+            "url": "https://en.wikipedia.org/wiki/Nagaland"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "font-size: 14px;color: rgb(32, 33, 34);",
+            "text": " (250 km. from Imphal).The institute has also a new campus inside Manipur University Campus, Canchipur.The University campus is spread over an area of 287 acres in the historic Canchipur which is the site of the old palace of Manipur \"The Langthabal Konung (Palace)\" which was established by Maharaja Ghambhir Singh in 1827 AD just after the liberation of Manipur from Burmese (Myanmar) occupation. Maharaja Gambhir Singh took his last breath at Canchipur. Canchipur is located along the National Highway (NH-2) at about 8 km. from the heart of the Imphal City and 12 km. from Imphal International Airport.",
+            "type": "text",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "justify",
+        "indent": 0,
+        "type": "paragraph",
+        "version": 1,
+        "textStyle": "font-size: 14px;color: rgb(32, 33, 34);",
+        "textFormat": 0
+      }
+    ],
+    "direction": "ltr",
+    "format": "",
+    "indent": 0,
+    "type": "root",
+    "version": 1,
+    "textStyle": "font-size: 14px;"
+  }
 }

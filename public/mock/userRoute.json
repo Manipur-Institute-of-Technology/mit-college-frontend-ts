@@ -1,11 +1,11 @@
 {
-	"userRoutes": [
-		"department",
-		"department/cse_dept",
-		"department/ece_dept",
-		"department/me_dept",
-		"department/ce_dept",
-		"department/ee_dept",
-		"department/bcs_dept"
-	]
+  "userRoutes": [
+    "department",
+    "department/cse_dept",
+    "department/ece_dept",
+    "department/me_dept",
+    "department/ce_dept",
+    "department/ee_dept",
+    "department/bcs_dept"
+  ]
 }

@@ -10,7 +10,11 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular",
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    ".SFNSText-Regular",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -188,7 +192,7 @@ pre::-webkit-scrollbar-thumb {
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.test-recorder-button+.test-recorder-button {
+.test-recorder-button + .test-recorder-button {
   margin-left: 4px;
 }
 
@@ -758,7 +762,9 @@ i.page-break,
   z-index: 100;
   display: block;
   position: fixed;
-  box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 12px 28px 0 rgba(0, 0, 0, 0.2),
+    0 2px 4px 0 rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   min-height: 40px;
@@ -852,7 +858,7 @@ i.page-break,
     display: none !important;
   }
 
-  .dialog-dropdown>.dropdown-button-text {
+  .dialog-dropdown > .dropdown-button-text {
     display: flex !important;
   }
 
@@ -1653,20 +1659,24 @@ button.toolbar-item.active i {
 
 .sticky-note.yellow {
   border-top: 1px solid #fdfd86;
-  background: linear-gradient(135deg,
-      #ffff88 81%,
-      #ffff88 82%,
-      #ffff88 82%,
-      #ffffc6 100%);
+  background: linear-gradient(
+    135deg,
+    #ffff88 81%,
+    #ffff88 82%,
+    #ffff88 82%,
+    #ffffc6 100%
+  );
 }
 
 .sticky-note.pink {
   border-top: 1px solid #e7d1e4;
-  background: linear-gradient(135deg,
-      #f7cbe8 81%,
-      #f7cbe8 82%,
-      #f7cbe8 82%,
-      #e7bfe1 100%);
+  background: linear-gradient(
+    135deg,
+    #f7cbe8 81%,
+    #f7cbe8 82%,
+    #f7cbe8 82%,
+    #e7bfe1 100%
+  );
 }
 
 .sticky-note-container.dragging {
@@ -1731,7 +1741,6 @@ button.toolbar-item.active i {
 }
 
 @keyframes octocat-wave {
-
   0%,
   100% {
     transform: rotate(0);

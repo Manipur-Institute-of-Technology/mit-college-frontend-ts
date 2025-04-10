@@ -1,71 +1,71 @@
 {
-	"initial": "prof.",
-	"firstName": "Nicolas",
-	"lastName": "Papernot",
-	"orchidId": "0000-1111-111",
-	"avatarUrl": "https://discover.research.utoronto.ca/12183-nicolas-papernot/thumbnail",
-	"personalWebsite": "https://www.papernot.fr/",
-	"topicOfResearchInterests": [
-		"Machine Learning",
-		"Distributed System",
-		"Optimization",
-		"Econometrics",
-		"Numerical Computation"
-	],
-	"address": {
-		"streetAddress": "10 King’s College Road",
-		"city": "Toronto",
-		"state": "Ontario",
-		"country": "Canada",
-		"zipCode": "M5S 3G4"
-	},
-	"positions": {
-		"academic": [
-			{
-				"position": "assistant professor",
-				"institution": {
-					"organisation": "University of Toronto",
-					"city": "Toronto",
-					"state": "Arkansas",
-					"country": "Canada"
-				},
-				"department": "Computer Science and Engineering"
-			}
-		],
-		"nonAcademic": [
-			{
-				"position": "boy's hostel warden",
-				"employer": {
-					"organisation": "Vector Institute",
-					"city": "Toronto",
-					"state": "Ottawa",
-					"country": "Canada"
-				}
-			}
-		]
-	},
-	"emails": ["tina@fr.ac"],
-	"socialLinks": [
-		{
-			"platform": "x",
-			"url": "https://www.twitter.com/nicolaspapernot"
-		},
-		{
-			"platform": "googleScholar",
-			"url": "https://scholar.google.com/citations?user=cGxq0cMAAAAJ&hl=en"
-		},
-		{
-			"platform": "linkedIn",
-			"url": "https://www.linkedin.com/in/nicolaspapernot/?locale=en_US"
-		}
-	],
-	"phoneNumbers": [
-		{
-			"type": "work",
-			"number": "4169787600",
-			"countryCode": "91"
-		}
-	],
-	"updatedAt": "2025-03-29T02:58:18.2354897-05:00",
-	"userProfileUrl": "/faculty/Pascal+Poupart-12183"
+  "initial": "prof.",
+  "firstName": "Nicolas",
+  "lastName": "Papernot",
+  "orchidId": "0000-1111-111",
+  "avatarUrl": "https://discover.research.utoronto.ca/12183-nicolas-papernot/thumbnail",
+  "personalWebsite": "https://www.papernot.fr/",
+  "topicOfResearchInterests": [
+    "Machine Learning",
+    "Distributed System",
+    "Optimization",
+    "Econometrics",
+    "Numerical Computation"
+  ],
+  "address": {
+    "streetAddress": "10 King’s College Road",
+    "city": "Toronto",
+    "state": "Ontario",
+    "country": "Canada",
+    "zipCode": "M5S 3G4"
+  },
+  "positions": {
+    "academic": [
+      {
+        "position": "assistant professor",
+        "institution": {
+          "organisation": "University of Toronto",
+          "city": "Toronto",
+          "state": "Arkansas",
+          "country": "Canada"
+        },
+        "department": "Computer Science and Engineering"
+      }
+    ],
+    "nonAcademic": [
+      {
+        "position": "boy's hostel warden",
+        "employer": {
+          "organisation": "Vector Institute",
+          "city": "Toronto",
+          "state": "Ottawa",
+          "country": "Canada"
+        }
+      }
+    ]
+  },
+  "emails": ["tina@fr.ac"],
+  "socialLinks": [
+    {
+      "platform": "x",
+      "url": "https://www.twitter.com/nicolaspapernot"
+    },
+    {
+      "platform": "googleScholar",
+      "url": "https://scholar.google.com/citations?user=cGxq0cMAAAAJ&hl=en"
+    },
+    {
+      "platform": "linkedIn",
+      "url": "https://www.linkedin.com/in/nicolaspapernot/?locale=en_US"
+    }
+  ],
+  "phoneNumbers": [
+    {
+      "type": "work",
+      "number": "4169787600",
+      "countryCode": "91"
+    }
+  ],
+  "updatedAt": "2025-03-29T02:58:18.2354897-05:00",
+  "userProfileUrl": "/faculty/Pascal+Poupart-12183"
 }

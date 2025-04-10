@@ -25,72 +25,72 @@ const FUNC_ERROR_TEXT = "Expected a function";
  * ```
  */
 export const debounce = (
-	fn: Function,
-	ms: number,
-	{ maxWait = 1000 }: { maxWait?: number },
+  fn: Function,
+  ms: number,
+  { maxWait = 1000 }: { maxWait?: number },
 ) => {
-	let timeoutId: number | null = null;
-	let lastCallTime: number | null = null;
-	let maxWaitTimeout: number | null = null;
+  let timeoutId: number | null = null;
+  let lastCallTime: number | null = null;
+  let maxWaitTimeout: number | null = null;
 
-	const debouncedFn = function (this: any, ...args: any[]) {
-		const currentTime = Date.now();
+  const debouncedFn = function (this: any, ...args: any[]) {
+    const currentTime = Date.now();
 
-		if (!lastCallTime) {
-			lastCallTime = currentTime;
-		}
+    if (!lastCallTime) {
+      lastCallTime = currentTime;
+    }
 
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
 
-		const timeSinceLastCall = currentTime - lastCallTime;
-		if (timeSinceLastCall >= maxWait) {
-			if (maxWaitTimeout) {
-				clearTimeout(maxWaitTimeout);
-				maxWaitTimeout = null;
-			}
-			fn.apply(this, args);
-			lastCallTime = currentTime;
-			return;
-		}
+    const timeSinceLastCall = currentTime - lastCallTime;
+    if (timeSinceLastCall >= maxWait) {
+      if (maxWaitTimeout) {
+        clearTimeout(maxWaitTimeout);
+        maxWaitTimeout = null;
+      }
+      fn.apply(this, args);
+      lastCallTime = currentTime;
+      return;
+    }
 
-		timeoutId = window.setTimeout(() => {
-			fn.apply(this, args);
-			timeoutId = null;
-			lastCallTime = null;
-			if (maxWaitTimeout) {
-				clearTimeout(maxWaitTimeout);
-				maxWaitTimeout = null;
-			}
-		}, ms);
+    timeoutId = window.setTimeout(() => {
+      fn.apply(this, args);
+      timeoutId = null;
+      lastCallTime = null;
+      if (maxWaitTimeout) {
+        clearTimeout(maxWaitTimeout);
+        maxWaitTimeout = null;
+      }
+    }, ms);
 
-		if (!maxWaitTimeout) {
-			maxWaitTimeout = window.setTimeout(() => {
-				if (timeoutId) {
-					clearTimeout(timeoutId);
-					timeoutId = null;
-				}
-				fn.apply(this, args);
-				lastCallTime = null;
-				maxWaitTimeout = null;
-			}, maxWait);
-		}
-	};
+    if (!maxWaitTimeout) {
+      maxWaitTimeout = window.setTimeout(() => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        fn.apply(this, args);
+        lastCallTime = null;
+        maxWaitTimeout = null;
+      }, maxWait);
+    }
+  };
 
-	debouncedFn.cancel = () => {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-			timeoutId = null;
-		}
-		if (maxWaitTimeout) {
-			clearTimeout(maxWaitTimeout);
-			maxWaitTimeout = null;
-		}
-		lastCallTime = null;
-	};
+  debouncedFn.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    if (maxWaitTimeout) {
+      clearTimeout(maxWaitTimeout);
+      maxWaitTimeout = null;
+    }
+    lastCallTime = null;
+  };
 
-	return debouncedFn;
+  return debouncedFn;
 };
 
 /**
