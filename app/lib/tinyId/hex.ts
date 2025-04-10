@@ -17,11 +17,12 @@ export const b66Chars: string[] = [
   ".",
   "~",
 ];
-// -, _, , ~
-// 507f1f77bcf86cd799439011
+
+// TODO: Rewrite the encoder with bitwise shift operation
 export const encodeB66 = (hex: string): string => {
   // TODO; check layout page with 3 column, move page width, shadow style to PageContent component
   if (hex.length === 0) return "";
+  if (hex === "0") return "0";
   // let hexVal = hex2BigInt(hex);
   let hexVal = BigInt("0x" + hex);
   const b66Len = log(hexVal, 66) + BigInt(1);
@@ -36,14 +37,12 @@ export const encodeB66 = (hex: string): string => {
     b66 += b66Chars[cIndx];
   }
   const res = b66 + "0".repeat(Number(b66Len) - b66.length);
-  // console.log(
-  // 	`encoder reduced %:  ${round((res.length / hex.length) * 100, 2)}, ${hex} -> ${res}`,
-  // );
   return res;
 };
 
 export const decodeB66 = (b66: string): string => {
   if (b66.length === 0) return "";
+  if (b66 === "0") return "0";
   let b66Val = b662BigInt(b66);
   let hex = "";
   const hexLen = log(b66Val, 16) + 1n;
@@ -57,9 +56,6 @@ export const decodeB66 = (b66: string): string => {
     hex += b66Chars[cIndx];
   }
   const res = hex + "0".repeat(Number(hexLen) - hex.length);
-  // console.log(
-  // 	`decoder reduced %:  ${round((res.length / b66.length) * 100, 2)}, ${b66} -> ${res}`,
-  // );
   return res;
 };
 
@@ -129,13 +125,28 @@ const getB66CharVal = (char: string): number => {
 
 // TODO: Rewrite it to work with BigInt
 // TODO: Rewrite the log algorithm using big int
-const log = (num: bigint, base: number): bigint => {
+export const log = (num: bigint, base: number): bigint => {
   const res = Math.log(Number(num)) / Math.log(Number(base));
   return BigInt(Math.floor(res));
 };
 
 export const round = (num: number, decimalPlaces: number = 0) => {
   return Math.round(num * 10 ** decimalPlaces) / 10 ** decimalPlaces;
+};
+
+/**
+ * Function for calulating logarithm of a bigint
+ * @param num
+ * @param base
+ * @returns
+ */
+// TODO: used numerical algorithm (taylor series expansion) instead of using loop
+export const logBigInt = (num: bigint, base: bigint): bigint => {
+  if (num === 0n) throw new Error("log of 0 is invalid");
+  let exp = 0n;
+  for (exp = 0n; base ** exp < num; exp++);
+  if (base ** exp > num) exp--;
+  return exp;
 };
 
 // const logBigInt = (num: bigint, base: bigint): bigint => {

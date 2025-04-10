@@ -1,5 +1,18 @@
-import { test, expect, describe, it } from "vitest";
-import { decodeB66, encodeB66 } from "./hex";
+import { expect, describe, it } from "vitest";
+import { decodeB66, encodeB66, log, logBigInt } from "./hex";
+
+describe("logBigInt", () => {
+  it("should throw error with log of 0", () => {
+    expect(() => logBigInt(0n, 21n)).toThrow("log of 0 is invalid");
+  });
+
+  it("logBigInt comparison with Math.log using base 2", () => {
+    const nums = [1, 500, 10];
+    nums.forEach((d) =>
+      expect(logBigInt(BigInt(d), 2n)).toBe(log(BigInt(d), 2)),
+    );
+  });
+});
 
 describe("B6 encoding", () => {
   it("b66 encoding", () => {
@@ -14,23 +27,21 @@ describe("B6 encoding", () => {
   });
 
   it("should encode single digit hex", () => {
+    expect(encodeB66("0")).toBe("0");
     expect(encodeB66("1")).toBe("1");
     expect(encodeB66("a")).toBe("a");
     expect(encodeB66("f")).toBe("f");
     expect(encodeB66("13")).toBe("j");
   });
 
+  // TODO: write test case for the following case
   // it("should encode multi digit hex", () => {
   // 	// check it work
   // 	expect(encodeB66("ff")).toBe(encodeB66("ff"));
-  // 	expect(encodeB66("ff")).toBe("2n");
-  // 	expect(encodeB66("abc")).toBe("q1");
-  // 	expect(encodeB66("dead")).toBe("nx3");
   // });
 
+  // TODO:
   // it("should encode large hex values", () => {
-  // 	expect(encodeB66("ffffff")).toBe("1njL");
-  // 	expect(encodeB66("deadbeef")).toBe("2nj.mT");
   // });
 
   describe("B66 decoding", () => {
@@ -39,20 +50,18 @@ describe("B6 encoding", () => {
     });
 
     it("should decode single character b66", () => {
+      expect(decodeB66("0")).toBe("0");
       expect(decodeB66("1")).toBe("1");
       expect(decodeB66("a")).toBe("a");
       expect(decodeB66("g")).toBe("10");
     });
 
+    // TODO:
     // it("should decode multi character b66", () => {
-    // 	expect(decodeB66("2n")).toBe("ff");
-    // 	expect(decodeB66("q1")).toBe("abc");
-    // 	expect(decodeB66("nx3")).toBe("dead");
     // });
 
+    // TODO:
     // it("should decode large b66 values", () => {
-    // 	expect(decodeB66("1njL")).toBe("ffffff");
-    // 	expect(decodeB66("2nj.mT")).toBe("deadbeef");
     // });
 
     it("should throw error for invalid b66 characters", () => {
