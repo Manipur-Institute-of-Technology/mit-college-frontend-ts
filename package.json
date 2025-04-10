@@ -11,9 +11,9 @@
     "tgn": "react-router typegen",
     "test-watch": "vitest watch",
     "test": "vitest run",
-    "prepare": "husky && husky install",
+    "prepare": "husky",
     "format": "prettier --write --log-level=warn .",
-    "lint": "eslint"
+    "style-check": "prettier --check ."
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
@@ -42,7 +42,6 @@
     "@types/node": "^20",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
-    "eslint": "^9.24.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "react-router-devtools": "^1.1.0",
@@ -54,7 +53,6 @@
     "vitest": "^3.1.1"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown",
-    "*.js": "eslint --cache --fix"
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
