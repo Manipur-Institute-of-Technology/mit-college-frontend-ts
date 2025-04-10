@@ -11,21 +11,21 @@
 import { createRef } from "react";
 
 export const throttle = <T extends (...args: any[]) => any>(
-  func: T,
-  wait: number,
+	func: T,
+	wait: number,
 ): T => {
-  let timeoutId = createRef<number | null>();
-  let cache = createRef<ReturnType<T> | null>();
+	let timeoutId = createRef<number | null>();
+	let cache = createRef<ReturnType<T> | null>();
 
-  return function (...args: Parameters<T>) {
-    if (timeoutId.current === null) {
-      timeoutId.current = window.setTimeout(() => {
-        timeoutId.current = null;
-      }, wait);
-      cache = func(...args);
-      return cache as ReturnType<T>;
-    } else {
-      return cache as ReturnType<T>;
-    }
-  } as T;
+	return function (...args: Parameters<T>) {
+		if (timeoutId.current === null) {
+			timeoutId.current = window.setTimeout(() => {
+				timeoutId.current = null;
+			}, wait);
+			cache = func(...args);
+			return cache as ReturnType<T>;
+		} else {
+			return cache as ReturnType<T>;
+		}
+	} as T;
 };

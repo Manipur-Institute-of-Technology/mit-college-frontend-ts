@@ -27,106 +27,106 @@ import { memo, useState } from "react";
  * ```
  */
 const DropDownMenus: React.FC<{
-  label: string;
-  menus: { name: string; value: string }[];
-  selectedIndxs: number[];
-  setSelectedIndxs: React.Dispatch<React.SetStateAction<number[]>>;
-  includeAllSelection?: boolean;
+	label: string;
+	menus: { name: string; value: string }[];
+	selectedIndxs: number[];
+	setSelectedIndxs: React.Dispatch<React.SetStateAction<number[]>>;
+	includeAllSelection?: boolean;
 }> = ({
-  selectedIndxs,
-  setSelectedIndxs,
-  label,
-  menus,
-  includeAllSelection = true,
+	selectedIndxs,
+	setSelectedIndxs,
+	label,
+	menus,
+	includeAllSelection = true,
 }) => {
-  const [openDropDown, setOpenDropDown] = useState(false);
-  return (
-    <div>
-      <div className="inline-flex flex-row items-center gap-x-2">
-        <label className="block text-sm/6 font-medium text-gray-900 capitalize">
-          {label}
-        </label>
-        <div className="relative">
-          <div
-            onClick={() => setOpenDropDown((s) => !s)}
-            className="grid w-[8rem] cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-          >
-            <span className="col-start-1 row-start-1 flex items-center gap-3 pr-6">
-              <span className="block truncate">
-                {selectedIndxs.length === 0
-                  ? "Select..."
-                  : selectedIndxs.length < 3
-                    ? selectedIndxs.reduce(
-                        (acc, d, i) =>
-                          `${acc}${i !== 0 ? "," : ""} ${menus[d].name}`,
-                        "",
-                      )
-                    : `${selectedIndxs.length} selected`}
-              </span>
-            </span>
-            <ChevronUpDownIcon
-              aria-hidden="true"
-              className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-            />
-          </div>
+	const [openDropDown, setOpenDropDown] = useState(false);
+	return (
+		<div>
+			<div className="inline-flex flex-row items-center gap-x-2">
+				<label className="block text-sm/6 font-medium text-gray-900 capitalize">
+					{label}
+				</label>
+				<div className="relative">
+					<div
+						onClick={() => setOpenDropDown((s) => !s)}
+						className="grid w-[8rem] cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+						<span className="col-start-1 row-start-1 flex items-center gap-3 pr-6">
+							<span className="block truncate">
+								{selectedIndxs.length === 0
+									? "Select..."
+									: selectedIndxs.length < 3
+										? selectedIndxs.reduce(
+												(acc, d, i) =>
+													`${acc}${i !== 0 ? "," : ""} ${menus[d].name}`,
+												"",
+											)
+										: `${selectedIndxs.length} selected`}
+							</span>
+						</span>
+						<ChevronUpDownIcon
+							aria-hidden="true"
+							className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+						/>
+					</div>
 
-          <div
-            className={`${!openDropDown && "opacity-0 h-[0]"} transition-[height] absolute z-10 mt-1 mr-0 max-h-56 w-[8rem] overflow-auto rounded-md bg-white py-1 text-base ring-1 shadow-lg ring-black/5 focus:outline-hidden data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm`}
-          >
-            {includeAllSelection && (
-              <div
-                onClick={() =>
-                  setSelectedIndxs((s) => {
-                    // TODO: Toggle all selection
-                    if (s.length === menus.length) return [];
-                    else return menus.map((_, i) => i);
-                  })
-                }
-                className={`group  relative cursor-default p-2 text-gray-900 select-none data-focus:bg-indigo-600 data-focus:text-white data-focus:outline-hidden max-w-[18rem] border-b border-b-slate-300 hover:bg-slate-100 ${selectedIndxs.length === menus.length && "bg-slate-200"}`}
-              >
-                <div
-                  className={`inline-flex items-center ${selectedIndxs.length === menus.length ? "justify-between" : "justify-start"} w-full`}
-                >
-                  <div
-                    className={`${selectedIndxs.length === menus.length ? "font-semibold" : "font-normal"}`}
-                  >
-                    All
-                  </div>
-                  {selectedIndxs.length === menus.length && (
-                    <CheckIcon aria-hidden="true" className="size-5" />
-                  )}
-                </div>
-              </div>
-            )}
-            {menus.map((menu, i) => (
-              <div
-                key={i}
-                onClick={() =>
-                  setSelectedIndxs((s) => {
-                    if (s.includes(i)) return s.filter((d) => d !== i);
-                    return [...s, i];
-                  })
-                }
-                className={`group  relative cursor-default p-2 text-gray-900 select-none data-focus:bg-indigo-600 data-focus:text-white data-focus:outline-hidden max-w-[18rem] border-b border-b-slate-300 hover:bg-slate-100 ${selectedIndxs.includes(i) && "bg-slate-200"}`}
-              >
-                <div
-                  className={`inline-flex items-center ${selectedIndxs.includes(i) ? "justify-between" : "justify-start"} w-full`}
-                >
-                  <div
-                    className={`${selectedIndxs.includes(i) ? "font-semibold" : "font-normal"}`}
-                  >
-                    {menu.name}
-                  </div>
-                  {selectedIndxs.includes(i) && (
-                    <CheckIcon aria-hidden="true" className="size-5" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+					<div
+						className={`${!openDropDown && "opacity-0 h-[0]"} transition-[height] absolute z-10 mt-1 mr-0 max-h-56 w-[8rem] overflow-auto rounded-md bg-white py-1 text-base ring-1 shadow-lg ring-black/5 focus:outline-hidden data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm`}>
+						{includeAllSelection && (
+							<div
+								onClick={() =>
+									setSelectedIndxs((s) => {
+										// TODO: Toggle all selection
+										if (s.length === menus.length)
+											return [];
+										else return menus.map((_, i) => i);
+									})
+								}
+								className={`group  relative cursor-default p-2 text-gray-900 select-none data-focus:bg-indigo-600 data-focus:text-white data-focus:outline-hidden max-w-[18rem] border-b border-b-slate-300 hover:bg-slate-100 ${selectedIndxs.length === menus.length && "bg-slate-200"}`}>
+								<div
+									className={`inline-flex items-center ${selectedIndxs.length === menus.length ? "justify-between" : "justify-start"} w-full`}>
+									<div
+										className={`${selectedIndxs.length === menus.length ? "font-semibold" : "font-normal"}`}>
+										All
+									</div>
+									{selectedIndxs.length === menus.length && (
+										<CheckIcon
+											aria-hidden="true"
+											className="size-5"
+										/>
+									)}
+								</div>
+							</div>
+						)}
+						{menus.map((menu, i) => (
+							<div
+								key={i}
+								onClick={() =>
+									setSelectedIndxs((s) => {
+										if (s.includes(i))
+											return s.filter((d) => d !== i);
+										return [...s, i];
+									})
+								}
+								className={`group  relative cursor-default p-2 text-gray-900 select-none data-focus:bg-indigo-600 data-focus:text-white data-focus:outline-hidden max-w-[18rem] border-b border-b-slate-300 hover:bg-slate-100 ${selectedIndxs.includes(i) && "bg-slate-200"}`}>
+								<div
+									className={`inline-flex items-center ${selectedIndxs.includes(i) ? "justify-between" : "justify-start"} w-full`}>
+									<div
+										className={`${selectedIndxs.includes(i) ? "font-semibold" : "font-normal"}`}>
+										{menu.name}
+									</div>
+									{selectedIndxs.includes(i) && (
+										<CheckIcon
+											aria-hidden="true"
+											className="size-5"
+										/>
+									)}
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 export default memo(DropDownMenus);
