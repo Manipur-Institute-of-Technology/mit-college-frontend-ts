@@ -14,8 +14,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check localStorage for existing session
-    const storedUser = localStorage.getItem(authStorageSessionKey);
-    const sessionType = localStorage.getItem(sessionTypeKey);
+    const sessionType = localStorage.getItem(
+      sessionTypeKey,
+    ) as SessionType | null;
+    // Check session type is present
+    if (
+      !sessionType ||
+      sessionType.length == 0 ||
+      !(sessionType === "permanent" || sessionType === "temporary")
+    )
+      return;
+
+    // Extract storedSUer from client storage
+    let storedUser: string | null;
+    if (sessionType === "permanent")
+      storedUser = localStorage.getItem(authStorageSessionKey);
+    else if (sessionType === "temporary")
+      storedUser = sessionStorage.getItem(authStorageSessionKey);
+    else storedUser = null;
 
     if (storedUser) {
       const parseUser = JSON.parse(storedUser) as User;
