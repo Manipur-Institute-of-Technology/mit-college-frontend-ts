@@ -13,13 +13,13 @@ import { type JSX } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 // import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
 import {
-  // $createParagraphNode,
-  // $createTextNode,
-  // $getRoot,
-  $isTextNode,
-  type DOMConversionMap,
-  type EditorState,
-  TextNode,
+	// $createParagraphNode,
+	// $createTextNode,
+	// $getRoot,
+	$isTextNode,
+	type DOMConversionMap,
+	type EditorState,
+	TextNode,
 } from "lexical";
 
 // import { isDevPlayground } from "./appSettings";
@@ -125,130 +125,133 @@ import "./index.css";
 // }
 
 function getExtraStyles(element: HTMLElement): string {
-  // Parse styles from pasted input, but only if they match exactly the
-  // sort of styles that would be produced by exportDOM
-  let extraStyles = "";
-  const fontSize = parseAllowedFontSize(element.style.fontSize);
-  const backgroundColor = parseAllowedColor(element.style.backgroundColor);
-  const color = parseAllowedColor(element.style.color);
-  if (fontSize !== "" && fontSize !== "15px") {
-    extraStyles += `font-size: ${fontSize};`;
-  }
-  if (backgroundColor !== "" && backgroundColor !== "rgb(255, 255, 255)") {
-    extraStyles += `background-color: ${backgroundColor};`;
-  }
-  if (color !== "" && color !== "rgb(0, 0, 0)") {
-    extraStyles += `color: ${color};`;
-  }
-  return extraStyles;
+	// Parse styles from pasted input, but only if they match exactly the
+	// sort of styles that would be produced by exportDOM
+	let extraStyles = "";
+	const fontSize = parseAllowedFontSize(element.style.fontSize);
+	const backgroundColor = parseAllowedColor(element.style.backgroundColor);
+	const color = parseAllowedColor(element.style.color);
+	if (fontSize !== "" && fontSize !== "15px") {
+		extraStyles += `font-size: ${fontSize};`;
+	}
+	if (backgroundColor !== "" && backgroundColor !== "rgb(255, 255, 255)") {
+		extraStyles += `background-color: ${backgroundColor};`;
+	}
+	if (color !== "" && color !== "rgb(0, 0, 0)") {
+		extraStyles += `color: ${color};`;
+	}
+	return extraStyles;
 }
 
 function buildImportMap(): DOMConversionMap {
-  const importMap: DOMConversionMap = {};
+	const importMap: DOMConversionMap = {};
 
-  // Wrap all TextNode importers with a function that also imports
-  // the custom styles implemented by the playground
-  for (const [tag, fn] of Object.entries(TextNode.importDOM() || {})) {
-    importMap[tag] = (importNode) => {
-      const importer = fn(importNode);
-      if (!importer) {
-        return null;
-      }
-      return {
-        ...importer,
-        conversion: (element) => {
-          const output = importer.conversion(element);
-          if (
-            output === null ||
-            output.forChild === undefined ||
-            output.after !== undefined ||
-            output.node !== null
-          ) {
-            return output;
-          }
-          const extraStyles = getExtraStyles(element);
-          if (extraStyles) {
-            const { forChild } = output;
-            return {
-              ...output,
-              forChild: (child, parent) => {
-                const textNode = forChild(child, parent);
-                if ($isTextNode(textNode)) {
-                  textNode.setStyle(textNode.getStyle() + extraStyles);
-                }
-                return textNode;
-              },
-            };
-          }
-          return output;
-        },
-      };
-    };
-  }
+	// Wrap all TextNode importers with a function that also imports
+	// the custom styles implemented by the playground
+	for (const [tag, fn] of Object.entries(TextNode.importDOM() || {})) {
+		importMap[tag] = (importNode) => {
+			const importer = fn(importNode);
+			if (!importer) {
+				return null;
+			}
+			return {
+				...importer,
+				conversion: (element) => {
+					const output = importer.conversion(element);
+					if (
+						output === null ||
+						output.forChild === undefined ||
+						output.after !== undefined ||
+						output.node !== null
+					) {
+						return output;
+					}
+					const extraStyles = getExtraStyles(element);
+					if (extraStyles) {
+						const { forChild } = output;
+						return {
+							...output,
+							forChild: (child, parent) => {
+								const textNode = forChild(child, parent);
+								if ($isTextNode(textNode)) {
+									textNode.setStyle(
+										textNode.getStyle() + extraStyles,
+									);
+								}
+								return textNode;
+							},
+						};
+					}
+					return output;
+				},
+			};
+		};
+	}
 
-  return importMap;
+	return importMap;
 }
 
 export interface EditorAppProps {
-  onChangeHandler: (eds: EditorState) => void;
-  initEditorStateLoader: () => string | undefined;
+	onChangeHandler: (eds: EditorState) => void;
+	initEditorStateLoader: () => string | undefined;
 }
 
 function App(props: EditorAppProps): JSX.Element {
-  // const {
-  // 	settings: { isCollab, emptyEditor, measureTypingPerf },
-  // } = useSettings();
+	// const {
+	// 	settings: { isCollab, emptyEditor, measureTypingPerf },
+	// } = useSettings();
 
-  const initialConfig = {
-    // editorState: isCollab
-    // 	? null
-    // 	: emptyEditor
-    // 		? undefined
-    // 		: $prepopulatedRichText,
-    // editorState: $prepopulatedRichText,
-    html: { import: buildImportMap() },
-    namespace: "Playground",
-    nodes: [...PlaygroundNodes],
-    onError: (error: Error) => {
-      throw error;
-    },
-    theme: PlaygroundEditorTheme,
-  };
+	const initialConfig = {
+		// editorState: isCollab
+		// 	? null
+		// 	: emptyEditor
+		// 		? undefined
+		// 		: $prepopulatedRichText,
+		// editorState: $prepopulatedRichText,
+		html: { import: buildImportMap() },
+		namespace: "Playground",
+		nodes: [...PlaygroundNodes],
+		onError: (error: Error) => {
+			throw error;
+		},
+		theme: PlaygroundEditorTheme,
+	};
 
-  return (
-    <LexicalComposer
-      initialConfig={{
-        ...initialConfig,
-        editable: true,
-      }}
-    >
-      <SharedHistoryContext>
-        <TableContext>
-          <ToolbarContext>
-            <div className="editor-shell bg-white border border-gray-300">
-              <Editor />
-            </div>
-            <Settings />
-            <MyOnChangePlugin onChange={props.onChangeHandler} />
-            <LoadInitTextPlugin loader={props.initEditorStateLoader} />
-            {/* {isDevPlayground ? <DocsPlugin /> : null}
+	return (
+		<LexicalComposer
+			initialConfig={{
+				...initialConfig,
+				editable: true,
+			}}>
+			<SharedHistoryContext>
+				<TableContext>
+					<ToolbarContext>
+						<div className="editor-shell bg-white border border-gray-300">
+							<Editor />
+						</div>
+						<Settings />
+						<MyOnChangePlugin onChange={props.onChangeHandler} />
+						<LoadInitTextPlugin
+							loader={props.initEditorStateLoader}
+						/>
+						{/* {isDevPlayground ? <DocsPlugin /> : null}
             {isDevPlayground ? <PasteLogPlugin /> : null}
             {isDevPlayground ? <TestRecorderPlugin /> : null} */}
 
-            {/* {measureTypingPerf ? <TypingPerfPlugin /> : null} */}
-          </ToolbarContext>
-        </TableContext>
-      </SharedHistoryContext>
-    </LexicalComposer>
-  );
+						{/* {measureTypingPerf ? <TypingPerfPlugin /> : null} */}
+					</ToolbarContext>
+				</TableContext>
+			</SharedHistoryContext>
+		</LexicalComposer>
+	);
 }
 
 export default function EditorApp(props: EditorAppProps): JSX.Element {
-  return (
-    <SettingsContext>
-      <FlashMessageContext>
-        <App {...props} />
-      </FlashMessageContext>
-    </SettingsContext>
-  );
+	return (
+		<SettingsContext>
+			<FlashMessageContext>
+				<App {...props} />
+			</FlashMessageContext>
+		</SettingsContext>
+	);
 }

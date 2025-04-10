@@ -6,57 +6,57 @@ const minHexStrLen = 0;
 const avgObs = 5; // num of hexStr to take average of
 
 const randHexStr = (hexLen: number): string => {
-  let hexStr = "";
-  for (let i = 0; i < hexLen; i++) {
-    const cIndx = Math.floor(Math.random() * 16);
-    const hexChar = b66Chars.at(cIndx);
-    if (hexChar) hexStr += hexChar;
-    else throw new Error(`invalid cIndx: ${cIndx}`);
-  }
-  return hexStr;
+	let hexStr = "";
+	for (let i = 0; i < hexLen; i++) {
+		const cIndx = Math.floor(Math.random() * 16);
+		const hexChar = b66Chars.at(cIndx);
+		if (hexChar) hexStr += hexChar;
+		else throw new Error(`invalid cIndx: ${cIndx}`);
+	}
+	return hexStr;
 };
 
 const bench = () => {
-  console.log("Benchmark data for TinyId");
+	console.log("Benchmark data for TinyId");
 
-  const hexLens: number[] = [];
-  const b66Lens: number[] = [];
-  const avgB66Lens: number[] = [];
+	const hexLens: number[] = [];
+	const b66Lens: number[] = [];
+	const avgB66Lens: number[] = [];
 
-  for (let hexLen = minHexStrLen; hexLen <= maxHexStrLen; hexLen++) {
-    if (hexLen === 0) {
-      hexLens.push(0);
-      avgB66Lens.push(0);
-      continue;
-    }
-    let totalB66Ratio = 0;
-    let totalB66Len = 0;
-    for (let i = 0; i < avgObs; i++) {
-      const hexStr = randHexStr(hexLen);
-      const b66Str = encodeB66(hexStr);
-      // b66 encoded str length ratio with respect to its corresponding hex str length
-      const ratio = round(b66Str.length / hexStr.length, 2);
-      totalB66Ratio += ratio;
-      totalB66Len += b66Str.length;
-    }
-    b66Lens.push(round(totalB66Len / avgObs, 2));
-    hexLens.push(hexLen);
-    avgB66Lens.push(round(totalB66Ratio / avgObs, 2));
-  }
+	for (let hexLen = minHexStrLen; hexLen <= maxHexStrLen; hexLen++) {
+		if (hexLen === 0) {
+			hexLens.push(0);
+			avgB66Lens.push(0);
+			continue;
+		}
+		let totalB66Ratio = 0;
+		let totalB66Len = 0;
+		for (let i = 0; i < avgObs; i++) {
+			const hexStr = randHexStr(hexLen);
+			const b66Str = encodeB66(hexStr);
+			// b66 encoded str length ratio with respect to its corresponding hex str length
+			const ratio = round(b66Str.length / hexStr.length, 2);
+			totalB66Ratio += ratio;
+			totalB66Len += b66Str.length;
+		}
+		b66Lens.push(round(totalB66Len / avgObs, 2));
+		hexLens.push(hexLen);
+		avgB66Lens.push(round(totalB66Ratio / avgObs, 2));
+	}
 
-  return { hexLens, avgB66Lens, b66Lens };
+	return { hexLens, avgB66Lens, b66Lens };
 };
 
 const writeBenchmarkReport = (
-  data: {
-    hexLens: number[];
-    b66Lens: number[];
-    avgB66Lens: number[];
-  },
-  mdFilePath: string = "./benchmark-report.md",
+	data: {
+		hexLens: number[];
+		b66Lens: number[];
+		avgB66Lens: number[];
+	},
+	mdFilePath: string = "./benchmark-report.md",
 ) => {
-  const graphTitle = `TinyId Benchmark Results`;
-  const mermaidGraph = `
+	const graphTitle = `TinyId Benchmark Results`;
+	const mermaidGraph = `
 ## TinyId Benchmark Results
 
 \`\`\`mermaid
@@ -76,8 +76,8 @@ xychart-beta
 ${data.hexLens.map((hex, i) => `| ${hex} | ${data.b66Lens[i]} | ${data.avgB66Lens[i]} |`).join("\n")}
 `;
 
-  writeFileSync(mdFilePath, mermaidGraph, "utf-8");
-  console.log(`Benchmark report written to ${mdFilePath}`);
+	writeFileSync(mdFilePath, mermaidGraph, "utf-8");
+	console.log(`Benchmark report written to ${mdFilePath}`);
 };
 
 const mdFilePath = "./benchmark-report.md";

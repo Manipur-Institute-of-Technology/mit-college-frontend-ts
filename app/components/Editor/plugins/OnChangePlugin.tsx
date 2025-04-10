@@ -3,16 +3,16 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { type EditorState } from "lexical";
 
 export default function MyOnChangePlugin({
-  onChange,
+	onChange,
 }: {
-  onChange: (eds: EditorState) => void;
+	onChange: (eds: EditorState) => void;
 }) {
-  const [editor] = useLexicalComposerContext();
+	const [editor] = useLexicalComposerContext();
 
-  useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      onChange(editorState);
-    });
-  }, [editor, onChange]);
-  return null;
+	useEffect(() => {
+		return editor.registerUpdateListener(({ editorState }) => {
+			onChange(editorState);
+		});
+	}, [editor, onChange]);
+	return null;
 }

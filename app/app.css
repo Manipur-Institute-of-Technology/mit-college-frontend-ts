@@ -4,9 +4,9 @@
 @import "tailwindcss";
 
 * {
-  interpolate-size: allow-keywords;
-  scroll-behavior: smooth;
-  scroll-padding-top: 30vh;
+	interpolate-size: allow-keywords;
+	scroll-behavior: smooth;
+	scroll-padding-top: 30vh;
 }
 
 /* @tailwind base;
@@ -14,11 +14,11 @@
 /* @tailwind utilities; */
 
 @theme {
-  --font-sans:
-    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-roboto: "Roboto", sans-serif;
-  --font-nunita: "Nunita", sans-serif;
+	--font-sans:
+		"Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+		"Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--font-roboto: "Roboto", sans-serif;
+	--font-nunita: "Nunita", sans-serif;
 }
 
 /* html,

@@ -5,14 +5,14 @@ import "./navbar.css";
 import type { NavbarData } from "~/types/api/resData.type";
 
 export const PublicContentNav: React.FC<{ navigation: NavbarData }> = ({
-  navigation,
+	navigation,
 }) => {
-  return (
-    <>
-      <PublicTopNavbar />
-      <PublicMainNavbar navigation={navigation} />
-    </>
-  );
+	return (
+		<>
+			<PublicTopNavbar />
+			<PublicMainNavbar navigation={navigation} />
+		</>
+	);
 };
 
 export default PublicContentNav;

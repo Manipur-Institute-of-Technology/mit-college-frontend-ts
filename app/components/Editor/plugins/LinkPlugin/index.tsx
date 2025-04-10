@@ -13,23 +13,23 @@ import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugi
 import { validateUrl } from "../../utils/url";
 
 type Props = {
-  hasLinkAttributes?: boolean;
+	hasLinkAttributes?: boolean;
 };
 
 export default function LinkPlugin({
-  hasLinkAttributes = false,
+	hasLinkAttributes = false,
 }: Props): JSX.Element {
-  return (
-    <LexicalLinkPlugin
-      validateUrl={validateUrl}
-      attributes={
-        hasLinkAttributes
-          ? {
-              rel: "noopener noreferrer",
-              target: "_blank",
-            }
-          : undefined
-      }
-    />
-  );
+	return (
+		<LexicalLinkPlugin
+			validateUrl={validateUrl}
+			attributes={
+				hasLinkAttributes
+					? {
+							rel: "noopener noreferrer",
+							target: "_blank",
+						}
+					: undefined
+			}
+		/>
+	);
 }

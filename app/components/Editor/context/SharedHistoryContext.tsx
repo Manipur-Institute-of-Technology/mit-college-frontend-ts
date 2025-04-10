@@ -14,23 +14,25 @@ import * as React from "react";
 import { createContext, type ReactNode, useContext, useMemo } from "react";
 
 type ContextShape = {
-  historyState?: HistoryState;
+	historyState?: HistoryState;
 };
 
 const Context: React.Context<ContextShape> = createContext({});
 
 export const SharedHistoryContext = ({
-  children,
+	children,
 }: {
-  children: ReactNode;
+	children: ReactNode;
 }): JSX.Element => {
-  const historyContext = useMemo(
-    () => ({ historyState: createEmptyHistoryState() }),
-    [],
-  );
-  return <Context.Provider value={historyContext}>{children}</Context.Provider>;
+	const historyContext = useMemo(
+		() => ({ historyState: createEmptyHistoryState() }),
+		[],
+	);
+	return (
+		<Context.Provider value={historyContext}>{children}</Context.Provider>
+	);
 };
 
 export const useSharedHistoryContext = (): ContextShape => {
-  return useContext(Context);
+	return useContext(Context);
 };
