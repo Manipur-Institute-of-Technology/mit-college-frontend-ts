@@ -1,4 +1,4 @@
 export type CustomRoute = {
-  route: string;
-  contentId: string;
+	route: string;
+	contentId: string;
 };

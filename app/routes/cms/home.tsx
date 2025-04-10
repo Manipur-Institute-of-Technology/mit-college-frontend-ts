@@ -1,5 +1,5 @@
-import CMSHome from "~/pages/CMSHome";
+import Home from "~/pages/cms/home/home";
 
 export default () => {
-  return <CMSHome />;
+	return <Home />;
 };

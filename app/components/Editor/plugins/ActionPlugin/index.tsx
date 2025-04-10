@@ -18,22 +18,22 @@ import { $createCodeNode, $isCodeNode } from "@lexical/code";
 // 	serializedDocumentFromEditorState,
 // } from "@lexical/file";
 import {
-  $convertFromMarkdownString,
-  $convertToMarkdownString,
+	$convertFromMarkdownString,
+	$convertToMarkdownString,
 } from "@lexical/markdown";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
-  CONNECTED_COMMAND,
-  //  TOGGLE_CONNECT_COMMAND
+	CONNECTED_COMMAND,
+	//  TOGGLE_CONNECT_COMMAND
 } from "@lexical/yjs";
 import {
-  $createTextNode,
-  $getRoot,
-  // $isParagraphNode,
-  CLEAR_EDITOR_COMMAND,
-  // CLEAR_HISTORY_COMMAND,
-  COMMAND_PRIORITY_EDITOR,
+	$createTextNode,
+	$getRoot,
+	// $isParagraphNode,
+	CLEAR_EDITOR_COMMAND,
+	// CLEAR_HISTORY_COMMAND,
+	COMMAND_PRIORITY_EDITOR,
 } from "lexical";
 import { useCallback, useEffect, useState } from "react";
 
@@ -95,110 +95,113 @@ import { PLAYGROUND_TRANSFORMERS } from "../MarkdownTransformers";
 // }
 
 export default function ActionsPlugin({
-  isRichText,
-  shouldPreserveNewLinesInMarkdown,
+	isRichText,
+	shouldPreserveNewLinesInMarkdown,
 }: {
-  isRichText: boolean;
-  shouldPreserveNewLinesInMarkdown: boolean;
+	isRichText: boolean;
+	shouldPreserveNewLinesInMarkdown: boolean;
 }): JSX.Element {
-  const [editor] = useLexicalComposerContext();
-  const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  // const [isSpeechToText, setIsSpeechToText] = useState(false);
-  const [_, setConnected] = useState(false);
-  const [isEditorEmpty] = useState(true);
-  const [modal, showModal] = useModal();
-  // const showFlashMessage = useFlashMessage();
+	const [editor] = useLexicalComposerContext();
+	const [isEditable, setIsEditable] = useState(() => editor.isEditable());
+	// const [isSpeechToText, setIsSpeechToText] = useState(false);
+	const [_, setConnected] = useState(false);
+	const [isEditorEmpty] = useState(true);
+	const [modal, showModal] = useModal();
+	// const showFlashMessage = useFlashMessage();
 
-  // useEffect(() => {
-  // 	if (INITIAL_SETTINGS.isCollab) {
-  // 		return;
-  // 	}
-  // 	docFromHash(window.location.hash).then((doc) => {
-  // 		if (doc && doc.source === "Playground") {
-  // 			editor.setEditorState(editorStateFromSerializedDocument(editor, doc));
-  // 			editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
-  // 		}
-  // 	});
-  // }, [editor]);
-  useEffect(() => {
-    return mergeRegister(
-      editor.registerEditableListener((editable) => {
-        setIsEditable(editable);
-      }),
-      editor.registerCommand<boolean>(
-        CONNECTED_COMMAND,
-        (payload) => {
-          const isConnected = payload;
-          setConnected(isConnected);
-          return false;
-        },
-        COMMAND_PRIORITY_EDITOR,
-      ),
-    );
-  }, [editor]);
+	// useEffect(() => {
+	// 	if (INITIAL_SETTINGS.isCollab) {
+	// 		return;
+	// 	}
+	// 	docFromHash(window.location.hash).then((doc) => {
+	// 		if (doc && doc.source === "Playground") {
+	// 			editor.setEditorState(editorStateFromSerializedDocument(editor, doc));
+	// 			editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
+	// 		}
+	// 	});
+	// }, [editor]);
+	useEffect(() => {
+		return mergeRegister(
+			editor.registerEditableListener((editable) => {
+				setIsEditable(editable);
+			}),
+			editor.registerCommand<boolean>(
+				CONNECTED_COMMAND,
+				(payload) => {
+					const isConnected = payload;
+					setConnected(isConnected);
+					return false;
+				},
+				COMMAND_PRIORITY_EDITOR,
+			),
+		);
+	}, [editor]);
 
-  // useEffect(() => {
-  // 	return editor.registerUpdateListener(
-  // 		({ dirtyElements, prevEditorState, tags }) => {
-  // 			// If we are in read only mode, send the editor state
-  // 			// to server and ask for validation if possible.
-  // 			if (
-  // 				!isEditable &&
-  // 				dirtyElements.size > 0 &&
-  // 				!tags.has("historic") &&
-  // 				!tags.has("collaboration")
-  // 			) {
-  // 				validateEditorState(editor);
-  // 			}
-  // 			editor.getEditorState().read(() => {
-  // 				const root = $getRoot();
-  // 				const children = root.getChildren();
+	// useEffect(() => {
+	// 	return editor.registerUpdateListener(
+	// 		({ dirtyElements, prevEditorState, tags }) => {
+	// 			// If we are in read only mode, send the editor state
+	// 			// to server and ask for validation if possible.
+	// 			if (
+	// 				!isEditable &&
+	// 				dirtyElements.size > 0 &&
+	// 				!tags.has("historic") &&
+	// 				!tags.has("collaboration")
+	// 			) {
+	// 				validateEditorState(editor);
+	// 			}
+	// 			editor.getEditorState().read(() => {
+	// 				const root = $getRoot();
+	// 				const children = root.getChildren();
 
-  // 				if (children.length > 1) {
-  // 					setIsEditorEmpty(false);
-  // 				} else {
-  // 					if ($isParagraphNode(children[0])) {
-  // 						const paragraphChildren = children[0].getChildren();
-  // 						setIsEditorEmpty(paragraphChildren.length === 0);
-  // 					} else {
-  // 						setIsEditorEmpty(false);
-  // 					}
-  // 				}
-  // 			});
-  // 		},
-  // 	);
-  // }, [editor, isEditable]);
+	// 				if (children.length > 1) {
+	// 					setIsEditorEmpty(false);
+	// 				} else {
+	// 					if ($isParagraphNode(children[0])) {
+	// 						const paragraphChildren = children[0].getChildren();
+	// 						setIsEditorEmpty(paragraphChildren.length === 0);
+	// 					} else {
+	// 						setIsEditorEmpty(false);
+	// 					}
+	// 				}
+	// 			});
+	// 		},
+	// 	);
+	// }, [editor, isEditable]);
 
-  const handleMarkdownToggle = useCallback(() => {
-    editor.update(() => {
-      const root = $getRoot();
-      const firstChild = root.getFirstChild();
-      if ($isCodeNode(firstChild) && firstChild.getLanguage() === "markdown") {
-        $convertFromMarkdownString(
-          firstChild.getTextContent(),
-          PLAYGROUND_TRANSFORMERS,
-          undefined, // node
-          shouldPreserveNewLinesInMarkdown,
-        );
-      } else {
-        const markdown = $convertToMarkdownString(
-          PLAYGROUND_TRANSFORMERS,
-          undefined, //node
-          shouldPreserveNewLinesInMarkdown,
-        );
-        const codeNode = $createCodeNode("markdown");
-        codeNode.append($createTextNode(markdown));
-        root.clear().append(codeNode);
-        if (markdown.length === 0) {
-          codeNode.select();
-        }
-      }
-    });
-  }, [editor, shouldPreserveNewLinesInMarkdown]);
+	const handleMarkdownToggle = useCallback(() => {
+		editor.update(() => {
+			const root = $getRoot();
+			const firstChild = root.getFirstChild();
+			if (
+				$isCodeNode(firstChild) &&
+				firstChild.getLanguage() === "markdown"
+			) {
+				$convertFromMarkdownString(
+					firstChild.getTextContent(),
+					PLAYGROUND_TRANSFORMERS,
+					undefined, // node
+					shouldPreserveNewLinesInMarkdown,
+				);
+			} else {
+				const markdown = $convertToMarkdownString(
+					PLAYGROUND_TRANSFORMERS,
+					undefined, //node
+					shouldPreserveNewLinesInMarkdown,
+				);
+				const codeNode = $createCodeNode("markdown");
+				codeNode.append($createTextNode(markdown));
+				root.clear().append(codeNode);
+				if (markdown.length === 0) {
+					codeNode.select();
+				}
+			}
+		});
+	}, [editor, shouldPreserveNewLinesInMarkdown]);
 
-  return (
-    <div className="actions">
-      {/* {SUPPORT_SPEECH_RECOGNITION && (
+	return (
+		<div className="actions">
+			{/* {SUPPORT_SPEECH_RECOGNITION && (
 				<button
 					onClick={() => {
 						editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
@@ -215,7 +218,7 @@ export default function ActionsPlugin({
 					<i className="mic" />
 				</button>
 			)} */}
-      {/* <button
+			{/* <button
 				className="action-button import"
 				onClick={() => importFile(editor)}
 				title="Import"
@@ -223,7 +226,7 @@ export default function ActionsPlugin({
 				<i className="import" />
 			</button> */}
 
-      {/* <button
+			{/* <button
 				className="action-button export"
 				onClick={() =>
 					exportFile(editor, {
@@ -235,7 +238,7 @@ export default function ActionsPlugin({
 				aria-label="Export editor state to JSON">
 				<i className="export" />
 			</button> */}
-      {/* <button
+			{/* <button
 				className="action-button share"
 				disabled={isCollabActive || INITIAL_SETTINGS.isCollab}
 				onClick={() =>
@@ -252,44 +255,41 @@ export default function ActionsPlugin({
 				aria-label="Share Playground link to current editor state">
 				<i className="share" />
 			</button> */}
-      <button
-        className="action-button clear"
-        disabled={isEditorEmpty}
-        onClick={() => {
-          showModal("Clear editor", (onClose) => (
-            <ShowClearDialog editor={editor} onClose={onClose} />
-          ));
-        }}
-        title="Clear"
-        aria-label="Clear editor contents"
-      >
-        <i className="clear" />
-      </button>
-      <button
-        className={`action-button ${!isEditable ? "unlock" : "lock"}`}
-        onClick={() => {
-          // Send latest editor state to commenting validation server
-          // TODO: perform validation of editor state on server-side when content is saved
-          // Render the content of saved editor state on lock mode
-          // if (isEditable) {
-          // 	sendEditorState(editor);
-          // }
-          editor.setEditable(!editor.isEditable());
-        }}
-        title="Read-Only Mode"
-        aria-label={`${!isEditable ? "Unlock" : "Lock"} read-only mode`}
-      >
-        <i className={!isEditable ? "unlock" : "lock"} />
-      </button>
-      <button
-        className="action-button"
-        onClick={handleMarkdownToggle}
-        title="Convert From Markdown"
-        aria-label="Convert from markdown"
-      >
-        <i className="markdown" />
-      </button>
-      {/* {isCollabActive && (
+			<button
+				className="action-button clear"
+				disabled={isEditorEmpty}
+				onClick={() => {
+					showModal("Clear editor", (onClose) => (
+						<ShowClearDialog editor={editor} onClose={onClose} />
+					));
+				}}
+				title="Clear"
+				aria-label="Clear editor contents">
+				<i className="clear" />
+			</button>
+			<button
+				className={`action-button ${!isEditable ? "unlock" : "lock"}`}
+				onClick={() => {
+					// Send latest editor state to commenting validation server
+					// TODO: perform validation of editor state on server-side when content is saved
+					// Render the content of saved editor state on lock mode
+					// if (isEditable) {
+					// 	sendEditorState(editor);
+					// }
+					editor.setEditable(!editor.isEditable());
+				}}
+				title="Read-Only Mode"
+				aria-label={`${!isEditable ? "Unlock" : "Lock"} read-only mode`}>
+				<i className={!isEditable ? "unlock" : "lock"} />
+			</button>
+			<button
+				className="action-button"
+				onClick={handleMarkdownToggle}
+				title="Convert From Markdown"
+				aria-label="Convert from markdown">
+				<i className="markdown" />
+			</button>
+			{/* {isCollabActive && (
 				<button
 					className="action-button connect"
 					onClick={() => {
@@ -304,40 +304,38 @@ export default function ActionsPlugin({
 					<i className={connected ? "disconnect" : "connect"} />
 				</button>
 			)} */}
-      {modal}
-    </div>
-  );
+			{modal}
+		</div>
+	);
 }
 
 function ShowClearDialog({
-  editor,
-  onClose,
+	editor,
+	onClose,
 }: {
-  editor: LexicalEditor;
-  onClose: () => void;
+	editor: LexicalEditor;
+	onClose: () => void;
 }): JSX.Element {
-  return (
-    <>
-      Are you sure you want to clear the editor?
-      <div className="Modal__content">
-        <Button
-          onClick={() => {
-            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-            editor.focus();
-            onClose();
-          }}
-        >
-          Clear
-        </Button>{" "}
-        <Button
-          onClick={() => {
-            editor.focus();
-            onClose();
-          }}
-        >
-          Cancel
-        </Button>
-      </div>
-    </>
-  );
+	return (
+		<>
+			Are you sure you want to clear the editor?
+			<div className="Modal__content">
+				<Button
+					onClick={() => {
+						editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+						editor.focus();
+						onClose();
+					}}>
+					Clear
+				</Button>{" "}
+				<Button
+					onClick={() => {
+						editor.focus();
+						onClose();
+					}}>
+					Cancel
+				</Button>
+			</div>
+		</>
+	);
 }

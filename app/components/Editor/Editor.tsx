@@ -71,103 +71,102 @@ import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
 // 	window.parent != null && window.parent.frames.right === window;
 
 export default function Editor(): JSX.Element {
-  const { historyState } = useSharedHistoryContext();
-  const {
-    settings: {
-      isCollab,
-      // isAutocomplete,
-      // isMaxLength,
-      isCharLimit,
-      hasLinkAttributes,
-      isCharLimitUtf8,
-      isRichText,
-      showTreeView,
-      showTableOfContents,
-      // shouldUseLexicalContextMenu,
-      shouldPreserveNewLinesInMarkdown,
-      tableCellMerge,
-      tableCellBackgroundColor,
-      tableHorizontalScroll,
-      // shouldAllowHighlightingWithBrackets,
-      selectionAlwaysOnDisplay,
-    },
-  } = useSettings();
-  const isEditable = useLexicalEditable();
-  const placeholder = isCollab
-    ? "Enter some collaborative rich text..."
-    : isRichText
-      ? "Enter some rich text..."
-      : "Enter some plain text...";
-  const [floatingAnchorElem, setFloatingAnchorElem] =
-    useState<HTMLDivElement | null>(null);
-  const [isSmallWidthViewport, setIsSmallWidthViewport] =
-    useState<boolean>(false);
-  //lexical.dev/docs/react/create_plugin
-  const [editor] = useLexicalComposerContext();
-  const [activeEditor, setActiveEditor] = useState(editor);
-  const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
+	const { historyState } = useSharedHistoryContext();
+	const {
+		settings: {
+			isCollab,
+			// isAutocomplete,
+			// isMaxLength,
+			isCharLimit,
+			hasLinkAttributes,
+			isCharLimitUtf8,
+			isRichText,
+			showTreeView,
+			showTableOfContents,
+			// shouldUseLexicalContextMenu,
+			shouldPreserveNewLinesInMarkdown,
+			tableCellMerge,
+			tableCellBackgroundColor,
+			tableHorizontalScroll,
+			// shouldAllowHighlightingWithBrackets,
+			selectionAlwaysOnDisplay,
+		},
+	} = useSettings();
+	const isEditable = useLexicalEditable();
+	const placeholder = isCollab
+		? "Enter some collaborative rich text..."
+		: isRichText
+			? "Enter some rich text..."
+			: "Enter some plain text...";
+	const [floatingAnchorElem, setFloatingAnchorElem] =
+		useState<HTMLDivElement | null>(null);
+	const [isSmallWidthViewport, setIsSmallWidthViewport] =
+		useState<boolean>(false);
+	//lexical.dev/docs/react/create_plugin
+	const [editor] = useLexicalComposerContext();
+	const [activeEditor, setActiveEditor] = useState(editor);
+	const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
-  const onRef = (_floatingAnchorElem: HTMLDivElement) => {
-    if (_floatingAnchorElem !== null) {
-      setFloatingAnchorElem(_floatingAnchorElem);
-    }
-  };
+	const onRef = (_floatingAnchorElem: HTMLDivElement) => {
+		if (_floatingAnchorElem !== null) {
+			setFloatingAnchorElem(_floatingAnchorElem);
+		}
+	};
 
-  useEffect(() => {
-    const updateViewPortWidth = () => {
-      const isNextSmallWidthViewport =
-        CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+	useEffect(() => {
+		const updateViewPortWidth = () => {
+			const isNextSmallWidthViewport =
+				CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
 
-      if (isNextSmallWidthViewport !== isSmallWidthViewport) {
-        setIsSmallWidthViewport(isNextSmallWidthViewport);
-      }
-    };
-    updateViewPortWidth();
-    window.addEventListener("resize", updateViewPortWidth);
+			if (isNextSmallWidthViewport !== isSmallWidthViewport) {
+				setIsSmallWidthViewport(isNextSmallWidthViewport);
+			}
+		};
+		updateViewPortWidth();
+		window.addEventListener("resize", updateViewPortWidth);
 
-    return () => {
-      window.removeEventListener("resize", updateViewPortWidth);
-    };
-  }, [isSmallWidthViewport]);
+		return () => {
+			window.removeEventListener("resize", updateViewPortWidth);
+		};
+	}, [isSmallWidthViewport]);
 
-  return (
-    <>
-      {isRichText && (
-        <ToolbarPlugin
-          editor={editor}
-          activeEditor={activeEditor}
-          setActiveEditor={setActiveEditor}
-          setIsLinkEditMode={setIsLinkEditMode}
-        />
-      )}
-      {isRichText && (
-        <ShortcutsPlugin
-          editor={activeEditor}
-          setIsLinkEditMode={setIsLinkEditMode}
-        />
-      )}
-      <div
-        className={`editor-container ${showTreeView ? "tree-view" : ""} ${
-          !isRichText ? "plain-text" : ""
-        }`}
-      >
-        {/* {isMaxLength && <MaxLengthPlugin maxLength={30} />} */}
-        {/* <DragDropPaste /> */}
-        <AutoFocusPlugin />
-        {selectionAlwaysOnDisplay && <SelectionAlwaysOnDisplay />}
-        <ClearEditorPlugin />
-        {/* <EmojiPickerPlugin /> */}
-        <AutoEmbedPlugin />
-        {/* <EmojisPlugin /> */}
-        {/* <KeywordsPlugin /> */}
-        {/* <SpeechToTextPlugin /> */}
-        <AutoLinkPlugin />
-        {/* <CommentPlugin
+	return (
+		<>
+			{isRichText && (
+				<ToolbarPlugin
+					editor={editor}
+					activeEditor={activeEditor}
+					setActiveEditor={setActiveEditor}
+					setIsLinkEditMode={setIsLinkEditMode}
+				/>
+			)}
+			{isRichText && (
+				<ShortcutsPlugin
+					editor={activeEditor}
+					setIsLinkEditMode={setIsLinkEditMode}
+				/>
+			)}
+			<div
+				className={`editor-container ${showTreeView ? "tree-view" : ""} ${
+					!isRichText ? "plain-text" : ""
+				}`}>
+				{/* {isMaxLength && <MaxLengthPlugin maxLength={30} />} */}
+				{/* <DragDropPaste /> */}
+				<AutoFocusPlugin />
+				{selectionAlwaysOnDisplay && <SelectionAlwaysOnDisplay />}
+				<ClearEditorPlugin />
+				{/* <EmojiPickerPlugin /> */}
+				<AutoEmbedPlugin />
+				{/* <EmojisPlugin /> */}
+				{/* <KeywordsPlugin /> */}
+				{/* <SpeechToTextPlugin /> */}
+				<AutoLinkPlugin />
+				{/* <CommentPlugin
           providerFactory={isCollab ? createWebsocketProvider : undefined}
         /> */}
-        {isRichText ? (
-          <>
-            {/* {isCollab ? (
+				{isRichText ? (
+					<>
+						{/* {isCollab ? (
               <CollaborationPlugin
                 id="main"
                 providerFactory={createWebsocketProvider}
@@ -176,94 +175,103 @@ export default function Editor(): JSX.Element {
             ) : (
               <HistoryPlugin externalHistoryState={historyState} />
             )} */}
-            <HistoryPlugin externalHistoryState={historyState} />
-            <RichTextPlugin
-              contentEditable={
-                <div
-                  className="editor-scroller"
-                  style={{
-                    marginTop: 0,
-                    marginBottom: 0,
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                  }}
-                >
-                  <div className="editor" ref={onRef}>
-                    <ContentEditable placeholder={placeholder} />
-                  </div>
-                </div>
-              }
-              ErrorBoundary={LexicalErrorBoundary}
-            />
-            <MarkdownShortcutPlugin />
-            <CodeHighlightPlugin />
-            <ListPlugin />
-            <CheckListPlugin />
-            <TablePlugin
-              hasCellMerge={tableCellMerge}
-              hasCellBackgroundColor={tableCellBackgroundColor}
-              hasHorizontalScroll={tableHorizontalScroll}
-            />
-            {/* <TableCellResizer /> */}
-            <LinkPlugin hasLinkAttributes={hasLinkAttributes} />
-            <YouTubePlugin />
-            <ClickableLinkPlugin disabled={isEditable} />
-            <HorizontalRulePlugin />
-            <EquationsPlugin />
-            {/* <TabFocusPlugin /> */}
-            <TabIndentationPlugin maxIndent={7} />
-            <CollapsiblePlugin />
-            <PageBreakPlugin />
-            <LayoutPlugin />
-            {floatingAnchorElem && !isSmallWidthViewport && (
-              <>
-                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-                <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
-                <FloatingLinkEditorPlugin
-                  anchorElem={floatingAnchorElem}
-                  isLinkEditMode={isLinkEditMode}
-                  setIsLinkEditMode={setIsLinkEditMode}
-                />
-                {/* <TableCellActionMenuPlugin
+						<HistoryPlugin externalHistoryState={historyState} />
+						<RichTextPlugin
+							contentEditable={
+								<div
+									className="editor-scroller"
+									style={{
+										marginTop: 0,
+										marginBottom: 0,
+										paddingTop: 0,
+										paddingBottom: 0,
+									}}>
+									<div className="editor" ref={onRef}>
+										<ContentEditable
+											placeholder={placeholder}
+										/>
+									</div>
+								</div>
+							}
+							ErrorBoundary={LexicalErrorBoundary}
+						/>
+						<MarkdownShortcutPlugin />
+						<CodeHighlightPlugin />
+						<ListPlugin />
+						<CheckListPlugin />
+						<TablePlugin
+							hasCellMerge={tableCellMerge}
+							hasCellBackgroundColor={tableCellBackgroundColor}
+							hasHorizontalScroll={tableHorizontalScroll}
+						/>
+						{/* <TableCellResizer /> */}
+						<LinkPlugin hasLinkAttributes={hasLinkAttributes} />
+						<YouTubePlugin />
+						<ClickableLinkPlugin disabled={isEditable} />
+						<HorizontalRulePlugin />
+						<EquationsPlugin />
+						{/* <TabFocusPlugin /> */}
+						<TabIndentationPlugin maxIndent={7} />
+						<CollapsiblePlugin />
+						<PageBreakPlugin />
+						<LayoutPlugin />
+						{floatingAnchorElem && !isSmallWidthViewport && (
+							<>
+								<DraggableBlockPlugin
+									anchorElem={floatingAnchorElem}
+								/>
+								<CodeActionMenuPlugin
+									anchorElem={floatingAnchorElem}
+								/>
+								<FloatingLinkEditorPlugin
+									anchorElem={floatingAnchorElem}
+									isLinkEditMode={isLinkEditMode}
+									setIsLinkEditMode={setIsLinkEditMode}
+								/>
+								{/* <TableCellActionMenuPlugin
 									anchorElem={floatingAnchorElem}
 									cellMerge={true}
 								/>
 								<TableHoverActionsPlugin anchorElem={floatingAnchorElem} /> */}
-                {/* <FloatingTextFormatToolbarPlugin
+								{/* <FloatingTextFormatToolbarPlugin
 									anchorElem={floatingAnchorElem}
 									setIsLinkEditMode={setIsLinkEditMode}
 								/> */}
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <PlainTextPlugin
-              contentEditable={<ContentEditable placeholder={placeholder} />}
-              ErrorBoundary={LexicalErrorBoundary}
-            />
-            <HistoryPlugin externalHistoryState={historyState} />
-          </>
-        )}
-        {(isCharLimit || isCharLimitUtf8) && (
-          <CharacterLimitPlugin
-            charset={isCharLimit ? "UTF-16" : "UTF-8"}
-            maxLength={5}
-          />
-        )}
-        {/* {isAutocomplete && <AutocompletePlugin />} */}
-        {/* <div>
+							</>
+						)}
+					</>
+				) : (
+					<>
+						<PlainTextPlugin
+							contentEditable={
+								<ContentEditable placeholder={placeholder} />
+							}
+							ErrorBoundary={LexicalErrorBoundary}
+						/>
+						<HistoryPlugin externalHistoryState={historyState} />
+					</>
+				)}
+				{(isCharLimit || isCharLimitUtf8) && (
+					<CharacterLimitPlugin
+						charset={isCharLimit ? "UTF-16" : "UTF-8"}
+						maxLength={5}
+					/>
+				)}
+				{/* {isAutocomplete && <AutocompletePlugin />} */}
+				{/* <div>
 					<TableOfContentsPlugin />
 				</div> */}
-        <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
-        {/* {shouldUseLexicalContextMenu && <ContextMenuPlugin />} */}
-        {/* {shouldAllowHighlightingWithBrackets && <SpecialTextPlugin />} */}
-        <ActionsPlugin
-          isRichText={isRichText}
-          shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
-        />
-      </div>
-      {showTreeView && <TreeViewPlugin />}
-    </>
-  );
+				<div>{showTableOfContents && <TableOfContentsPlugin />}</div>
+				{/* {shouldUseLexicalContextMenu && <ContextMenuPlugin />} */}
+				{/* {shouldAllowHighlightingWithBrackets && <SpecialTextPlugin />} */}
+				<ActionsPlugin
+					isRichText={isRichText}
+					shouldPreserveNewLinesInMarkdown={
+						shouldPreserveNewLinesInMarkdown
+					}
+				/>
+			</div>
+			{showTreeView && <TreeViewPlugin />}
+		</>
+	);
 }
