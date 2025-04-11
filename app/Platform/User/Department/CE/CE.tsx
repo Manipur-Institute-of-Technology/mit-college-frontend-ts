@@ -1,13 +1,13 @@
 import Informations from "~/Common/Informations/Informations";
 import Department from "../Department"
 
-function CSE() {
+function CE() {
   return (
       <>
-        <Department name="CSE" />
+        <Department name="CE" />
         <Informations />
       </>
     );
 }
 
-export default CSE
+export default CE

@@ -1,13 +1,13 @@
 import Informations from "~/Common/Informations/Informations";
-import Department from "../Department"
+import Department from "../Department";
 
-function EE() {
+function BSH() {
   return (
     <>
-      <Department name="EE" />
+      <Department name="BSH" />
       <Informations />
     </>
   );
 }
 
-export default EE
+export default BSH;

@@ -1,5 +1,5 @@
 import { Department_data } from "~/DB_Sample/Department";
-import { Teachers } from "~/DB_Sample/Department";
+import { Faculty_Data } from "~/DB_Sample/FacultyData";
 
 type commonProps = {
   name: string;
@@ -17,10 +17,15 @@ export default function Common({ name }: commonProps) {
 }
 
 function DepartmentData({ name }: commonProps) {
-  if (name == "Computer Science & Engineering")
+  const selectedFaculty = Faculty_Data.filter(
+    (item) => item.deptCode.toLowerCase() === name.toLowerCase()
+  );
+  const selectedDepartment = Department_data.filter(
+    (item) => item.DeptCode.toLowerCase() === name.toLowerCase()
+  );
     return (
       <>
-        {Department_data.map((item, index) => {
+        {selectedDepartment.map((item, index) => {
           return (
             <>
               <div
@@ -39,7 +44,7 @@ function DepartmentData({ name }: commonProps) {
                   Faculty Members :
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {Teachers.map((teacher, index) => (
+                  {selectedFaculty.map((teacher, index) => (
                     <div
                       key={index}
                       className="relative flex bg-white rounded-xl shadow-md p-4 items-center space-x-4 border border-gray-300"
@@ -53,7 +58,7 @@ function DepartmentData({ name }: commonProps) {
 
                       {/* Image */}
                       <img
-                        src={teacher.Image}
+                        src={teacher.Photo}
                         alt={teacher.name}
                         className="w-24 h-28 object-cover rounded-md border"
                       />
@@ -66,16 +71,13 @@ function DepartmentData({ name }: commonProps) {
                         <p className="text-gray-700">{teacher.position}</p>
                         <p className="text-gray-500">{teacher.email.trim()}</p>
                         <p className="text-gray-700">{teacher.qualification}</p>
-                        <p className="text-gray-700">
-                          {teacher.Specialization}
-                        </p>
+                        <p className="text-gray-700">{teacher.speacility}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
               {/* Lab and Facilities Section */}
-              {item.DeptCode === "CSE" && (
                 <div className="p-6 mt-6 space-y-6 rounded-lg">
                   {/* Lab Section */}
                   <h2 className="text-xl font-semibold">Lab</h2>
@@ -93,14 +95,16 @@ function DepartmentData({ name }: commonProps) {
                   {/* Facilities Section */}
                   <div>
                     <h2 className="text-xl font-semibold mb-2">Facilities</h2>
-                    <p style={{ whiteSpace: "pre-wrap" }} className="text-justify text-gray-800 whitespace-pre-line">
+                    <p
+                      style={{ whiteSpace: "pre-wrap" }}
+                      className="text-justify text-gray-800 whitespace-pre-line"
+                    >
                       {item.MoreInfo[0].Facilities}
                     </p>
                   </div>
                 </div>
-              )}
 
-              <h1>{item.DeptCode}</h1>
+              {/* <h1>{item.DeptCode}</h1> */}
             </>
           );
         })}

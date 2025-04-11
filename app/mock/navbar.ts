@@ -27,7 +27,7 @@ export const navigationData: NavigationData[] = [
     childrens: [
       {
         name: "Department of Computer Science & Engineering",
-        href: "/CSE-dept",
+        href: "/CSE_dept",
       },
       {
         name: "Department of Electrical Engineering",
@@ -43,7 +43,7 @@ export const navigationData: NavigationData[] = [
       },
       {
         name: "Department of Basic Sciences & Humanities",
-        href: "/BSC_dept",
+        href: "/BSH_dept",
       },
       {
         name: "Department of Mechanical Engineering",

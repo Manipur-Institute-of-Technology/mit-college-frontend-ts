@@ -1,13 +1,13 @@
 import Informations from "~/Common/Informations/Informations";
 import Department from "../Department"
 
-function EE() {
+function ECE() {
   return (
     <>
-      <Department name="EE" />
+      <Department name="ECE" />
       <Informations />
     </>
   );
 }
 
-export default EE
+export default ECE
