@@ -2,3 +2,7 @@
 - json response shape: [{h1: "", content: editorContentType}, {imageContentType: []}, ...]
 - Finish implementation for studentfaculty - student teams,  project modal
 - implement page for contactUS  
+
+- Complete Error Handling page!
+- change component that used serice not from mockService class, to used it 
+- Automatic site map generator
