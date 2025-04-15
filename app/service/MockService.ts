@@ -6,12 +6,14 @@ import type {
 	Weather,
 } from "~/types/api/resData.type";
 import type { IService, ServiceType } from "./IService";
-import { createFetchError } from "~/types/api/FetchError";
+import { createFetchError, FetchError } from "~/types/api/FetchError";
 import type {
 	FacultyBasicProfile,
 	FacultyDetailProfile,
 	FacultyStudents,
+	PublicationDetail,
 } from "~/types/api/faculty.type";
+import { data } from "react-router";
 
 /**
  * MockService is a mock implementation of the IService interface.
@@ -29,7 +31,7 @@ export default class MockService implements IService {
 	async getPublicNavContent(): Promise<NavbarData> {
 		try {
 			const res = await fetch("/mock/pubNavbar.json");
-			return (await res.json()) satisfies NavbarData[];
+			return (await res.json()) satisfies NavbarData;
 		} catch (err) {
 			console.log("navbar fetch error", err);
 			throw err;
@@ -62,7 +64,7 @@ export default class MockService implements IService {
 	): Promise<NoticeData[]> {
 		try {
 			// Add delay
-			await new Promise((res) => setTimeout(res, 5000));
+			// await new Promise((res) => setTimeout(res, 5000));
 			const res = await fetch("/mock/notice.json");
 			if (!res.ok) {
 				throw createFetchError("Error fetching notice  data", res);
@@ -104,13 +106,26 @@ export default class MockService implements IService {
 		}
 	}
 
+	async getPublicationDetail(pubId: string): Promise<PublicationDetail> {
+		try {
+			await new Promise((res) => setTimeout(res, 3000));
+			const res = await fetch("/mock/publication/pubId.json");
+			if (!res.ok)
+				throw createFetchError("Error fetching publication data", res);
+			return res.json() satisfies Promise<PublicationDetail>;
+		} catch (err) {
+			console.error("Error fetching publication detail");
+			throw err;
+		}
+	}
+
 	async getFacultyBasicProfile(
 		facultyId: string,
 	): Promise<FacultyBasicProfile> {
 		try {
 			const res = await fetch("/mock/faculty/basicProfile.json");
 			if (!res.ok)
-				throw createFetchError("Error fetching notice data", res);
+				throw createFetchError("Error fetching profile data", res);
 			return res.json() satisfies Promise<FacultyBasicProfile>;
 		} catch (err) {
 			console.error("Error fetching faculty profile");

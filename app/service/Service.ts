@@ -7,8 +7,8 @@ import ProdService from "./ProdService";
  * @returns Service class
  */
 const generateService = (): IService => {
-	switch (import.meta.env.VITE_ENV) {
-		case "dev":
+	switch (import.meta.env.VITE_SERVICE) {
+		case "mock":
 			return new MockService();
 		case "prod":
 			return new ProdService();

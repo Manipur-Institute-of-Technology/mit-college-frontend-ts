@@ -1,0 +1,23 @@
+{
+	"paperTitle": "Contextual bandits for adapting treatment in a mouse model of de novo carcinogenesis",
+	"authors": [
+		{
+			"name": "Audrey Durand",
+			"profileLink": "https://www.papernot.fr/"
+		},
+		{
+			"name": "Nicolas Papernot",
+			"profileLink": "https://www.papernot.fr/"
+		},
+		{
+			"name": "Sarah Chen",
+			"profileLink": "https://example.com/schen"
+		}
+	],
+	"downloadLink": "google.com",
+	"paperLink": "google.com",
+	"publicationDate": "Mon Apr 14 2025 13:20:51 GMT+0530 (India Standard Time)",
+	"type": "journal",
+	"doi": "doi:7839247894578",
+	"abstract": "In this work, we present a specific case study where we aim to design effective treatment allocation strategies and validate these using a mouse model of skin cancer. Collecting data for modelling treatments effectiveness on animal models is an expensive and time consuming process. Moreover, acquiring this information during the full range of disease stages is hard to achieve with a conventional random treatment allocation procedure, as poor treatments cause deterioration of subject health. We therefore aim to design an adaptive allocation strategy to improve the efficiency of data collection by allocating more samples for exploring promising treatments. We cast this application as a contextual bandit problem and introduce a simple and practical algorithm for exploration-exploitation in this framework. The work builds on a recent class of approaches for non-contextual bandits that relies on subsampling to compare treatment options using an equivalent amount of information. On the technical side, we extend the subsampling strategy to the case of bandits with context, by applying subsampling within Gaussian Process regression. On the experimental side, preliminary results using 10 mice with skin tumours suggest that the proposed approach extends by more than 50% the subjects life duration compared with baseline strategies: no treatment, random treatment allocation, and constant chemotherapeutic agent. By slowing the tumour growth rate, the adaptive procedure gathers information about treatment effectiveness on a broader range of tumour volumes, which is crucial for eventually deriving sequential pharmacological treatment strategies"
+}
