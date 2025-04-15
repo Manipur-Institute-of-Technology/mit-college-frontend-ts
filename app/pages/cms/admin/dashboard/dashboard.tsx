@@ -1,12 +1,14 @@
 import { ChevronRight } from "lucide-react";
 import { useLocation, Link } from "react-router";
+import BreadCrumb from "~/components/BreadCrumb";
 
 // TODO: Add Dashboard title
 export default () => {
 	const loc = useLocation();
 	return (
 		<div className="border rounded-md min-h-[100vh] font-roboto">
-			<div className="w-full bg-white p-4 rounded-md shadow-md text-sm fonr-thin font-roboto">
+			<div className="w-full bg-white p-4 rounded-md shadow-md text-sm font-thin font-roboto">
+				<BreadCrumb crumbs={loc.pathname.split("/").slice(1)} />
 				<div className="inline-flex items-center gap-x-0.5 py-1	text-gray-500">
 					{loc.pathname
 						.split("/")

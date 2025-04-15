@@ -9,6 +9,8 @@
 export const cacheFetch = async <T = any>(
 	url: string,
 	cacheKey: string,
+	responseDataAccessor: (res: Response) => Promise<T> = async (res) =>
+		await res.json(),
 	cacheInterval: number = 30,
 	store: "localStorage" | "sessionStorage" | Storage = "localStorage",
 ): Promise<(T & { cacheDate: Date }) | null> => {
@@ -44,7 +46,7 @@ export const cacheFetch = async <T = any>(
 	// Fetch resource from server
 	try {
 		const res = await fetch(url);
-		const data = (await res.json()) as T;
+		const data = (await responseDataAccessor(res)) as T;
 		const cacheVal = { ...data, cacheDate: new Date() };
 		// Update Cache Store
 		storeref.setItem(cacheKey, JSON.stringify(cacheVal));

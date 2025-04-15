@@ -62,6 +62,31 @@ const rawNavData: RawNavData[] = [
 			},
 		],
 	},
+	{
+		category: "Paper Repetoire",
+		lists: [
+			{
+				name: "Dashboard",
+				href: "/cms/dashboard",
+				icon: LayoutDashboard,
+			},
+			{
+				name: "Pages",
+				href: "/cms/pages",
+				icon: BookOpen,
+				lists: [
+					{ name: "Tools", href: "/cms/tools", icon: Wrench },
+					{ name: "Tools", href: "/cms/tools", icon: Wrench },
+					{ name: "Tools", href: "/cms/tools", icon: Wrench },
+				],
+			},
+			{
+				name: "Tools",
+				href: "/cms/tools",
+				icon: Wrench,
+			},
+		],
+	},
 ];
 
 export const clientLoader = async () => {

@@ -1,4 +1,4 @@
-import { Await, Outlet, useAsyncError, useLocation } from "react-router";
+import { Await, Link, Outlet, useAsyncError, useLocation } from "react-router";
 import Navbar from "../components/Navbar/PublicContentNav";
 import Footer from "../components/Footer/PublicFooter";
 import ImageCarousel, {
@@ -14,7 +14,8 @@ import { FetchError } from "~/types/api/FetchError";
 import { getFooterData } from "~/mock/services/fetchMockData";
 import PublicFooterSkel from "~/components/Footer/PublicFooterSkel";
 import CustomRoutesProvider from "~/context/CustomRoutesProvider";
-import ErrorBoundary from "~/components/ErrorBoundary";
+import ErrorBoundaryComponent from "~/components/ErrorBoundary";
+import generateService from "~/service/Service";
 
 export const links: Route.LinksFunction = () => {
 	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
@@ -23,14 +24,14 @@ export const links: Route.LinksFunction = () => {
 export const clientLoader = async ({}: Route.ClientLoaderArgs) => {
 	// TODO: fetch carousel data from api return route lists
 	// TODO: Fetch footer data here
-	const imgCarouselData = getImageCarouselContent();
-	const navData = getPublicNavContent();
-	const footerData = getFooterData();
+	const imgCarouselData = generateService().getImageCarouselContent();
+	const navData = generateService().getPublicNavContent();
+	const footerData = generateService().getFooterData();
 	return { imgCarouselData, navData, footerData } as const;
 };
 
 export default function PublicLayout({ loaderData }: Route.ComponentProps) {
-	// const loc = useLocation();
+	const loc = useLocation();
 
 	const routeUrl = import.meta.env.VITE_ROUTE_API_URL;
 
@@ -41,7 +42,16 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 					<Suspense fallback={<>Loading navbar...</>}>
 						<Await
 							resolve={loaderData.navData}
-							errorElement={<>Navbar Error</>}>
+							// errorElement={<>Navbar Error</>}
+							errorElement={
+								<Navbar
+									navigation={{
+										logoURL: "",
+										navbarTitle: "",
+										menus: [],
+									}}
+								/>
+							}>
 							{(val) => <Navbar navigation={val} />}
 						</Await>
 					</Suspense>
@@ -59,11 +69,8 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 					</Suspense>
 				)} */}
 
-					<div className="mx-auto max-w-7xl px-0 py-6 lg:px-0 min-h-[100vh] relative">
-						{/*  Wrap an error boundary here */}
-						<ErrorBoundary>
-							<Outlet />
-						</ErrorBoundary>
+					<div className="mx-auto max-w-7xl px-0 py-2 md:py-4 lg:px-0 min-h-[100vh] relative">
+						<Outlet />
 					</div>
 				</main>
 				{loaderData && (
@@ -105,4 +112,8 @@ const ImageCarouselErrorElement = () => {
 			</div>
 		);
 	}
+};
+
+export const ErrorBoundary = (error: Route.ErrorBoundaryProps) => {
+	return <ErrorBoundaryComponent error={error} />;
 };

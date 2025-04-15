@@ -5,38 +5,31 @@ export default function TopNavbar() {
 	return (
 		<div>
 			<div className="relative w-full bg-rose-700 text-gray-100 p-1 font-semibold gap-2 overflow-x-auto">
-				<div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8  flex flex-row flex-nowrap items-center justify-end">
-					<div className="border-r border-rose-300">
-						<button className="outline-none border-none text-center px-2">
-							<Moon size={18} />
-						</button>
-					</div>
+				<div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-row flex-nowrap items-center justify-end divide-x-1 divide-rose-300">
+					<button className="text-center px-2">
+						<Moon size={18} />
+					</button>
+					<button className="text-center px-2">
+						<AArrowUp size={18} />
+					</button>
 
-					<div className="border-r border-rose-300">
-						<button className="outline-none border-none text-center px-2">
-							<AArrowUp size={18} />
-						</button>
-					</div>
-					<div className="border-r border-rose-300">
-						<button className="outline-none border-none text-center px-2">
-							<AArrowDown size={18} />
-						</button>
-					</div>
-					<div className="border-r border-rose-300">
-						<button className="outline-none border-none px-2 text-center">
-							<LanguagesIcon size={18} />
-						</button>
-					</div>
-					<div className=" border-rose-300">
-						<Link to="/cms/">
-							<button className="text-slate-50 outline-none border-none m-auto relative flex flex-row flex-nowrap items-center gap-1 justify-center px-2">
-								<User size={18} />
-								System Login
-							</button>
-						</Link>
-					</div>
+					<button className="text-center px-2">
+						<AArrowDown size={18} />
+					</button>
+
+					<button className="px-2 text-center">
+						<LanguagesIcon size={18} />
+					</button>
+
+					<Link to="/cms/">
+						<div className="text-slate-50 text-sm inline-flex items-center gap-1 justify-center px-2">
+							<User size={18} />
+							<span>System Login</span>
+						</div>
+					</Link>
 				</div>
 			</div>
+			{/* Second row */}
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex flex-row flex-wrap text-center md:flex-nowrap justify-center items-center relative">
 					<div className="select-none w-max min-w-[18rem]">

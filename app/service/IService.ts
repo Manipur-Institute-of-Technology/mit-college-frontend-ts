@@ -2,6 +2,7 @@ import type {
 	FacultyBasicProfile,
 	FacultyDetailProfile,
 	FacultyStudents,
+	PublicationDetail,
 } from "~/types/api/faculty.type";
 import type {
 	FooterData,
@@ -54,6 +55,8 @@ export interface IService {
 	 * @returns A promise that resolves to the weather data with a cache date.
 	 */
 	getWeatherData(): Promise<Weather & { cacheDate: Date }>;
+
+	getPublicationDetail(pubId: string): Promise<PublicationDetail>;
 
 	/**
 	 * Fetches the basic profile information for a faculty member.

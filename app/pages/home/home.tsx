@@ -1,6 +1,6 @@
 import { genPageMetaData } from "~/utils/meta";
 import { getImageCarouselContent } from "~/mock/services/imageCarousel";
-import { Await, data, Link, useAsyncError } from "react-router";
+import { Await, data, Link, useAsyncError, useLocation } from "react-router";
 import ImageCarousel, {
 	ImageCarouselSkeleton,
 } from "~/components/ImageCarousel/ImageCarrousel";
