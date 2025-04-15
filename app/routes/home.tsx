@@ -23,6 +23,7 @@ import { FetchError } from "~/types/api/FetchError";
 import type { ImageCarouselData, NoticeData } from "~/types/api/resData.type";
 import { useXFetcher } from "~/hooks/useXFetcher";
 import Home from "~/pages/home/home";
+import generateService from "~/service/Service";
 
 export function meta({}: Route.MetaArgs) {
 	return genPageMetaData({});
@@ -47,15 +48,18 @@ export const links: Route.LinksFunction = () => [
 
 export const clientLoader = async () => {
 	// Fetch data separately to handle errors independently
-	const imageCarouselPromise = getImageCarouselContent().catch((error) => {
-		console.log("carousel err from loader");
-		return { error };
-	});
+	const imageCarouselPromise = generateService()
+		.getImageCarouselContent()
+		.catch((error) => {
+			console.log("carousel err from loader");
+			return { error };
+		});
 
-	const noticeListPromise = getNoticeList().catch((error) => {
-		console.log("notice err from loader");
-		return { error };
-	});
+	const noticeListPromise = generateService().getNoticeList();
+	// .catch((error) => {
+	// 	console.log("notice err from loader");
+	// 	return { error };
+	// });
 
 	const getHomePageContent = async () => {
 		await new Promise((res) => setTimeout(res, 7000));

@@ -16,6 +16,7 @@ import { getPublicNavContent } from "./mock/services/navbar";
 import { useEffect, useState } from "react";
 import { type FooterData, type NavbarData } from "./types/api/resData.type";
 import { getFooterData } from "./mock/services/fetchMockData";
+import ErrorPage from "./pages/(common)/error";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -87,8 +88,15 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	const [footerData, setFooterData] = useState<FooterData>();
 	const backgroundImageUrl = "/404_bg.jpg";
 	useEffect(() => {
-		(async () => setNavData(await getPublicNavContent()))();
-		(async () => setFooterData(await getFooterData()))();
+		// TODO: Handle error fetching data
+		try {
+			(async () => setNavData(await getPublicNavContent()))();
+			(async () => setFooterData(await getFooterData()))();
+		} catch (err) {
+			console.error(err);
+			// TODO: catch err properly
+			throw err;
+		}
 	}, []);
 
 	if (isRouteErrorResponse(error) && error.status === 404) {
@@ -100,6 +108,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 					style={{ backgroundImage: `url('${backgroundImageUrl}')` }}>
 					<div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
 						<NotFound />
+						{/* <Error errorCode={error.status} mainMessage={error.statusText} subMessage={""}/> */}
 					</div>
 				</main>
 				{footerData && <Footer footerData={footerData} />}

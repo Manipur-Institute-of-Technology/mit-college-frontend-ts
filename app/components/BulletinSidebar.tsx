@@ -4,8 +4,8 @@ import { EmptyList, Skel } from "./CardBulletin/AuxComponent";
 import { Await } from "react-router";
 import CardBulletin from "./CardBulletin/CardBulletin";
 import generateService from "~/service/Service";
-import ErrorBoundary from "./ErrorElement";
-import ErrorElement from "./ErrorElement";
+import ErrorBoundary from "./ErrorElementAsync";
+import ErrorElement from "./ErrorElementAsync";
 
 export type BulletinSideBarProp = {
 	noticeListData: Promise<
@@ -85,7 +85,7 @@ const BulletinSideBar: React.FC<BulletinSideBarProp> = ({
 									mssg="No Information"
 								/>
 							);
-						// else return <ErrorBoundary err={(vals as { error: any }).error} />;
+						// else return <ErrorElement />;
 					}}
 				</Await>
 			</Suspense>
@@ -95,7 +95,11 @@ const BulletinSideBar: React.FC<BulletinSideBarProp> = ({
 					{(vals) => {
 						if (Array.isArray(vals) && vals.length > 0)
 							return (
-								<CardBulletin cardTitle="News" lists={vals} />
+								<CardBulletin
+									cardTitle="News"
+									lists={vals}
+									marques={false}
+								/>
 							);
 						else if (Array.isArray(vals) && vals.length === 0)
 							return (

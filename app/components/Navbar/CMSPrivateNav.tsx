@@ -40,6 +40,7 @@ const CMSPrivateNav: React.FC<{
 						<div>
 							<div className="hidden md:block">
 								<button
+									className="hover:cursor-pointer"
 									onClick={() =>
 										setSidePanelOpen(!sidePanelOpen)
 									}>

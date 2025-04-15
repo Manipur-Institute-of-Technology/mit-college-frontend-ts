@@ -97,7 +97,84 @@ Make sure to deploy the output of `npm run build`
 
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+- TailwindCSS, with headless UI that support tailwindCSS
+
+### Contributors
+
+To contribute follow the steaps as follows:
+
+1. Create a fork of this repo.
+2. Clone your forked repo to you device.
+3. Configure your git, add the remote repository:
+    ```bash
+    git remote add upstream <src-repo-url>
+    git remote add origin <forked-repo-url>
+    ```
+4. To make edit, create a local branch using your username: `git branch <username>`
+5. After manually or using a unit test lib to test your code, commit the code to your local branch, (please, used conventional commit):
+    ```bash
+    git commit -m <username>
+    git push origin <username>  # push commit to your forked repo branch
+    ```
+6. Then, submit a PR to merge with the `dev` branch
+
+## Development Guidelines
+
+### Rules - PR
+
+- Do not commit/push/merge directly on `main/master` branch, used the `dev` branch
+- `main/master` will be used for releasing only
+
+### Code Style
+
+- We use Prettier for code formatting
+- Configure your editor to format on save
+
+### Git Commit Guidelines
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Types:
+
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation changes
+- style: Code style changes (formatting, etc.)
+- refactor: Code refactoring
+- test: Adding/modifying tests
+- chore: Build process or auxiliary tool changes
+
+Example:
+
+```
+feat(auth): add user authentication endpoint
+```
+
+### Code Quality
+
+- Run linting before commits:
+
+```bash
+npm run lint
+```
+
+- Run tests:
+
+```bash
+npm test
+```
+
+## License
+
+Unlicensed
 
 ---
 

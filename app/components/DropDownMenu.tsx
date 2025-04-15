@@ -7,6 +7,7 @@ const DropDownMenu: React.FC<{
 	selectedIndx: number;
 	setSelectedIndx: React.Dispatch<React.SetStateAction<number>>;
 	menuItemClassName?: string;
+	menuItemContainerClassName?: string;
 	menuClassName?: string;
 	className?: string;
 }> = ({
@@ -15,6 +16,7 @@ const DropDownMenu: React.FC<{
 	label,
 	menus,
 	className = "",
+	menuItemContainerClassName = "",
 	menuItemClassName = "",
 	menuClassName = "",
 }) => {
@@ -22,9 +24,11 @@ const DropDownMenu: React.FC<{
 
 	return (
 		<div className={className}>
-			<div className="inline-flex flex-row items-center gap-x-2">
+			<div className="inline-flex flex-row items-center gap-x-2 hover:cursor-pointer">
 				{label && label.length !== 0 && (
-					<label className="block text-sm/6 font-medium text-gray-800 capitalize">
+					<label
+						className="block text-sm/6 font-medium text-gray-800 capitalize text-nowrap"
+						onClick={() => setOpenDropDown(true)}>
 						{label}
 					</label>
 				)}
@@ -47,7 +51,7 @@ const DropDownMenu: React.FC<{
 					</div>
 
 					<div
-						className={`${!openDropDown && "opacity-0 h-[0]"} transition-[height] absolute z-10 mt-1 mr-0 max-h-56 w-fit min-w-[4rem] overflow-auto rounded-md bg-white py-1 text-base ring-1 shadow-lg ring-black/5 focus:outline-hidden data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm`}>
+						className={`${!openDropDown && "opacity-0 h-[0]"} transition-[height] absolute z-10 mt-1 mr-0 max-h-56 w-fit min-w-[4rem] overflow-auto rounded-md bg-white py-1 text-base ring-1 shadow-lg ring-black/5 focus:outline-hidden data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm ${menuItemContainerClassName}`}>
 						{menus.map((menu, i) => (
 							<div
 								key={i}

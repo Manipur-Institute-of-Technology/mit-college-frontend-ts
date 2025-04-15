@@ -19,7 +19,7 @@ export const clientLoader = ({
 	const url = new URL(request.url);
 	const searchParams = Object.fromEntries(url.searchParams);
 	const { pageSize, pageNum, sortBy } = searchParams;
-	console.log(pageSize, pageNum, sortBy);
+	console.log(searchParams);
 
 	const { facultyId } = params;
 	try {

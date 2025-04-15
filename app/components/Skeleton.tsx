@@ -5,11 +5,15 @@ const Skeleton: React.FC<{ className?: string }> = ({ className = "" }) => {
 	return (
 		<div
 			className={
-				"w-full h-full border border-gray-300 rounded-md p-2 " +
+				"w-full h-full bg-gray-300 rounded-md animate-gradient-skel-bg skel-bg border border-slate-300 " +
 				className
-			}>
-			<div className="w-full bg-gray-300 my-1 rounded-md .animate-gradient-skel-bg skel-bg" />
-		</div>
+			}
+		/>
+		// <div
+		// 	className={
+		// 		"relative w-full h-full border border-gray-300 rounded-md " + className
+		// 	}>
+		// </div>
 	);
 };
 export default Skeleton;

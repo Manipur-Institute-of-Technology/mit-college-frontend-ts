@@ -8,12 +8,12 @@ export const ResearchSections: React.FC<FacultyDetailProfile> = (props) => {
 	return (
 		<div className="relative w-full font-roboto">
 			<Section header="research areas">
-				<div className="flex flex-row flex-wrap gap-2">
+				<div className="flex flex-row flex-wrap gap-2 py-2">
 					{props.researchDetail.topicOfResearchInterests.map(
 						(d, i) => (
 							<div
 								key={i}
-								className="capitalize border rounded-full p-1 px-2 text-md bg-slate-200 font-roboto text-slate-700 font-thin">
+								className="capitalize border rounded-full p-1 px-2 md:text-md text-sm bg-slate-200 font-roboto text-slate-700 font-thin">
 								{d}
 							</div>
 						),

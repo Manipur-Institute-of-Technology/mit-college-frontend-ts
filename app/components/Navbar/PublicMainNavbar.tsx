@@ -63,21 +63,23 @@ export default ({ navigation }: { navigation: NavbarData }) => {
 
 	return (
 		<nav
-			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-[999] m-0 sticky top-0 transition-[top] duration-700`}>
+			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-9 m-0 sticky top-0 transition-[top] duration-700`}>
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="max-w-6xl mx-auto px-4">
 					<div className="flex justify-between">
 						<div className="space-x-7 hidden lg:flex">
-							<Link to={"/"}>
-								<div className="bg-white absolute border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 origin-top transition-transform duration-300">
-									<img
-										src={navigation.logoURL}
-										alt={`logo of ${navigation.navbarTitle}`}
-										height={60}
-										width={60}
-									/>
-								</div>
-							</Link>
+							{navigation.logoURL && (
+								<Link to={"/"}>
+									<div className="bg-white absolute border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 origin-top transition-transform duration-300">
+										<img
+											src={navigation.logoURL}
+											alt={`logo of ${navigation.navbarTitle}`}
+											height={60}
+											width={60}
+										/>
+									</div>
+								</Link>
+							)}
 						</div>
 
 						{/* Desktop menu */}
