@@ -4,8 +4,8 @@ import { EmptyList, Skel } from "./CardBulletin/AuxComponent";
 import { Await } from "react-router";
 import CardBulletin from "./CardBulletin/CardBulletin";
 import generateService from "~/service/Service";
-import ErrorBoundary from "./ErrorElement";
-import ErrorElement from "./ErrorElement";
+import ErrorBoundary from "./ErrorElementAsync";
+import ErrorElement from "./ErrorElementAsync";
 
 export type BulletinSideBarProp = {
 	noticeListData: Promise<
