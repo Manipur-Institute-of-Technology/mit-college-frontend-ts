@@ -56,6 +56,7 @@ export const predefinedRoutes = [
 		route("/about", "./routes/about.tsx"),
 		route("/contact", "./routes/contact.tsx"),
 		route("/editor", "./routes/editor.tsx"),
+		route("/publication/:pubId", "./routes/publication/[pubId].tsx"),
 		// faculty routes
 		...prefix("/faculty", [
 			index("./routes/faculty/index.tsx"), // Faculty Search Routes

@@ -6,3 +6,8 @@
 - Complete Error Handling page!
 - change component that used serice not from mockService class, to used it 
 - Automatic site map generator
+
+- Implement window width listener hook (useWindowWidth), to be used in wideBar chart component
+- Implement scrolltoTop component, implement a usePageTop hook first (display the scroll to top elm inly when we are more than 100vh/50 y axis position)
+- Feat TODO: Hide public navbar on scroll down, reappear on scroll up
+    - Implement scroll direction hook

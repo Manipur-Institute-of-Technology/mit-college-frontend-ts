@@ -69,7 +69,8 @@ export const Stats: React.FC<{ studentStats: studentStatsType }> = ({
 					count={studentStats.otherStudenCount}
 				/>
 			</div>
-			<div className="p-2 rounded-md my-2 shadow-md bg-white">
+
+			<div className="p-2 rounded-b-md my-2 shadow-md bg-white border-t-4 border-t-slate-500">
 				<div className="text-xl font-semibold my-2">Project Areas</div>
 				<div className="inline-flex flex-wrap flex-direction gap-2">
 					{Array.from(studentStats.researchTopicStats.entries())

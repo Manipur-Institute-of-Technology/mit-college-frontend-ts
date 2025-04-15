@@ -43,6 +43,7 @@ export const getFooterData = async (): Promise<FooterData> => {
 export const getWeatherData = async (): Promise<
 	Weather & { cacheDate: Date }
 > => {
+	// TODO: Fetch weather api url from the server and fetch the weather data with the return url
 	try {
 		const res = await fetch("/mock/weather.json");
 		let data = {

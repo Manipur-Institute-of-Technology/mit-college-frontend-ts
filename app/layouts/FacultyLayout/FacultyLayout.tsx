@@ -1,47 +1,13 @@
-import { getFacultyBasicProfile } from "~/mock/services/fetchMockData";
-import type { Route } from "../+types/FacultyLayout";
-import React, { Suspense, useState } from "react";
+import React, { Suspense } from "react";
 import { Await } from "react-router";
 import type { FacultyBasicProfile } from "~/types/api/faculty.type";
-import {
-	capitalizeString,
-	capitalizeWords,
-	formatCamelCaseString,
-} from "~/utils/format";
-import {
-	ArrowRight,
-	ArrowUpRight,
-	ChevronDown,
-	Contact,
-	Copy,
-	Download,
-	EllipsisVertical,
-	ExternalLink,
-	Globe,
-	Link,
-	Mail,
-	MapPin,
-	Phone,
-	Share2,
-} from "lucide-react";
-import { FaOrcid } from "react-icons/fa";
-import { socialIconMap } from "~/constants/socialIconMap";
-import type { IconType } from "react-icons";
-import {
-	DialogTitle,
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuItems,
-} from "@headlessui/react";
 import { Outlet } from "react-router";
-import { useModal } from "~/hooks/useModal";
 import { FacultyBasicProfileDataContext } from "~/context/FacultyBasicProfileDataContext";
-import moment from "moment";
 import generateService from "~/service/Service";
 import { NavTabs } from "./NavTabs";
 import { ContactTabContainer } from "./ContactTabContainer";
 import { FacultyProfileCard } from "./FacultyProfileCard";
+import type { Route } from "./+types/FacultyLayout";
 
 export const clientLoader = ({ params }: Route.ClientLoaderArgs) => {
 	// TODO: Test with non existent or invalid ID

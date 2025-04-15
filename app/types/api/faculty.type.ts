@@ -95,6 +95,17 @@ export type Publication = {
 	authors: { name: string; profileLink: string }[];
 };
 
+export type PublicationDetail = {
+	paperTitle: string;
+	doi: string | null;
+	downloadLink: string | null;
+	paperLink: string | null;
+	type: string;
+	publicationDate: string;
+	authors: { name: string; profileLink: string | null }[];
+	abstract: string;
+};
+
 type ResearchDetail = {
 	topicOfResearchInterests: string[];
 	researchInterests: string;
