@@ -63,7 +63,7 @@ export default ({ navigation }: { navigation: NavbarData }) => {
 
 	return (
 		<nav
-			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-[999] m-0 sticky top-0 transition-[top] duration-700`}>
+			className={`bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg z-9 m-0 sticky top-0 transition-[top] duration-700`}>
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="max-w-6xl mx-auto px-4">
 					<div className="flex justify-between">
