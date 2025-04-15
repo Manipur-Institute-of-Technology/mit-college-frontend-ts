@@ -1,7 +1,7 @@
 import { DialogTitle } from "@headlessui/react";
 import { Calendar, Filter, Loader2, Scroll } from "lucide-react";
-import React, { useMemo, useState } from "react";
-import WideBarChart from "~/components/WideBarChart";
+import React, { lazy, Suspense, useMemo, useState } from "react";
+// import WideBarChart from "~/components/WideBarChart";
 import { PublicationListItem } from "./PublicationLists";
 
 const LargePublicationChart: React.FC<{
@@ -66,6 +66,8 @@ const LargePublicationChart: React.FC<{
 		},
 	];
 
+	const WideBarChart = lazy(() => import("~/components/WideBarChart"));
+
 	return (
 		<div className="mt-2 max-w-full w-7xl">
 			<DialogTitle
@@ -91,7 +93,9 @@ const LargePublicationChart: React.FC<{
 					<Filter size={18} />
 				</button>
 
-				<WideBarChart {...barProps} />
+				<Suspense fallback={<>Loading...</>}>
+					<WideBarChart {...barProps} />
+				</Suspense>
 			</div>
 
 			<div className="py-4">

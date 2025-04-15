@@ -1,10 +1,10 @@
 import moment from "moment";
 import type { FacultyDetailProfile } from "~/types/api/faculty.type";
-import React, { useEffect, useMemo } from "react";
+import React, { lazy, Suspense, useEffect, useMemo } from "react";
 import { Fullscreen, Loader2 } from "lucide-react";
 import { useModal } from "~/hooks/useModal";
 
-import BarChart from "~/components/BarChart";
+// import BarChart from "~/components/BarChart";
 import ModalBody from "./LargePublicationChart";
 
 const PublicationChart: React.FC<FacultyDetailProfile> = (props) => {
@@ -44,6 +44,8 @@ const PublicationChart: React.FC<FacultyDetailProfile> = (props) => {
 		[width, height],
 	);
 
+	const BarChart = lazy(() => import("~/components/BarChart"));
+
 	return (
 		<div className="p-2 rounded-md bg-slate-100 shadow-md font-roboto w-full border border-slate-300">
 			<div className="inline-flex items-center justify-between w-full px-2 py-1">
@@ -64,12 +66,14 @@ const PublicationChart: React.FC<FacultyDetailProfile> = (props) => {
 					scrollbarWidth: "thin",
 					scrollbarColor: "#cbd5e1 #f1f5f9",
 				}}>
-				<svg
-					className="bg-slate-100 rounded-md mx-auto"
-					width={width}
-					height={height}>
-					<BarChart {...barProps} />
-				</svg>
+				<Suspense fallback={<>Loading Chart</>}>
+					<svg
+						className="bg-slate-100 rounded-md mx-auto"
+						width={width}
+						height={height}>
+						<BarChart {...barProps} />
+					</svg>
+				</Suspense>
 			</div>
 
 			<div
