@@ -78,31 +78,42 @@ function DepartmentData({ name }: commonProps) {
                 </div>
               </div>
               {/* Lab and Facilities Section */}
+              {(item.Images.some((img) => img.link) ||
+                item.MoreInfo[0]?.Facilities) && (
                 <div className="p-6 mt-6 space-y-6 rounded-lg">
                   {/* Lab Section */}
-                  <h2 className="text-xl font-semibold">Lab</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {item.Images.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img.link}
-                        alt={img.caption}
-                        className="rounded-md shadow-md border object-cover"
-                      />
-                    ))}
-                  </div>
+                  {item.Images.some((img) => img.link) && (
+                    <>
+                      <h2 className="text-xl font-semibold">Lab</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {item.Images.map((img, idx) =>
+                          img.link ? (
+                            <img
+                              key={idx}
+                              src={img.link}
+                              alt={img.caption || `Lab Image ${idx + 1}`}
+                              className="rounded-md shadow-md border object-cover"
+                            />
+                          ) : null
+                        )}
+                      </div>
+                    </>
+                  )}
 
                   {/* Facilities Section */}
-                  <div>
-                    <h2 className="text-xl font-semibold mb-2">Facilities</h2>
-                    <p
-                      style={{ whiteSpace: "pre-wrap" }}
-                      className="text-justify text-gray-800 whitespace-pre-line"
-                    >
-                      {item.MoreInfo[0].Facilities}
-                    </p>
-                  </div>
+                  {item.MoreInfo[0]?.Facilities && (
+                    <div>
+                      <h2 className="text-xl font-semibold mb-2">Facilities</h2>
+                      <p
+                        style={{ whiteSpace: "pre-wrap" }}
+                        className="text-justify text-gray-800 whitespace-pre-line"
+                      >
+                        {item.MoreInfo[0].Facilities}
+                      </p>
+                    </div>
+                  )}
                 </div>
+              )}
 
               {/* <h1>{item.DeptCode}</h1> */}
             </>

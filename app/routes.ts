@@ -28,6 +28,13 @@ export default [
     route("ECE_dept", "./routes/ece.tsx"),
     route("CE_dept", "./routes/ce.tsx"),
     route("ME_dept", "./routes/me.tsx"),
+    route("Fire_Safety_Certificate", "./routes/fsc.tsx"),
+    route("Mandatory_Disclosures", "./routes/md.tsx"),
+    route("Ragging", "./routes/ragging.tsx"),
+    route("Faculty_Development_Program", "./routes/fdp.tsx"),
+    route("Placement", "./routes/placement.tsx"),
+    route("Campus", "./routes/campus.tsx"),
+    route("Classroom", "./routes/classroom.tsx"),
   ]),
   // CMS Route
   ...prefix("cms", [
