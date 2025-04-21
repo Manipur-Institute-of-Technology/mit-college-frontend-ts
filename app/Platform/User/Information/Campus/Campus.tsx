@@ -1,10 +1,10 @@
 import Informations from "~/Common/Informations/Informations";
-import Campus from "../";
+import Information from "../Information";
 
-export default function Info() {
+export default function Campus_Info() {
   return (
     <>
-      <Information name="Fire Safety Certificate" />
+      <Information name="Campus" />
       <Informations />
     </>
   );
