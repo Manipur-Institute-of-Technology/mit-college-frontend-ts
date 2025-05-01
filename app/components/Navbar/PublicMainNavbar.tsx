@@ -409,10 +409,10 @@ const MobileNav: React.FC<{
 	children,
 }) => {
 	return (
-		<div className="lg:hidden max-h-[100vh] overflow-y-auto sticky">
+		<div className="lg:hidden max-h-[100vh] overflow-y-auto sticky z-10">
 			{/* Mobile menu button */}
 			<div
-				className={`lg:hidden sticky top-0 transition-[top] duration-700 w-[100%] text-center bg-rose-600/70 backdrop-blur-sm z-[99]`}>
+				className={`lg:hidden sticky top-0 transition-[top] duration-700 w-[100%] text-center bg-rose-600/70 backdrop-blur-sm`}>
 				<div className="inline-block rounded-full w-fit bg-white p-1 my-1">
 					<Link to={"/"}>
 						<img

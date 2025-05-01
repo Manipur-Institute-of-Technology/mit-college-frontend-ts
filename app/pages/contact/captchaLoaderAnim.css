@@ -1,0 +1,17 @@
+.captchaLoaderColorAnim {
+	animation: captchaLoaderColorKF 2s linear 0s infinite alternate;
+}
+
+@keyframes captchaLoaderColorKF {
+	0% {
+		border-color: green;
+	}
+
+	50% {
+		border-color: orange;
+	}
+
+	100% {
+		border-color: blue;
+	}
+}

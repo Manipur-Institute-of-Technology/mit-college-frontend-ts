@@ -103,7 +103,7 @@ export default function Home({
 	} as const;
 
 	return (
-		<div className="px-0 md:px-2">
+		<div className="px-0 md:px-2 max-w-7xl mx-auto">
 			{/* <Suspense fallback={<ImageCarouselSkeleton />}>
                 <Await resolve={data} errorElement={<>An error occured...</>}>
                     {(val) => (val.length > 0 ? <ImageCarousel data={val} /> : null)}
@@ -122,7 +122,7 @@ export default function Home({
 			</div>
 
 			{/* Desktop View */}
-			<div className="hidden md:grid grid-cols-12 w-full gap-0.5 px-1 relative">
+			<div className="hidden lg:grid grid-cols-12 w-full gap-0.5 px-1 relative">
 				<div
 					className="col-span-3 space-y-1.5 overflow-y-auto sticky top-[4rem] h-[90vh]"
 					style={{ ...scrollbarStyle }}>
@@ -137,16 +137,18 @@ export default function Home({
 				</div>
 			</div>
 			{/* MobileView */}
-			<div className="md:hidden w-full relative space-y-2 px-1">
+			<div className="lg:hidden w-full relative space-y-2 px-1">
 				<div className="h-full">
 					<XPreviewEditor loadSaveText={getHomePageContent} />
 				</div>
 				<div className="space-y-2">
-					<BulletinSidebar
-						noticeListData={noticeListData}
-						informationListData={noticeListData}
-						newsListData={noticeListData}
-					/>
+					<div className="flex flex-row flex-wrap gap-1">
+						<BulletinSidebar
+							noticeListData={noticeListData}
+							informationListData={noticeListData}
+							newsListData={noticeListData}
+						/>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -79,7 +79,7 @@ const CardBulletinStatic: React.FC<CardBulletinProps> = ({
 	return (
 		<div className="relative border border-gray-300 shadow-md rounded-md bg-gray-50 w-full overflow-y-clip">
 			<div
-				className="bg-gray-50 border border-gray-300 shadow-lg p-2 flex items-center justify-between max-w-[100vw] rounded-t-md z-[99] sticky"
+				className="bg-gray-50 border border-gray-300 shadow-lg p-2 flex items-center justify-between max-w-[100vw] rounded-t-md z-5 sticky"
 				style={{
 					boxShadow: "0 2px 4px 0 rgba(0,0,0,0.1)",
 				}}>

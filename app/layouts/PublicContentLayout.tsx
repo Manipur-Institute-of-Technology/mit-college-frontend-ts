@@ -6,7 +6,7 @@ import ImageCarousel, {
 } from "../components/ImageCarousel/ImageCarrousel";
 import type { Route } from "./+types/PublicContentLayout";
 import { getImageCarouselContent } from "~/mock/services/imageCarousel";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import "./background.css";
 import { getPublicNavContent } from "~/mock/services/navbar";
@@ -16,6 +16,7 @@ import PublicFooterSkel from "~/components/Footer/PublicFooterSkel";
 import CustomRoutesProvider from "~/context/CustomRoutesProvider";
 import ErrorBoundaryComponent from "~/components/ErrorBoundary";
 import generateService from "~/service/Service";
+import ErrorPage from "~/pages/(common)/error";
 
 export const links: Route.LinksFunction = () => {
 	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
@@ -34,10 +35,23 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 	const loc = useLocation();
 
 	const routeUrl = import.meta.env.VITE_ROUTE_API_URL;
+	const [online, setOnline] = useState<boolean>(true);
+
+	useEffect(() => {
+		window.addEventListener("online", () => {
+			setOnline(navigator.onLine);
+		});
+		return () => window.removeEventListener("online", () => {});
+	}, []);
 
 	return (
 		<CustomRoutesProvider routeSrcUrl={routeUrl!}>
 			<>
+				{!online && (
+					<div className="w-full bg-rose-200 text-center">
+						Offline!
+					</div>
+				)}
 				{loaderData && (
 					<Suspense fallback={<>Loading navbar...</>}>
 						<Await
@@ -69,8 +83,17 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 					</Suspense>
 				)} */}
 
-					<div className="mx-auto max-w-7xl px-0 py-2 md:py-4 lg:px-0 min-h-[100vh] relative">
-						<Outlet />
+					{/* <div className="mx-auto max-w-7xl px-0 py-2 md:py-4 lg:px-0 min-h-[100vh] relative"> */}
+					<div className="mx-auto w-full min-h-[100vh] relative">
+						{online ? (
+							<Outlet />
+						) : (
+							<ErrorPage
+								errorCode={503}
+								mainMessage="Network Disconnected"
+								subMessage="It seems you are offline. Please reconnect to the internet and try again."
+							/>
+						)}
 					</div>
 				</main>
 				{loaderData && (
