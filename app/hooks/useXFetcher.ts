@@ -6,6 +6,7 @@ type XFetcher<T> = {
 	error: string | undefined;
 	load: (url: string, init?: RequestInit) => Promise<void>;
 	xFetch: (cb: () => Promise<T>) => Promise<void>;
+	reset: () => void;
 };
 
 /**
@@ -85,5 +86,14 @@ export const useXFetcher = <T = any>(
 		}
 	};
 
-	return { data, state, error, load, xFetch };
+	return {
+		data,
+		state,
+		error,
+		load,
+		xFetch,
+		reset: () => {
+			setData(undefined);
+		},
+	};
 };

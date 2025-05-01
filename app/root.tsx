@@ -1,5 +1,6 @@
 import {
 	isRouteErrorResponse,
+	Link,
 	Links,
 	Meta,
 	Outlet,
@@ -103,14 +104,29 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 		return (
 			<>
 				{navData && <Navbar navigation={navData} />}
-				<main
+				<main>
+					<ErrorPage
+						errorCode={error.status}
+						mainMessage={error.statusText}
+						subMessage={
+							<>
+								It may have moved or may no longer exist. If you
+								reached this error from a link on our site,
+								please leave us{" "}
+								<Link to={"github.com"}> feedback</Link>, so we
+								can fix the problem. Regardless, let's help you
+								get where you want to go.
+							</>
+						}
+					/>
+				</main>
+				{/* <main
 					className="bg-slate-800  bg-blend-overlay bg-fixed bg-center bg-no-repeat bg-cover"
 					style={{ backgroundImage: `url('${backgroundImageUrl}')` }}>
 					<div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
 						<NotFound />
-						{/* <Error errorCode={error.status} mainMessage={error.statusText} subMessage={""}/> */}
 					</div>
-				</main>
+				</main> */}
 				{footerData && <Footer footerData={footerData} />}
 			</>
 		);

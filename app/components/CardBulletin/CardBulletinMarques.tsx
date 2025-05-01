@@ -76,7 +76,7 @@ const CardBulletinMarques: React.FC<CardBulletinProps> = ({
 			}}
 			className="relative md:max-h-[30vh] max-h-[50vh] overflow-y-hidden border border-gray-300 shadow-md rounded-md bg-gray-50 w-full">
 			<div
-				className="bg-gray-50 border border-gray-300 shadow-lg p-2 flex items-center justify-between max-w-[100vw] rounded-t-md w-full z-[10] sticky top-0"
+				className="bg-gray-50 border border-gray-300 shadow-lg p-2 flex items-center justify-between max-w-[100vw] rounded-t-md w-full z-5 sticky top-0"
 				style={{
 					boxShadow: "0 2px 4px 0 rgba(0,0,0,0.1)",
 				}}>

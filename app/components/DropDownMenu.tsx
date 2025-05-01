@@ -27,7 +27,7 @@ const DropDownMenu: React.FC<{
 			<div className="inline-flex flex-row items-center gap-x-2 hover:cursor-pointer">
 				{label && label.length !== 0 && (
 					<label
-						className="block text-sm/6 font-medium text-gray-800 capitalize text-nowrap"
+						className="block text-sm/6 font-medium capitalize text-nowrap"
 						onClick={() => setOpenDropDown(true)}>
 						{label}
 					</label>
