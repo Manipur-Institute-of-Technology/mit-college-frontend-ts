@@ -7,7 +7,7 @@
  * @returns A throttled version of the function. If the function is called during throttling, a cache return value of the previous called is returned
  *
  */
-
+// TODO: Remove react dependencies
 import { createRef } from "react";
 
 export const throttle = <T extends (...args: any[]) => any>(
@@ -28,4 +28,37 @@ export const throttle = <T extends (...args: any[]) => any>(
 			return cache as ReturnType<T>;
 		}
 	} as T;
+};
+
+// TODO: need check
+export const debounce = (func: Function, wait: number) => {
+	let timeoutId: number | null = null;
+	return function (...args: any[]) {
+		if (timeoutId) {
+			window.clearTimeout(timeoutId); // cancel currently running callback
+			timeoutId = window.setTimeout(() => func(...args), wait); // start new timeout callback
+		} else {
+			timeoutId = window.setTimeout(() => {
+				func(...args);
+				timeoutId = null;
+			}, wait);
+		}
+	} satisfies Function;
+};
+
+/**
+ *
+ * @param timeMs millisencods to sleep
+ * @returns a void promise
+ * @example
+ * ```js
+ * 	const mockCompute = async (): number => {
+ * 		const a = 9999
+ * 		await sleep(4000) // sleep for 4sec
+ * 		return a
+ * }
+ * ```
+ */
+export const sleep = (timeMs: number): Promise<void> => {
+	return new Promise((res, _) => window.setTimeout(() => res(), timeMs));
 };

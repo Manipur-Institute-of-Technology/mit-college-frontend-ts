@@ -4,7 +4,8 @@ import { useModal } from "~/hooks/useModal";
 import { DeskProfileCard } from "./DesktopProfileCard";
 import { MobileProfileCard } from "./MobileProfileCard";
 import moment from "moment";
-import { Share2 } from "lucide-react";
+import { ArrowLeft, Share2 } from "lucide-react";
+import { Link } from "react-router";
 
 export const FacultyProfileCard: React.FC<FacultyBasicProfile> = (props) => {
 	const { setIsOpen, ModalComponent } = useModal();
@@ -19,6 +20,14 @@ export const FacultyProfileCard: React.FC<FacultyBasicProfile> = (props) => {
 
 	return (
 		<div className="p-2 w-full text-center font-roboto bg-slate-700 text-slate-200 relative rounded-t-lg">
+			<div className="w-full text-left md:mb-0 mb-4">
+				<Link
+					to={"/faculty"}
+					className="w-fit border border-dashed p-2 text-left uppercase text-sm inline-flex items-center gap-2 rounded-md">
+					<ArrowLeft size={18} />
+					<span>Back to all faculty</span>
+				</Link>
+			</div>
 			{/* Desk */}
 			<div className="hidden md:block">
 				<DeskProfileCard {...props} />

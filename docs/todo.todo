@@ -11,3 +11,5 @@
 - Implement scrolltoTop component, implement a usePageTop hook first (display the scroll to top elm inly when we are more than 100vh/50 y axis position)
 - Feat TODO: Hide public navbar on scroll down, reappear on scroll up
     - Implement scroll direction hook
+
+TODO: add feedback button

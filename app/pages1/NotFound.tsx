@@ -3,7 +3,7 @@ import { Link } from "react-router";
 export default function NotFound() {
 	return (
 		<div className="relative w-full min-h-[80vh] text-center text-gray-100 flex items-center">
-			<div className="m-auto w-full backdrop-blur-sm">
+			<div className="m-auto w-full backdrop-blur-sm ">
 				<div className="relative m-auto max-w-fit w-[32rem] p-4  shadow-lg rounded-lg">
 					<div className="text-[2rem] font-bold ">ERROR</div>
 					<div className="text-[8rem] font-bold ">404</div>
