@@ -6,6 +6,11 @@ export function meta({}: Route.MetaArgs) {
 	return genPageMetaData({ title: "MIT | Contact" });
 }
 
+export const links: Route.LinksFunction = () => [
+	// Can be override in another page
+	{ rel: "icon", href: "/favicon.ico" },
+];
+
 export default function Contact() {
 	return <ContactUsPage />;
 }

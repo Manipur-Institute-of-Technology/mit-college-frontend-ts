@@ -37,6 +37,7 @@
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.0",
 		"@commitlint/config-conventional": "^19.8.0",
+		"@netlify/vite-plugin-react-router": "^1.0.1",
 		"@react-router/dev": "^7.3.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/d3": "^7.4.3",
