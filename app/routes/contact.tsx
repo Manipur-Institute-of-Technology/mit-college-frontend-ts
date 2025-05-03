@@ -8,6 +8,7 @@ export function meta({}: Route.MetaArgs) {
 
 export const links: Route.LinksFunction = () => [
 	// Can be override in another page
+	// TODO: Fix favicon icon override
 	{ rel: "icon", href: "/favicon.ico" },
 ];
 

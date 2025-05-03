@@ -5,7 +5,12 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import netlifyPlugin from "@netlify/vite-plugin-react-router";
 
 export default defineConfig({
-	plugins: [tailwindcss(), reactRouter(), tsconfigPaths(), netlifyPlugin()],
+	plugins: [
+		tailwindcss(),
+		reactRouter(),
+		tsconfigPaths(),
+		// netlifyPlugin()
+	],
 	server: {
 		allowedHosts: ["puny-zebras-travel.loca.lt"],
 	},

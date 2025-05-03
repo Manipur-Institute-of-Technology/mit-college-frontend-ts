@@ -34,7 +34,7 @@ export const links: Route.LinksFunction = () => [
 	// { rel: "icon", href: "/Manipur_University_Logo.png" },
 	{ rel: "icon", href: "/favicon.ico" },
 ];
-
+// TODO: Feedback button stick on side of viewport
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">

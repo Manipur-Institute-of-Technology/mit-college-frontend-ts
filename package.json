@@ -6,6 +6,7 @@
 		"build": "react-router build",
 		"dev": "react-router dev",
 		"devh": "react-router dev --host",
+		"preview": "vite preview",
 		"start": "react-router-serve ./build/server/index.js",
 		"typecheck": "react-router typegen && tsc",
 		"tgn": "react-router typegen",
