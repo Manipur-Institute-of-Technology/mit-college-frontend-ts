@@ -17,6 +17,10 @@ import CustomRoutesProvider from "~/context/CustomRoutesProvider";
 import ErrorBoundaryComponent from "~/components/ErrorBoundary";
 import generateService from "~/service/Service";
 import ErrorPage from "~/pages/(common)/error";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { debounce } from "~/utils/util";
+import { useScrollPosition } from "~/hooks/useScrollPosition";
+import ScrollJumpBtn from "~/components/ScrollJumpBtn";
 
 export const links: Route.LinksFunction = () => {
 	return [{ rel: "icon", href: "./Manipur_University_Logo.png" }];
@@ -95,6 +99,9 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 							/>
 						)}
 					</div>
+
+					{/* <FeedBackButton /> */}
+					<ScrollJumpBtn />
 				</main>
 				{loaderData && (
 					<Suspense fallback={<PublicFooterSkel />}>
@@ -109,6 +116,16 @@ export default function PublicLayout({ loaderData }: Route.ComponentProps) {
 		</CustomRoutesProvider>
 	);
 }
+
+// TODO: feedback button
+// Retrive which url to submit feedabck from API in layout loader
+// export function FeedBackButton() {
+// 	return (
+// 		<button className="fixed z-10 [writing-mode:sideways-lr] top-[80%] -translate-y-[50%] left-[100%] translate-[-100%] px-2 py-1 text-rose-50 text-sm font-semibold rounded-l-md bg-rose-700 hover:cursor-pointer hover:bg-rose-800">
+// 			Feedback
+// 		</button>
+// 	);
+// }
 
 const ImageCarouselErrorElement = () => {
 	const err = useAsyncError();
