@@ -83,7 +83,9 @@ const CardBulletinStatic: React.FC<CardBulletinProps> = ({
 				style={{
 					boxShadow: "0 2px 4px 0 rgba(0,0,0,0.1)",
 				}}>
-				<div className="text-lg font-bold">{cardTitle}</div>
+				<div className="text-lg text-slate-600 font-bold">
+					{cardTitle}
+				</div>
 				<div className="flex flex-nowrap w-fit gap-x-2">
 					{moreViewLink && (
 						<div

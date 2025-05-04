@@ -15,4 +15,11 @@
 TODO: add feedback button, loading bar, scroll position bar
 
 
-TODO: custom logger, functionality to log or not dependeing on env variable
+TODO: custom logger, functionality to log or not depending on env variable
+
+⚠️⚠️⚠️ TODO: Make lexical editor or lexical preview component import `lazy load` to reduce bundle size
+
+
+// TODO: get meta deta, description for custom route page only
+// Perform another fetch ops to get page description - no need to fetch description for non custom route as they can be provided beforehand
+// write another page metadata generator for custom routes pages only
