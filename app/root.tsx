@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { type FooterData, type NavbarData } from "./types/api/resData.type";
 import { getFooterData } from "./mock/services/fetchMockData";
 import ErrorPage from "./pages/(common)/error";
+import NavLoader from "./components/NavLoader";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -48,6 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
+				<NavLoader />
 				{children}
 				<ScrollRestoration />
 				<Scripts />

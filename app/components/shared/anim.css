@@ -29,3 +29,61 @@
 		#525252 100%
 	);
 }
+
+.animate-shrink {
+	animation-name: shrink-kf;
+	/* Specifies the name of the keyframes */
+	animation-duration: 1s;
+	/* Specifies the duration of the animation */
+	animation-timing-function: ease-in-out;
+	/* Specifies the timing function for the animation */
+	animation-fill-mode: forwards;
+	/* Specifies how the animation applies styles after it ends */
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	transform-origin: center;
+}
+
+.animate-ltr {
+	animation-name: move-ltr-kf;
+	animation-duration: 3s;
+	animation-timing-function: ease-in-out;
+	/* Specifies the timing function for the animation */
+	animation-fill-mode: forwards;
+	/* Specifies how the animation applies styles after it ends */
+	animation-iteration-count: infinite;
+}
+
+.animate-shrink-ltr {
+	animation-name: shrink-kf, move-ltr-kf;
+	/* Specifies the name of the keyframes */
+	animation-duration: 1s, 3s;
+	/* Specifies the duration of the animation */
+	animation-timing-function: ease-in-out;
+	/* Specifies the timing function for the animation */
+	animation-fill-mode: forwards;
+	/* Specifies how the animation applies styles after it ends */
+	animation-iteration-count: infinite;
+	animation-direction: alternate, normal;
+	transform-origin: center;
+}
+
+@keyframes shrink-kf {
+	from {
+		transform: scaleX(1);
+	}
+
+	to {
+		transform: scaleX(0);
+	}
+}
+
+@keyframes move-ltr-kf {
+	from {
+		left: -10%;
+	}
+
+	to {
+		left: 100%;
+	}
+}
