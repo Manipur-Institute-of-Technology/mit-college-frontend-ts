@@ -6,6 +6,7 @@
 		"build": "react-router build",
 		"dev": "react-router dev",
 		"devh": "react-router dev --host",
+		"preview": "vite preview",
 		"start": "react-router-serve ./build/server/index.js",
 		"typecheck": "react-router typegen && tsc",
 		"tgn": "react-router typegen",
@@ -37,6 +38,7 @@
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.0",
 		"@commitlint/config-conventional": "^19.8.0",
+		"@netlify/vite-plugin-react-router": "^1.0.1",
 		"@react-router/dev": "^7.3.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/d3": "^7.4.3",

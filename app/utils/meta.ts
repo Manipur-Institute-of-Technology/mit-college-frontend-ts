@@ -57,3 +57,7 @@ export const genPageMetaData = ({
 	];
 	return defaultMetaData;
 };
+
+// TODO: get meta deta, description for custom route page only
+// Perform another fetch ops to get page description - no need to fetch description for non custom route as they can be provided beforehand
+// write another page metadata generator for custom routes pages only
