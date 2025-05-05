@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { type FooterData, type NavbarData } from "./types/api/resData.type";
 import { getFooterData } from "./mock/services/fetchMockData";
 import ErrorPage from "./pages/(common)/error";
+import NavLoader from "./components/NavLoader";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -30,8 +31,11 @@ export const links: Route.LinksFunction = () => [
 		rel: "stylesheet",
 		href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
 	},
+	// Can be override in another page
+	// { rel: "icon", href: "/Manipur_University_Logo.png" },
+	{ rel: "icon", href: "/favicon.ico" },
 ];
-
+// TODO: Feedback button stick on side of viewport
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
@@ -45,6 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
+				<NavLoader />
 				{children}
 				<ScrollRestoration />
 				<Scripts />
