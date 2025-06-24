@@ -35,6 +35,9 @@ export default [
     route("Placement", "./routes/placement.tsx"),
     route("Campus", "./routes/campus.tsx"),
     route("Classroom", "./routes/classroom.tsx"),
+    route("Nirf", "./routes/nirf.tsx"),
+    route("Confrence", "./routes/confrence.tsx"),
+    route("teacher/:teacherName", "./routes/teacher.$teacherName.tsx"),
   ]),
   // CMS Route
   ...prefix("cms", [

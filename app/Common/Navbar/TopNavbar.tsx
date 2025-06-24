@@ -60,11 +60,6 @@ export default function TopNavbar() {
               <AArrowDown size={18} />
             </button>
           </div>
-          <div className="border-r border-rose-300">
-            <button className="outline-none border-none px-2 cursor-pointer text-center">
-              <LanguagesIcon size={18} />
-            </button>
-          </div>
           <div className="border-rose-300">
             <Link to="/faculty">
               <button className="text-slate-50 outline-none border-none m-auto relative flex flex-row flex-nowrap items-center gap-1 justify-center px-2 cursor-pointer">

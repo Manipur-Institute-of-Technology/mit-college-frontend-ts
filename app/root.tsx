@@ -13,6 +13,9 @@ import { navigationData } from "./mock/navbar";
 import Navbar from "./Common/Navbar/Navbar";
 import Footer from "./Common/Footer/PublicFooter";
 import NotFound from "./pages/NotFound";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "./toast.css"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -38,6 +41,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        {/* Global Toastify Container */}
+        <ToastContainer
+          position="bottom-left"
+          autoClose={3000}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          progressClassName = "toast_progress_class"
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
