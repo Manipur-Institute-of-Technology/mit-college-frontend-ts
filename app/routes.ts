@@ -48,11 +48,15 @@ export default [
       route("signup", "./routes/cms/signup.tsx"),
       route("forgotpass", "./routes/cms/forgotpass.tsx"),
     ]),
-    // Routes Specific for Admin
-    ...prefix("admin", [
-      layout("./layouts/CMSAdminLayout.tsx", [
-        index("./routes/cms/admin.dashboard.tsx"),
-      ]),
+  ]),
+  // Routes Specific for Admin
+  ...prefix("admin", [
+    layout("./layouts/CMSAdminLayout.tsx", [
+      index("./routes/admin/admin_home_page.tsx"),
+      route("/admin", "./routes/admin/admin_home_page.tsx", {
+        id: "AdminHome1",
+      }),
+      route("/faculty", "./routes/admin/admin_faculty_page.tsx"),
     ]),
   ]),
   // Routes Specific for Faculty

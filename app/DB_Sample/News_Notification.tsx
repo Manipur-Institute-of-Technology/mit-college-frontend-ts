@@ -6,14 +6,14 @@ export const News_notification_data = [
   },
   {
     File_name: "Notice for Admission Fee Payment-BE & M tech Courses",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Notice for Hostel Admission Fee Payment-MIT Boys' Hostel",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Notice for Hostel Admission Fee Payment-MIT Girls' Hostel",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
 ];

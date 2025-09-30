@@ -5,31 +5,31 @@ export const Information_data = [
   },
   {
     File_name: "Fire Safety Certificate",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Mandatory Disclosures",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Ragging",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Faculty Development Program",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Placement",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Campus",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Classroom",
-    Links: "https://hanime.tv/playlists/xfyklxteeotfuemfjkzx",
+    Links: "",
   },
   {
     File_name: "Online Grievance Redressal",

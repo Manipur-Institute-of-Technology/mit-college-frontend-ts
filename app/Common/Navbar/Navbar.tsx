@@ -27,9 +27,16 @@ export default function Navbar({
 }
 
 const CMSNavbar = () => {
+  const location = useLocation();
+  // Check if the path is exactly /admin or starts with /admin (but not /cms/admin)
+  // Or if it is /cms/admin or /cms/admin/...
+  const isAdminRoute = location.pathname.includes("admin");
+
   return (
     <>
-      <nav className="bg-rose-700/90 shadow-lg sticky top-0 z-[999] m-0 w-full">
+      <nav
+        className={`bg-rose-700/90 shadow-lg top-0 z-[999] m-0 w-full${!isAdminRoute ? " sticky" : ""}`}
+      >
         <div className="md:w-10/12 relative flex flex-row flex-nowrap items-center gap-2 py-2 px-2 md:pl-8 m-auto">
           <div className="border-4 border-rose-700/90 shadow-lg bg-white rounded-full p-1 relative md:absolute md:top-[0%] md:translate-y-[-0%]">
             <img

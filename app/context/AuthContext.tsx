@@ -19,14 +19,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<UserRole>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedRole = localStorage.getItem("role") as UserRole;
+    const storedToken = sessionStorage.getItem("token");
+    const storedRole = sessionStorage.getItem("role") as UserRole;
     if (storedToken) setToken(storedToken);
     if (storedRole) setRole(storedRole);
   }, []);
 
+  // Ensure sessionStorage is updated when token/role changes
+  const setTokenAndStore = (token: string | null) => {
+    setToken(token);
+    if (token) sessionStorage.setItem("token", token);
+    else sessionStorage.removeItem("token");
+  };
+
+  const setRoleAndStore = (role: UserRole) => {
+    setRole(role);
+    if (role) sessionStorage.setItem("role", role);
+    else sessionStorage.removeItem("role");
+  };
+
   return (
-    <AuthContext.Provider value={{ token, role, setToken, setRole }}>
+    <AuthContext.Provider value={{ token, role, setToken: setTokenAndStore, setRole: setRoleAndStore }}>
       {children}
     </AuthContext.Provider>
   );
