@@ -5,31 +5,31 @@ export const Information_data = [
   },
   {
     File_name: "Fire Safety Certificate",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Mandatory Disclosures",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Ragging",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Faculty Development Program",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Placement",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Campus",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Classroom",
-    Links: "",
+    Links: "#",
   },
   {
     File_name: "Online Grievance Redressal",
