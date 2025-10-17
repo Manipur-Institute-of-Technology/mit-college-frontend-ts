@@ -62,15 +62,6 @@ export default function App() {
   return <Outlet />;
 }
 
-export function HydrateFallback() {
-  return (
-    <div className="fixed bg-slate-700/50 backdrop-blur-md w-[100vw] h-[100vh]">
-      <div className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] font-mono w-fit">
-        This is some hydration...
-      </div>
-    </div>
-  );
-}
 
 // TODO: Make this a generic error displaying page, which carch all error including non 404
 // TODO: add catch all route for cms prefix route

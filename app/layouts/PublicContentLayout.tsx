@@ -12,13 +12,6 @@ export default function PublicLayout() {
     <>
       <Navbar navigation={navigation} />
       <main
-        style={{
-          backgroundImage: `radial-gradient(circle at center, rgba(200, 200, 200, 0.8) 0 1px, transparent 1px 18px), 
-									radial-gradient(circle at center, transparent 30%, rgba(200, 200, 200, 0.8))`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "18px 18px, 100vw 100vh",
-          backgroundAttachment: "fixed",
-        }}
       >
         {/* {location.pathname === "/" && (
           <div className="mt-8 mb-2">
