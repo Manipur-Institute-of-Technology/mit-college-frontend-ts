@@ -5,31 +5,31 @@ export const Information_data = [
   },
   {
     File_name: "Fire Safety Certificate",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Mandatory Disclosures",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Ragging",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Faculty Development Program",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Placement",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Campus",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Classroom",
-    Links: "#",
+    Links: "https://www.aicte-india.org/feedback",
   },
   {
     File_name: "Online Grievance Redressal",
