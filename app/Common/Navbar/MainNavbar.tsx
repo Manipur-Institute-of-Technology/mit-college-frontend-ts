@@ -1,168 +1,132 @@
 import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Link, NavLink } from "react-router";
+import Swal from "sweetalert2";
 import { type NavigationData } from "~/mock/navbar";
 
-export default ({ navigation = [] }: { navigation: NavigationData[] }) => {
-  const [isOpen, setIsOpen] = useState(false); // Hamburger menu open/close
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null); // menu dropdown
+export default function Navbar({
+  navigation = [],
+}: {
+  navigation: NavigationData[];
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
   const toggleDropdown = (index: number) => {
-    if (activeDropdown === index) {
-      setActiveDropdown(null);
-    } else {
-      setActiveDropdown(index);
+    setActiveDropdown(activeDropdown === index ? null : index);
+  };
+
+  // 🔹 Detect external link
+  const isExternalLink = (url: string) => {
+    try {
+      const linkUrl = new URL(url, window.location.origin);
+      return linkUrl.origin !== window.location.origin;
+    } catch {
+      return false;
     }
   };
 
+  // 🔹 Handle navigation click
+  const handleNavClick = (
+    e: React.MouseEvent,
+    href: string,
+    target?: string
+  ) => {
+    if (!isExternalLink(href)) return;
+
+    e.preventDefault();
+
+    Swal.fire({
+      title: "Leave this site?",
+      text: "You are being redirected to an external website.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Continue",
+      cancelButtonText: "Stay here",
+      confirmButtonColor: "#22c55e",
+      cancelButtonColor: "#ef4444",
+      customClass: {
+        popup: "rounded-xl",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        target === "_blank"
+          ? window.open(href, "_blank")
+          : (window.location.href = href);
+      }
+    });
+  };
+
   return (
-    <nav className="bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg sticky top-0 z-[999] m-0">
+    <nav className="bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg sticky top-0 z-[999]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex justify-between">
-            <div className="space-x-7 hidden lg:flex">
-              <Link to={"/"}>
-                <div className="bg-white absolute border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 origin-top transition-transform duration-300">
-                  <img
-                    src="/Manipur_University_Logo.png"
-                    alt="mu logo"
-                    height={60}
-                    width={60}
-                  />
-                </div>
-              </Link>
+        <div className="flex justify-between items-center">
+          {/* Logo */}
+          <Link to="/" className="hidden lg:block">
+            <div className="bg-white border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 transition">
+              <img
+                src="/Manipur_University_Logo.png"
+                alt="MU Logo"
+                width={60}
+                height={60}
+              />
             </div>
+          </Link>
 
-            {/* Desktop menu */}
-            <div className="hidden lg:flex items-center space-x-1">
-              {navigation.map((item, index) => (
-                <div
-                  key={item.name}
-                  className="relative"
-                  onMouseEnter={() => setActiveDropdown(index)}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                >
-                  {item.childrens && item.childrens.length > 0 ? (
-                    <div>
-                      <button className="relative py-4 px-2 text-gray-100 font-bold hover:bg-rose-500 transition duration-300 flex flex-row flex-nowrap items-center justify-center">
-                        <span className="block">{item.name}</span>
-                        <ChevronDown
-                          size={20}
-                          className={`${
-                            activeDropdown === index ? "rotate-180" : "rotate-0"
-                          } transition-transform duration-300`}
-                        />
-                      </button>
-                      {activeDropdown === index && (
-                        <div className="absolute z-[999] right-0 mt-0 w-48 rounded-md bg-rose-600 ring-1 ring-black ring-opacity-5 shadow-md">
-                          <div className="py-1 ">
-                            {item.childrens.map((child, indx) => (
-                              <NavLink
-                                to={child.href}
-                                key={child.name}
-                                target={child.target ? child.target : "_self"}
-                                className={(isActive) =>
-                                  `block px-4 py-2 text-sm text-gray-100 hover:bg-rose-500 ${
-                                    item.childrens &&
-                                    indx === item.childrens.length - 1
-                                      ? ""
-                                      : " border-b-2 border-b-rose-300"
-                                  }`
-                                }
-                              >
-                                {child.name}
-                              </NavLink>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <NavLink
-                      to={item.href}
-                      className={(isActive) =>
-                        `py-4 px-2 text-gray-100 font-bold hover:bg-rose-500 transition duration-300`
-                      }
-                    >
-                      {item.name}
-                    </NavLink>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* MobileNav */}
-        <div className="lg:hidden max-h-[100vh] overflow-y-auto">
-          {/* Mobile menu button */}
-          <div className="lg:hidden sticky top-0 w-[100%] text-center bg-rose-600/70 backdrop-blur-sm z-[99]">
-            <div className="inline-block rounded-full w-fit bg-white p-1 my-1">
-              <Link to={"/"}>
-                <img
-                  src="/Manipur_University_Logo.png"
-                  alt="mu logo"
-                  height={60}
-                  width={60}
-                />
-              </Link>
-            </div>
-            <div className="absolute right-2 top-[50%] translate-y-[-50%] rounded">
-              <button
-                className="block outline-none mobile-menu-button"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                {isOpen ? (
-                  <X className="text-gray-200" size={32} />
-                ) : (
-                  <Menu className="text-gray-200" size={32} />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile menu */}
-          <div
-            className={`lg:hidden ${
-              isOpen ? "block" : "hidden"
-            } rounded-lg border border-rose-100 transition-all duration-1000`}
-          >
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center space-x-1">
             {navigation.map((item, index) => (
-              <div key={item.name}>
-                {item.childrens && item.childrens.length > 0 ? (
-                  <div>
-                    <button
-                      onClick={() => toggleDropdown(index)}
-                      className="border-b-rose-100 border-b-2  w-full relative py-2 px-4 text-gray-100 font-bold hover:bg-rose-600 transition duration-300 flex flex-row flex-nowrap items-center justify-between"
-                    >
-                      <span className="block">{item.name}</span>
-
+              <div
+                key={item.name}
+                className="relative"
+                onMouseEnter={() => setActiveDropdown(index)}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                {item.childrens?.length ? (
+                  <>
+                    <button className="py-4 px-2 text-gray-100 font-bold hover:bg-rose-500 flex items-center gap-1">
+                      {item.name}
                       <ChevronDown
-                        size={20}
-                        className={`${
-                          activeDropdown === index ? "rotate-180" : "rotate-0"
-                        } transition-transform duration-300`}
+                        size={18}
+                        className={`transition-transform ${
+                          activeDropdown === index ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
-                    {activeDropdown === index && (
-                      <div className="bg-rose-500">
-                        {item.childrens.map((child) => (
+
+                    {activeDropdown === index && (() => {
+                    const children = item.childrens ?? [];
+                    return (
+                      <div className="absolute right-0 w-48 bg-rose-600 rounded shadow-md z-[999]">
+                        {children.map((child, indx) => (
                           <NavLink
                             key={child.name}
                             to={child.href}
-                            className="block py-2 px-8 text-sm text-gray-100 hover:bg-rose-400 border-b border-b-rose-100"
+                            target={child.target}
+                            onClick={(e) =>
+                              handleNavClick(e, child.href, child.target)
+                            }
+                            className={`block px-4 py-2 text-sm text-gray-100 hover:bg-rose-500 ${
+                              indx !== children.length - 1
+                                ? "border-b border-rose-400"
+                                : ""
+                            }`}
                           >
                             {child.name}
                           </NavLink>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    );
+                  })()}
+                  </>
                 ) : (
                   <NavLink
                     to={item.href}
-                    target={item.target ? item.target : "_self"}
-                    className="block py-2 px-4 text-sm font-bold text-gray-100 hover:bg-rose-200 border-b-rose-100 border-b-2"
+                    target={item.target}
+                    onClick={(e) =>
+                      handleNavClick(e, item.href, item.target)
+                    }
+                    className="py-4 px-2 text-gray-100 font-bold hover:bg-rose-500"
                   >
                     {item.name}
                   </NavLink>
@@ -170,10 +134,73 @@ export default ({ navigation = [] }: { navigation: NavigationData[] }) => {
               </div>
             ))}
           </div>
+
+          {/* Mobile Button */}
+          <button
+            className="lg:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? (
+              <X size={32} className="text-white" />
+            ) : (
+              <Menu size={32} className="text-white" />
+            )}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="lg:hidden mt-4 rounded-lg overflow-hidden">
+            {navigation.map((item, index) => (
+              <div key={item.name}>
+                {item.childrens?.length ? (
+                  <>
+                    <button
+                      onClick={() => toggleDropdown(index)}
+                      className="w-full py-2 px-4 text-gray-100 font-bold bg-rose-600 flex justify-between items-center"
+                    >
+                      {item.name}
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform ${
+                          activeDropdown === index ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {activeDropdown === index &&
+                      item.childrens.map((child) => (
+                        <NavLink
+                          key={child.name}
+                          to={child.href}
+                          onClick={(e) =>
+                            handleNavClick(e, child.href, child.target)
+                          }
+                          className="block py-2 px-8 text-sm text-gray-100 bg-rose-500 hover:bg-rose-400"
+                        >
+                          {child.name}
+                        </NavLink>
+                      ))}
+                  </>
+                ) : (
+                  <NavLink
+                    to={item.href}
+                    onClick={(e) =>
+                      handleNavClick(e, item.href, item.target)
+                    }
+                    className="block py-2 px-4 text-gray-100 font-bold bg-rose-600 hover:bg-rose-500"
+                  >
+                    {item.name}
+                  </NavLink>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      <div className="w-full h-2 bg-yellow-500"></div>
-      <div className="bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 w-full h-2 animate-gradient-bg"></div>
+
+      {/* Decorative bars */}
+      <div className="h-2 bg-yellow-500"></div>
+      <div className="h-2 bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 animate-gradient-bg"></div>
     </nav>
   );
-};
+}

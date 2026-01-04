@@ -12,7 +12,6 @@ export default function Admin_Home() {
   if (!token || role !== "admin") {
     return (
       <div className="p-4 space-y-6">
-        <h2 className="text-2xl font-bold text-center">Admin Profile</h2>
         <SignIn_SignUP role="admin" />
       </div>
     );
