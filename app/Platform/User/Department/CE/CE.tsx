@@ -4,34 +4,6 @@ import "../Department.css";
 
 function CE() {
 
-  const [galleryImages, setGalleryImages] = useState([]);
-  const [facultyList, setFacultyList] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [galleryRes, facultyRes] = await Promise.all([
-          fetch("http://192.168.1.9:3001//mit/gallery/CE"),
-          fetch("http://192.168.1.9:3001//mit/faculty/CE"),
-        ]);
-        
-        const galleryData = await galleryRes.json();
-        const facultyData = await facultyRes.json();
-        
-        setGalleryImages(galleryData.images);
-        setFacultyList(facultyData.faculty);
-      } catch (error) {
-        console.error("Failed to fetch CE data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, []);
-  console.log(loading)
-
   return (
       <>
         <div className="min-h-dvh">
