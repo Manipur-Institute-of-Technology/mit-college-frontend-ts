@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Informations from "~/Common/Informations/Informations";
-import CircularProgress from "@mui/material/CircularProgress";
 import "../Department.css";
 
 function CE() {
@@ -32,14 +31,6 @@ function CE() {
     fetchData();
   }, []);
   console.log(loading)
-
-  if (loading) {
-    return(
-      <div className="flex items-end justify-center min-h-[50vh]">
-      <CircularProgress size={70} />
-    </div>
-    )
-  }
 
   return (
       <>
