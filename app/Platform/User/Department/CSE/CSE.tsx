@@ -4,8 +4,13 @@ import Department from "../Department"
 function CSE() {
   return (
       <>
-        <Department name="CSE" />
-        <Informations />
+        <div className="min-h-dvh">
+          <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
+            Department of Computer Science and Engineering
+          </div>
+          <Department name="CSE" />
+          <Informations />
+        </div>
       </>
     );
 }

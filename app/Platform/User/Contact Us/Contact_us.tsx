@@ -109,7 +109,7 @@ export default function Contact_Us() {
 
   return (
     <div className="min-h-dvh">
-      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-center">
+      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
         Contact Us
       </div>
       <div className="flex flex-col md:flex-row m-4 items-center justify-around gap-6">

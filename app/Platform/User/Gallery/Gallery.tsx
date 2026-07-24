@@ -97,7 +97,7 @@ export default function Gallery() {
   return (
     <>
       <div className="min-h-dvh">
-        <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs">
+       <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
           Gallery
         </div>
         <div className="flex gap-8 p-4 flex-wrap">

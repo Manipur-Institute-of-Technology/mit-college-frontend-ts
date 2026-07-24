@@ -1,35 +1,3 @@
-// import { Administration_data } from "~/DB_Sample/Admin";
-
-// type commonProps = {
-//   name: string;
-// };
-
-// export default function Common({ name }: commonProps) {
-//   return (
-//     <>
-//       <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs">
-//         {name}
-//       </div>
-//       <AdministrationData name={name} />
-//     </>
-//   );
-// }
-
-// function AdministrationData({ name }: commonProps) {
-//   const selectedAdmin = Administration_data.find(
-//     (item) => item.Admin.toLowerCase() === name.toLowerCase()
-//   );
-
-//   return (
-//     selectedAdmin && (
-//       <div className="min-h-screen flex flex-col justify-center items-center gap-6">
-//             <span>About The {selectedAdmin.Admin}</span>
-//       </div>
-//     )
-//   );
-// }
-
-
 import { Information_data } from "~/DB_Sample/Information";
 
 type commonProps = {
@@ -39,7 +7,7 @@ type commonProps = {
 export default function Common({ name }: commonProps) {
   return (
     <>
-      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs">
+      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
         {name}
       </div>
       <InformationData name={name} />
