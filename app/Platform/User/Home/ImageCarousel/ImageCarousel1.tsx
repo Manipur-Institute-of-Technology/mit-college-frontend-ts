@@ -13,12 +13,6 @@ const ImageCarousel1 = ({
 	const nextSlide = () => {
 		setCurIndx((s) => {
 			const nxtIndx = (s + 1) % images.length;
-			// const elm = document.querySelector(`#slide-${nxtIndx}`);
-			// if (elm) {
-			// 	elm.scrollIntoView();
-			// 	console.log("scroll", curIndx);
-			// }
-
 			return nxtIndx;
 		});
 	};

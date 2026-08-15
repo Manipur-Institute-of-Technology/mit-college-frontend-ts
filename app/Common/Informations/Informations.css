@@ -1,21 +1,190 @@
-@keyframes marquee {
-  0% {
-    /* transform: translateX(0%); */
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(-100%);
-    /* transform: translateX(-100%); */
-  }
-}
-.animate-marquee {
-  animation: marquee 15s linear infinite;
-}
+/* ================================================================
+   HIDE SCROLLBAR
+================================================================ */
 
-.animate-marquee:hover {
-  animation-play-state: paused;
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* ================================================================
+   NOTIFICATION MARQUEE
+   Bottom -> Top
+================================================================ */
+
+.notification-marquee {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  /*
+   * Start below the notification box
+   */
+  transform: translateY(100%);
+
+  animation: notificationBottomToTop 18s linear infinite;
+
+  padding: 10px 4px;
+}
+
+/*
+ * IMPORTANT:
+ * For one notification we still animate it,
+ * but we DO NOT duplicate it.
+ */
+.notification-marquee-single {
+  animation-duration: 8s;
+}
+
+/* ================================================================
+   INDIVIDUAL NOTIFICATION
+================================================================ */
+
+.notification-item {
+  width: 100%;
+}
+
+/* ================================================================
+   NOTIFICATION LINK
+================================================================ */
+
+.notification-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+
+  color: #134e4a;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.notification-link:hover {
+  color: #0f766e;
+
+  transform: translateX(3px);
+}
+
+/* ================================================================
+   NEW BADGE
+================================================================ */
+
+.notification-new {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 2px 7px;
+
+  border-radius: 999px;
+
+  background: #dc2626;
+
+  color: white;
+
+  font-size: 9px;
+
+  line-height: 1;
+
+  font-weight: 800;
+
+  text-decoration: none;
+
+  animation: newPulse 1.5s ease-in-out infinite;
+}
+
+/* ================================================================
+   BOTTOM -> TOP ANIMATION
+================================================================ */
+
+@keyframes notificationBottomToTop {
+  0% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(-110%);
+  }
+}
+
+/* ================================================================
+   NEW BADGE PULSE
+================================================================ */
+
+@keyframes newPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.65;
+    transform: scale(1.05);
+  }
+}
+
+/* ================================================================
+   PAUSE MARQUEE ON HOVER
+================================================================ */
+
+.notification-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ================================================================
+   MOBILE
+================================================================ */
+
+@media (max-width: 640px) {
+  .notification-link {
+    font-size: 13px;
+  }
+
+  .notification-marquee {
+    gap: 14px;
+
+    animation-duration: 20s;
+  }
+
+  .notification-marquee-single {
+    animation-duration: 8s;
+  }
+}
+
+/* ================================================================
+   REDUCE MOTION
+================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-marquee {
+    animation: none;
+
+    transform: translateY(0);
+  }
+
+  .notification-new {
+    animation: none;
+  }
 }

@@ -2,12 +2,6 @@
 // import delayFetcher from "../utils/delayFetcher";
 
 export default function CMSDashboard() {
-	// const f = async () => {
-	// const d = () => userRoutes;
-	// const d = () => fetch("/manifest.json");
-	// const res = await delayFetcher(d, 3000);
-	// console.log(await res);
-	// };
 	return (
 		<div>
 			<header className="bg-white shadow w-full">

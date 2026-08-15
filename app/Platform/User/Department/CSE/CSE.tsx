@@ -1,5 +1,5 @@
 import Informations from "~/Common/Informations/Informations";
-import Department from "../Department"
+import Department from "../DepartmentData"
 
 function CSE() {
   return (
@@ -8,7 +8,7 @@ function CSE() {
           <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
             Department of Computer Science and Engineering
           </div>
-          <Department name="CSE" />
+          <Department name="computer science & engineering" />
           <Informations />
         </div>
       </>

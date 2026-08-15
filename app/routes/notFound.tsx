@@ -1,8 +1,7 @@
 import NotFoundPage from "~/pages/NotFound";
-import type { Route } from "./+types/notFound";
 import { genPageMetaData } from "~/utils/meta";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
 	return genPageMetaData({ title: "MIT | Not Found" });
 }
 

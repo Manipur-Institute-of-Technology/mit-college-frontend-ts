@@ -78,7 +78,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <>
         <Navbar navigation={navigationData} />
         <main
-          className="bg-slate-800  bg-blend-overlay bg-fixed bg-center bg-no-repeat bg-cover"
+          className="bg-slate-800 bg-blend-overlay bg-fixed bg-center bg-no-repeat bg-cover"
           style={{ backgroundImage: `url('${backgroundImageUrl}')` }}
         >
           <div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
@@ -88,9 +88,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         <Footer />
       </>
     );
-  } else {
-    console.log("Non 404 error occur: ", error);
   }
+  return null;
 }
 
 export function _ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

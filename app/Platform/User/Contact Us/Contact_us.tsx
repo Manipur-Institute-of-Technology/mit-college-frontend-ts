@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import Informations from "~/Common/Informations/Informations";
-import axios from "axios";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import apiClient from "~/utils/apiClient";
 
-type FormFields = 'name' | 'email' | 'message';
+type FormFields = "name" | "email" | "message";
 
 type FormData = {
   name: string;
@@ -21,12 +21,23 @@ type FloatingInputProps = {
   type?: string;
   isTextarea?: boolean;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   error?: string;
 };
 
-const FloatingInput: React.FC<FloatingInputProps> = ({ label, id, type = 'text', isTextarea = false, value, onChange, error }) => {
+const FloatingInput: React.FC<FloatingInputProps> = ({
+  label,
+  id,
+  type = "text",
+  isTextarea = false,
+  value,
+  onChange,
+  error,
+}) => {
   const [focused, setFocused] = useState(false);
+
   const isActive = focused || value.length > 0;
 
   return (
@@ -34,11 +45,14 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ label, id, type = 'text',
       <label
         htmlFor={id}
         className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-1 ${
-          isActive ? "-top-3 text-xs text-blue-600" : "top-2.5 text-gray-500"
+          isActive
+            ? "-top-3 text-xs text-blue-600"
+            : "top-2.5 text-gray-500"
         }`}
       >
         {label}
       </label>
+
       {isTextarea ? (
         <textarea
           id={id}
@@ -48,7 +62,9 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ label, id, type = 'text',
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className={`w-full px-3 pt-5 pb-2 border rounded-md focus:outline-none focus:ring-2 ${
-            error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+            error
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 focus:ring-blue-500"
           }`}
         />
       ) : (
@@ -60,65 +76,199 @@ const FloatingInput: React.FC<FloatingInputProps> = ({ label, id, type = 'text',
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className={`w-full px-3 pt-5 pb-2 border rounded-md focus:outline-none focus:ring-2 ${
-            error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+            error
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 focus:ring-blue-500"
           }`}
         />
       )}
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+
+      {error && (
+        <p className="text-red-500 text-xs mt-1">
+          {error}
+        </p>
+      )}
     </div>
   );
 };
 
 export default function Contact_Us() {
-  const [formData, setFormData] = useState<FormData>({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState<FormErrors>({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    message: "",
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const [errors, setErrors] = useState<FormErrors>({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [isSending, setIsSending] = useState(false);
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // HANDLE INPUT CHANGE
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >
+  ) => {
     const { id, value } = e.target;
-    if (['name', 'email', 'message'].includes(id)) {
+
+    if (
+      ["name", "email", "message"].includes(id)
+    ) {
       const field = id as FormFields;
-      setFormData(prev => ({ ...prev, [field]: value }));
-      setErrors(prev => ({ ...prev, [field]: '' }));
+
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "",
+      }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    let hasError = false;
-    const newErrors: FormErrors = { name: '', email: '', message: '' };
+  // ───────────────────────────────────────────────────────────────────────────
+  // SUBMIT
+  // ───────────────────────────────────────────────────────────────────────────
 
-    if (!formData.name.trim()) { newErrors.name = 'Name is required'; hasError = true; }
-    if (!formData.email.trim()) { newErrors.email = 'Email is required'; hasError = true; }
-    if (!formData.message.trim()) { newErrors.message = 'Message is required'; hasError = true; }
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
+
+    let hasError = false;
+
+    const newErrors: FormErrors = {
+      name: "",
+      email: "",
+      message: "",
+    };
+
+    // Name
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+      hasError = true;
+    }
+
+    // Email
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+      hasError = true;
+    } else {
+      const emailRegex =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(formData.email.trim())) {
+        newErrors.email =
+          "Please enter a valid email address";
+        hasError = true;
+      }
+    }
+
+    // Message
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required";
+      hasError = true;
+    }
 
     setErrors(newErrors);
 
     if (hasError) {
-      toast.warning('Please fill all required fields.');
+      toast.warning(
+        "Please fill all required fields."
+      );
       return;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // SEND MAIL
+    // ─────────────────────────────────────────────────────────────────────────
+
     try {
-      await axios.post('/api/contact', formData);
-      toast.success('Message sent successfully!');
-      setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
-      toast.error('Failed to send message. Please try again later.');
+      setIsSending(true);
+
+      await apiClient.post(
+        "/mail/SendMail",
+        {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+        }
+      );
+
+      toast.success(
+        "Message sent successfully!"
+      );
+
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+
+      setErrors({
+        name: "",
+        email: "",
+        message: "",
+      });
+    } catch (error: any) {
+      console.error(
+        "Contact form error:",
+        error
+      );
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to send message. Please try again later."
+      );
+    } finally {
+      setIsSending(false);
     }
   };
 
+  // ─────────────────────────────────────────────────────────────────────────────
+  // UI
+  // ─────────────────────────────────────────────────────────────────────────────
+
   return (
     <div className="min-h-dvh">
+
+      {/* ─────────────────────────────────────────────────────────────────────
+          PAGE TITLE
+      ───────────────────────────────────────────────────────────────────── */}
+
       <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
         Contact Us
       </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────
+          CONTENT
+      ───────────────────────────────────────────────────────────────────── */}
+
       <div className="flex flex-col md:flex-row m-4 items-center justify-around gap-6">
+
+        {/* ───────────────────────────────────────────────────────────────────
+            ADDRESS + MAP
+        ─────────────────────────────────────────────────────────────────── */}
+
         <div className="flex-1 w-full flex flex-col gap-3 items-start justify-baseline font-semibold tracking-wider text-lg">
+
           <p className="text-sm md:text-lg">
-            &emsp;Manipur Institute of Technology<br />
-            &emsp;(A Constituent College of Manipur University)<br />
-            &emsp;Takyelpat, Imphal - 795001, Manipur , India
+            &emsp;Manipur Institute of Technology
+            <br />
+            &emsp;(A Constituent College of Manipur University)
+            <br />
+            &emsp;Takyelpat, Imphal - 795001, Manipur, India
           </p>
+
           <div
             style={{
               width: "100%",
@@ -145,14 +295,20 @@ export default function Contact_Us() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            />
           </div>
+
         </div>
+
+        {/* ───────────────────────────────────────────────────────────────────
+            CONTACT FORM
+        ─────────────────────────────────────────────────────────────────── */}
 
         <form
           onSubmit={handleSubmit}
           className="flex-1 max-w-lg w-full p-6 border-2 border-gray-300 rounded-xl bg-white shadow-md flex flex-col gap-6"
         >
+
           <FloatingInput
             label="Your Name"
             id="name"
@@ -160,6 +316,7 @@ export default function Contact_Us() {
             onChange={handleChange}
             error={errors.name}
           />
+
           <FloatingInput
             label="Email"
             id="email"
@@ -168,6 +325,7 @@ export default function Contact_Us() {
             onChange={handleChange}
             error={errors.email}
           />
+
           <FloatingInput
             label="Message"
             id="message"
@@ -176,15 +334,23 @@ export default function Contact_Us() {
             onChange={handleChange}
             error={errors.message}
           />
+
           <button
             type="submit"
-            className="self-start mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-all duration-200"
+            disabled={isSending}
+            className="self-start mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
           >
-            Send Message
+            {isSending
+              ? "Sending..."
+              : "Send Message"}
           </button>
+
         </form>
+
       </div>
+
       <Informations />
+
     </div>
   );
 }

@@ -1,291 +1,3542 @@
-import { useState } from "react";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaEdit,
+  FaSave,
+  FaTrash,
+  FaPlus,
+  FaExternalLinkAlt,
+  FaTimesCircle,
+  FaBookOpen,
+} from "react-icons/fa";
+
 import { useAuth } from "~/context/AuthContext";
+import apiClient from "~/utils/apiClient";
+
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 
-type PaperType = {
-  desc: string;
-  link: string;
-};
+// =========================================================
+// TYPES
+// =========================================================
 
-type TeacherDataType = {
+type Department = {
+  _id: string;
   name: string;
-  position: string;
-  email: string;
-  phone_No: string; // As string for validation
-  Photo: string | ArrayBuffer | null;
-  HOD: boolean;
-  Password: string;
-  recovery_code: string;
-  speacility: string;
-  qualification: string;
-  department: string;
-  deptCode: string;
-  papers: PaperType[];
 };
 
-export default function Teacher_Home() {
-  const { token, role } = useAuth();
+type Faculty = {
+  _id?: string;
+  accountId?: string;
 
-  const [teacherData, setTeacherData] = useState<TeacherDataType>({
-    name: "Dr. Th. Ibungomacha Singh",
-    position: "Associate Professor & HoD (wef 7-11-2023)",
-    email: "ibomcha.2007@rediffmail.com",
-    phone_No: "9080000000",
-    Photo: "Images/Department/CSE/Members/img_1.jpeg",
-    HOD: true,
-    Password: "",
-    recovery_code: "",
-    speacility: "Image Processing",
-    qualification: "Ph.D.",
-    department: "Computer Science and Engineering",
-    deptCode: "CSE",
-    papers: [{ desc: "Sample Paper", link: "http://example.com" }],
+  email?: string;
+  username?: string;
+
+  photoId?: string;
+
+  namePrefix?: string;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+
+  phoneNumber?: string;
+
+  sex?:
+    | "male"
+    | "female"
+    | "other"
+    | "prefer not to say";
+
+  startDate?: string;
+
+  department?: Department;
+
+  departmentId?: string | Department;
+
+  hod?: boolean;
+
+  highestDegree?: string;
+
+  expertFields?: string[];
+
+  roles?: string | string[];
+
+  bios?: string;
+
+  securityCode?: string;
+};
+
+type FacultyResponse = {
+  data?: {
+    faculty?: Faculty;
+  };
+
+  faculty?: Faculty;
+};
+
+type Paper = {
+  _id: string;
+  facultyId: string;
+  title: string;
+  paperUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+// =========================================================
+// API ERROR
+// =========================================================
+
+const getApiErrorMessage = (
+  error: any,
+  fallback: string
+): string => {
+  const data = error?.response?.data;
+
+  if (!data) {
+    return error?.message || fallback;
+  }
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  if (typeof data.message === "string") {
+    return data.message;
+  }
+
+  if (
+    data.message &&
+    typeof data.message.message === "string"
+  ) {
+    return data.message.message;
+  }
+
+  if (typeof data.error === "string") {
+    return data.error;
+  }
+
+  if (
+    data.error &&
+    typeof data.error.message === "string"
+  ) {
+    return data.error.message;
+  }
+
+  return fallback;
+};
+
+// =========================================================
+// FORMAT ROLE
+// =========================================================
+
+const formatRole = (
+  role?: string | string[]
+) => {
+  if (!role) {
+    return "Faculty";
+  }
+
+  const value =
+    Array.isArray(role)
+      ? role[0]
+      : role;
+
+  return value
+    .split(" ")
+    .map(
+      (word) =>
+        word.charAt(0).toUpperCase() +
+        word.slice(1)
+    )
+    .join(" ");
+};
+
+// =========================================================
+// FORMAT DATE
+// =========================================================
+
+const formatDate = (
+  date?: string
+) => {
+  if (!date) {
+    return "Not available";
+  }
+
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return date;
+  }
+
+  return parsed.toLocaleDateString(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }
+  );
+};
+
+// =========================================================
+// DEPARTMENT NAME
+// =========================================================
+
+const getDepartmentName = (
+  department?: string | Department
+) => {
+  if (!department) {
+    return "Department not assigned";
+  }
+
+  if (typeof department === "string") {
+    return department;
+  }
+
+  return department.name;
+};
+
+// =========================================================
+// TEACHER HOME PAGE
+// =========================================================
+
+export default function TeacherHomePage() {
+
+  // =======================================================
+  // AUTH CONTEXT
+  // =======================================================
+
+  const {
+    token,
+    role,
+    user,
+    setToken,
+    setRole,
+    setUser,
+  } = useAuth();
+
+  // =======================================================
+  // FACULTY STATE
+  // =======================================================
+
+  const [faculty, setFaculty] =
+    useState<Faculty | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
+  // =======================================================
+  // EDIT FACULTY
+  // =======================================================
+
+  const [editingFaculty, setEditingFaculty] =
+    useState(false);
+
+  const [savingFaculty, setSavingFaculty] =
+    useState(false);
+
+  const [facultyForm, setFacultyForm] =
+    useState<Faculty>({});
+
+  // =======================================================
+  // PAPERS
+  // =======================================================
+
+  const [papers, setPapers] =
+    useState<Paper[]>([]);
+
+  const [papersLoading, setPapersLoading] =
+    useState(false);
+
+  const [paperError, setPaperError] =
+    useState("");
+
+  const [showPaperForm, setShowPaperForm] =
+    useState(false);
+
+  const [editingPaperId, setEditingPaperId] =
+    useState<string | null>(null);
+
+  const [savingPaper, setSavingPaper] =
+    useState(false);
+
+  const [paperForm, setPaperForm] = useState({
+    title: "",
+    paperUrl: "",
   });
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editedData, setEditedData] = useState<TeacherDataType>(teacherData);
+  // =======================================================
+  // ACCOUNT ID
+  // =======================================================
 
-  const handleEditOpen = () => {
-    setEditedData(teacherData); // Create editable copy
-    setIsEditModalOpen(true);
-  };
-  const handleEditClose = () => setIsEditModalOpen(false);
+  const accountId =
+    user?._id ||
+    (user as any)?.id ||
+    (user as any)?.accountId;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (name === "phone_No" && !/^\d{0,10}$/.test(value)) return; // allow max 10 digits
-    setEditedData((prev) => ({ ...prev, [name]: value }));
-  };
+  // =======================================================
+  // FACULTY ID
+  // =======================================================
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setEditedData((prev) => ({ ...prev, [name]: value === "true" }));
-  };
+  const facultyId =
+    faculty?._id;
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setEditedData((prev) => ({ ...prev, Photo: reader.result }));
-      };
-      reader.readAsDataURL(file);
+  // =======================================================
+  // AUTHENTICATED CHECK
+  // =======================================================
+
+  const isAuthenticated =
+    Boolean(
+      token &&
+      role === "faculty" &&
+      user
+    );
+
+  // =======================================================
+  // EXTERNAL LINK CHECK
+  // =======================================================
+
+  const isExternalLink = (
+    url: string
+  ) => {
+    try {
+      const linkUrl =
+        new URL(
+          url,
+          window.location.origin
+        );
+
+      return (
+        linkUrl.origin !==
+        window.location.origin
+      );
+    } catch {
+      return false;
     }
   };
 
-  const handlePaperChange = (index: number, field: keyof PaperType, value: string) => {
-    const updatedPapers = [...editedData.papers];
-    updatedPapers[index][field] = value;
-    setEditedData((prev) => ({ ...prev, papers: updatedPapers }));
+  // =======================================================
+  // EXTERNAL LINK NAVIGATION
+  // =======================================================
+
+  const handlePaperLinkClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    if (!isExternalLink(href)) {
+      return;
+    }
+
+    e.preventDefault();
+
+    Swal.fire({
+      title: "Leave this site?",
+      text: "You are being redirected to an external website.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Continue",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#22c55e",
+      cancelButtonColor: "#ef4444",
+      customClass: {
+        popup: "rounded-xl",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.open(
+          href,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
+    });
   };
 
-  const addPaper = () => {
-    setEditedData((prev) => ({
-      ...prev,
-      papers: [...prev.papers, { desc: "", link: "" }],
-    }));
+  // =======================================================
+  // FETCH FACULTY
+  // =======================================================
+
+  useEffect(() => {
+    if (
+      !token ||
+      role !== "faculty" ||
+      !user ||
+      !accountId
+    ) {
+      setFaculty(null);
+      setLoading(false);
+      return;
+    }
+
+    const fetchFaculty =
+      async () => {
+        try {
+          setLoading(true);
+          setError("");
+
+          const response =
+            await apiClient.get(
+              `/faculty/${accountId}`
+            );
+
+          const responseData =
+            response.data as FacultyResponse;
+
+          const facultyData =
+            responseData?.data?.faculty ||
+            responseData?.faculty ||
+            responseData?.data;
+
+          if (!facultyData) {
+            throw new Error(
+              "Faculty profile was not found."
+            );
+          }
+
+          const loadedFaculty =
+            facultyData as Faculty;
+
+          setFaculty(
+            loadedFaculty
+          );
+
+          setFacultyForm({
+            ...loadedFaculty,
+          });
+
+        } catch (err: any) {
+          console.error(
+            "FACULTY FETCH ERROR:",
+            err
+          );
+
+          setError(
+            getApiErrorMessage(
+              err,
+              "Unable to load your faculty profile."
+            )
+          );
+
+        } finally {
+          setLoading(false);
+        }
+      };
+
+    fetchFaculty();
+
+  }, [
+    token,
+    role,
+    user,
+    accountId,
+  ]);
+
+  // =======================================================
+  // FETCH PAPERS
+  // =======================================================
+
+  useEffect(() => {
+    if (
+      !isAuthenticated ||
+      !faculty?._id
+    ) {
+      setPapers([]);
+      return;
+    }
+
+    const fetchPapers =
+      async () => {
+        try {
+          setPapersLoading(true);
+          setPaperError("");
+
+          const response =
+            await apiClient.get(
+              `/paper/faculty/${faculty._id}`
+            );
+
+          const data =
+            response.data?.data;
+
+          setPapers(
+            Array.isArray(data)
+              ? data
+              : []
+          );
+
+        } catch (err: any) {
+          console.error(
+            "PAPERS FETCH ERROR:",
+            err
+          );
+
+          setPaperError(
+            getApiErrorMessage(
+              err,
+              "Unable to load papers."
+            )
+          );
+
+        } finally {
+          setPapersLoading(false);
+        }
+      };
+
+    fetchPapers();
+
+  }, [
+    isAuthenticated,
+    faculty?._id,
+  ]);
+
+  // =======================================================
+  // FULL NAME
+  // =======================================================
+
+  const fullName = [
+    faculty?.namePrefix,
+    faculty?.firstName,
+    faculty?.middleName,
+    faculty?.lastName,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  // =======================================================
+  // PHOTO URL
+  // =======================================================
+
+  const photoUrl =
+    faculty?.photoId
+      ? `${apiClient.defaults.baseURL}/image/${faculty.photoId}`
+      : "";
+
+  // =======================================================
+  // FACULTY FORM CHANGE
+  // =======================================================
+
+  const handleFacultyChange = (
+    field: keyof Faculty,
+    value: any
+  ) => {
+    setFacultyForm(
+      (previous) => ({
+        ...previous,
+        [field]: value,
+      })
+    );
   };
 
-  const removePaper = (index: number) => {
-    const updatedPapers = editedData.papers.filter((_, i) => i !== index);
-    setEditedData((prev) => ({ ...prev, papers: updatedPapers }));
+  // =======================================================
+  // SAVE FACULTY
+  // =======================================================
+
+  const handleSaveFaculty =
+    async () => {
+      if (!faculty?._id) {
+        return;
+      }
+
+      try {
+        setSavingFaculty(true);
+        setError("");
+
+        const response =
+          await apiClient.put(
+            `/faculty/${faculty._id}`,
+            {
+              namePrefix:
+                facultyForm.namePrefix,
+
+              firstName:
+                facultyForm.firstName,
+
+              middleName:
+                facultyForm.middleName,
+
+              lastName:
+                facultyForm.lastName,
+
+              phoneNumber:
+                facultyForm.phoneNumber,
+
+              sex:
+                facultyForm.sex,
+
+              highestDegree:
+                facultyForm.highestDegree,
+
+              expertFields:
+                facultyForm.expertFields,
+
+              bios:
+                facultyForm.bios,
+            }
+          );
+
+        const updatedFaculty =
+          response.data?.data?.faculty ||
+          response.data?.faculty ||
+          response.data?.data;
+
+        if (updatedFaculty) {
+          setFaculty(
+            updatedFaculty
+          );
+
+          setFacultyForm(
+            updatedFaculty
+          );
+        } else {
+          setFaculty(
+            facultyForm
+          );
+        }
+
+        setEditingFaculty(false);
+
+      } catch (err: any) {
+        console.error(
+          "FACULTY UPDATE ERROR:",
+          err
+        );
+
+        setError(
+          getApiErrorMessage(
+            err,
+            "Unable to update faculty information."
+          )
+        );
+
+      } finally {
+        setSavingFaculty(false);
+      }
+    };
+
+  // =======================================================
+  // CANCEL FACULTY EDIT
+  // =======================================================
+
+  const cancelFacultyEdit =
+    () => {
+      setFacultyForm({
+        ...(faculty || {}),
+      });
+
+      setEditingFaculty(false);
+    };
+
+  // =======================================================
+  // OPEN ADD PAPER
+  // =======================================================
+
+  const openAddPaper =
+    () => {
+      setEditingPaperId(null);
+
+      setPaperForm({
+        title: "",
+        paperUrl: "",
+      });
+
+      setPaperError("");
+      setShowPaperForm(true);
+    };
+
+  // =======================================================
+  // OPEN EDIT PAPER
+  // =======================================================
+
+  const openEditPaper =
+    (paper: Paper) => {
+      setEditingPaperId(
+        paper._id
+      );
+
+      setPaperForm({
+        title:
+          paper.title || "",
+
+        paperUrl:
+          paper.paperUrl || "",
+      });
+
+      setPaperError("");
+      setShowPaperForm(true);
+    };
+
+  // =======================================================
+  // CLOSE PAPER FORM
+  // =======================================================
+
+  const closePaperForm =
+    () => {
+      if (savingPaper) {
+        return;
+      }
+
+      setShowPaperForm(false);
+
+      setEditingPaperId(null);
+
+      setPaperForm({
+        title: "",
+        paperUrl: "",
+      });
+
+      setPaperError("");
+    };
+
+  // =======================================================
+  // PAPER FORM CHANGE
+  // =======================================================
+
+  const handlePaperChange = (
+    field:
+      | "title"
+      | "paperUrl",
+    value: string
+  ) => {
+    setPaperForm(
+      (previous) => ({
+        ...previous,
+        [field]: value,
+      })
+    );
   };
 
-  const handleSave = () => {
-    setTeacherData(editedData);
-    setIsEditModalOpen(false);
-  };
+  // =======================================================
+  // SAVE PAPER
+  // =======================================================
 
-  if (token && role === "faculty") {
-    return (
-      <div className="p-4 space-y-6">
-        <h2 className="text-2xl font-bold text-center">Teacher Profile</h2>
+  const handleSavePaper =
+    async () => {
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Profile */}
-          <div className="flex flex-col items-center bg-white rounded shadow p-4 w-full lg:w-1/3">
-            {teacherData.Photo && (
-              <img
-                src={teacherData.Photo as string}
-                alt="Profile"
-                className="w-40 h-50 object-fit rounded-md border"
-              />
-            )}
-            <h3 className="text-xl font-semibold mt-4 text-center">{teacherData.name}</h3>
-            <p className="text-sm text-gray-600 text-center mt-1">{teacherData.position}</p>
-          </div>
+      if (
+        !paperForm.title.trim()
+      ) {
+        setPaperError(
+          "Please enter the paper title."
+        );
 
-          {/* Right Info */}
-          <div className="bg-white rounded shadow p-4 w-full lg:w-2/3 space-y-4">
-            <div className="flex flex-wrap gap-4">
-              <div className="w-full sm:w-[45%]"><p className="font-semibold">Email:</p><p>{teacherData.email}</p></div>
-              <div className="w-full sm:w-[45%]"><p className="font-semibold">Phone:</p><p>{teacherData.phone_No}</p></div>
-              <div className="w-full sm:w-[45%]"><p className="font-semibold">HOD:</p><p>{teacherData.HOD ? "Yes" : "No"}</p></div>
-              <div className="w-full sm:w-[45%]"><p className="font-semibold">Qualification:</p><p>{teacherData.qualification}</p></div>
-              <div className="w-full"><p className="font-semibold">Speciality:</p><p>{teacherData.speacility}</p></div>
-              <div className="w-full"><p className="font-semibold">Department:</p><p>{teacherData.department}</p></div>
-            </div>
-            <button onClick={handleEditOpen} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Edit Profile</button>
-          </div>
-        </div>
+        return;
+      }
 
-        {/* Papers */}
-        <div className="bg-white rounded shadow p-4 mt-6">
-          <h3 className="text-lg font-semibold mb-4">Papers</h3>
-          {teacherData.papers.length > 0 && teacherData.papers.some(p => p.desc || p.link) ? (
-            <div className="space-y-2 mb-4">
-              {teacherData.papers.map((paper, index) => (
-                (paper.desc || paper.link) && (
-                  <div key={index} className="border p-3 rounded bg-gray-50">
-                    <p><span className="font-medium">Description:</span> {paper.desc || "N/A"}</p>
-                    <p><span className="font-medium">Link:</span> {paper.link || "N/A"}</p>
-                  </div>
+      try {
+        setSavingPaper(true);
+        setPaperError("");
+
+        const paperPayload = {
+          title:
+            paperForm.title.trim(),
+
+          paperUrl:
+            paperForm.paperUrl.trim() ||
+            undefined,
+        };
+
+        // =================================================
+        // EDIT
+        // =================================================
+
+        if (editingPaperId) {
+
+          const response =
+            await apiClient.put(
+              `/paper/me/${editingPaperId}`,
+              paperPayload
+            );
+
+          const updatedPaper =
+            response.data?.data;
+
+          if (updatedPaper) {
+            setPapers(
+              (previous) =>
+                previous.map(
+                  (paper) =>
+                    paper._id ===
+                    editingPaperId
+                      ? updatedPaper
+                      : paper
                 )
-              ))}
-            </div>
-          ) : <p className="text-gray-500 mb-4">No papers added yet.</p>}
+            );
+          }
+
+        }
+
+        // =================================================
+        // ADD
+        // =================================================
+
+        else {
+
+          const response =
+            await apiClient.post(
+              "/paper/me",
+              paperPayload
+            );
+
+          const newPaper =
+            response.data?.data;
+
+          if (newPaper) {
+            setPapers(
+              (previous) => [
+                newPaper,
+                ...previous,
+              ]
+            );
+          }
+        }
+
+        closePaperForm();
+
+        await Swal.fire({
+          title: editingPaperId
+            ? "Paper updated!"
+            : "Paper added!",
+          text: editingPaperId
+            ? "The paper has been updated successfully."
+            : "The paper has been added successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#22c55e",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+
+      } catch (err: any) {
+
+        console.error(
+          "PAPER SAVE ERROR:",
+          err
+        );
+
+        const message =
+          getApiErrorMessage(
+            err,
+            "Unable to save paper."
+          );
+
+        setPaperError(message);
+
+        await Swal.fire({
+          title: "Unable to save paper",
+          text: message,
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#ef4444",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+
+      } finally {
+        setSavingPaper(false);
+      }
+    };
+
+  // =======================================================
+  // DELETE PAPER
+  // =======================================================
+
+  const handleDeletePaper =
+    async (
+      paperId: string
+    ) => {
+
+      const result =
+        await Swal.fire({
+          title: "Delete paper?",
+          text: "This paper will be permanently deleted.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Delete",
+          cancelButtonText: "Cancel",
+          confirmButtonColor: "#ef4444",
+          cancelButtonColor: "#22c55e",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+
+        setPaperError("");
+
+        await apiClient.delete(
+          `/paper/me/${paperId}`
+        );
+
+        setPapers(
+          (previous) =>
+            previous.filter(
+              (paper) =>
+                paper._id !== paperId
+            )
+        );
+
+        await Swal.fire({
+          title: "Deleted!",
+          text: "The paper has been deleted successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#22c55e",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+
+      } catch (err: any) {
+
+        console.error(
+          "PAPER DELETE ERROR:",
+          err
+        );
+
+        const message =
+          getApiErrorMessage(
+            err,
+            "Unable to delete paper."
+          );
+
+        setPaperError(message);
+
+        await Swal.fire({
+          title: "Delete failed",
+          text: message,
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#ef4444",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+      }
+    };
+
+  // =======================================================
+  // LOGOUT
+  // =======================================================
+
+  const handleLogout =
+    async () => {
+
+      const result =
+        await Swal.fire({
+          title: "Logout?",
+          text: "Are you sure you want to sign out?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Logout",
+          cancelButtonText: "Cancel",
+          confirmButtonColor: "#ef4444",
+          cancelButtonColor: "#22c55e",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+
+        if (user?.email) {
+          await apiClient.post(
+            "/account/logout",
+            {
+              email: user.email,
+            }
+          );
+        }
+
+      } catch (error) {
+        console.error(
+          "LOGOUT ERROR:",
+          error
+        );
+
+      } finally {
+
+        setToken("");
+        setRole("");
+        setUser(null);
+
+        window.location.href =
+          "/faculty";
+      }
+    };
+
+  // =======================================================
+  // AUTH CHECK
+  // =======================================================
+
+  if (!isAuthenticated) {
+    return (
+      <div className="p-4">
+        <SignIn_SignUP
+          role="faculty"
+        />
+      </div>
+    );
+  }
+
+  // =======================================================
+  // LOADING
+  // =======================================================
+
+  if (loading) {
+    return (
+      <div
+        className="
+          min-h-screen
+          bg-gray-50
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <div className="text-center">
+
+          <div
+            className="
+              w-12
+              h-12
+              border-4
+              border-cyan-700
+              border-t-transparent
+              rounded-full
+              animate-spin
+              mx-auto
+            "
+          />
+
+          <p
+            className="
+              mt-4
+              text-sm
+              font-semibold
+              text-gray-600
+            "
+          >
+            Loading faculty dashboard...
+          </p>
+
         </div>
+      </div>
+    );
+  }
 
-        {/* Edit Modal */}
-{isEditModalOpen && (
-  <div className="fixed inset-0 z-[999999] flex items-center justify-center">
-    {/* Background Blur Layer */}
-    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+  // =======================================================
+  // ERROR
+  // =======================================================
 
-    {/* Modal Content */}
-    <div className="relative bg-white p-6 rounded shadow-lg w-[95%] max-w-5xl space-y-4 overflow-y-auto max-h-[90vh]">
-      <h3 className="text-xl font-semibold text-center">Edit Profile</h3>
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left Block */}
-        <div className="flex flex-col items-center bg-gray-50 p-4 rounded w-full lg:w-1/3 space-y-3">
-          <label htmlFor="photoUpload" className="cursor-pointer relative">
-            {editedData.Photo && (
-              <img
-                src={editedData.Photo as string}
-                alt="Profile"
-                className="w-32 h-32 object-cover rounded-full border-2 border-cyan-500"
-              />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              id="photoUpload"
-              onChange={handlePhotoChange}
-              className="hidden"
-            />
-            <div className="absolute inset-0 rounded-full bg-black bg-opacity-25 flex items-center justify-center opacity-0 hover:opacity-100 transition">
-              <span className="text-white text-sm">Change</span>
-            </div>
-          </label>
-          <div className="w-full">
-            <label>Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={editedData.name}
-              onChange={handleInputChange}
-              className="border p-2 rounded w-full"
-            />
-          </div>
-          <div className="w-full">
-            <label>Position:</label>
-            <textarea
-              name="position"
-              value={editedData.position}
-              onChange={handleInputChange}
-              className="border p-2 rounded w-full"
-            />
-          </div>
-        </div>
+  if (error) {
+    return (
+      <div
+        className="
+          min-h-screen
+          bg-gray-50
+          flex
+          items-center
+          justify-center
+          px-4
+        "
+      >
 
-        {/* Right Block */}
-        <div className="flex flex-col gap-3 w-full lg:w-2/3">
-          {["email", "phone_No", "speacility", "qualification", "department"].map((key) => (
-            <div key={key}>
-              <label>{key.replace("_", " ")}:</label>
-              <input
-                type="text"
-                name={key}
-                value={editedData[key as keyof TeacherDataType] as string}
-                onChange={handleInputChange}
-                className="border p-2 rounded w-full"
-              />
-            </div>
-          ))}
-          <div>
-            <label>HOD:</label>
-            <select
-              name="HOD"
-              value={editedData.HOD.toString()}
-              onChange={handleSelectChange}
-              className="border p-2 rounded w-full"
+        <div
+          className="
+            w-full
+            max-w-md
+            bg-white
+            rounded-3xl
+            shadow-xl
+            border
+            border-red-100
+            p-8
+            text-center
+          "
+        >
+
+          <FaUserCircle
+            className="
+              text-5xl
+              text-red-400
+              mx-auto
+            "
+          />
+
+          <h2
+            className="
+              text-xl
+              font-bold
+              text-gray-900
+              mt-5
+            "
+          >
+            Unable to Load Profile
+          </h2>
+
+          <p
+            className="
+              text-sm
+              text-gray-500
+              mt-2
+            "
+          >
+            {error}
+          </p>
+
+          <div
+            className="
+              flex
+              gap-3
+              mt-6
+            "
+          >
+
+            <button
+              type="button"
+              onClick={() =>
+                window.location.reload()
+              }
+              className="
+                flex-1
+                bg-cyan-700
+                hover:bg-cyan-800
+                text-white
+                font-bold
+                py-3
+                rounded-xl
+              "
             >
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+              Try Again
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="
+                flex-1
+                bg-gray-100
+                hover:bg-gray-200
+                text-gray-700
+                font-bold
+                py-3
+                rounded-xl
+              "
+            >
+              Sign Out
+            </button>
+
           </div>
-        </div>
-      </div>
 
-      {/* Papers Editable */}
-      <div>
-        <h3 className="text-lg font-semibold mt-4">Papers</h3>
-        <div className="max-h-60 overflow-y-auto space-y-3">
-          {editedData.papers.map((paper, index) => (
-            <div key={index} className="border p-3 rounded relative bg-gray-50">
-              <label className="font-medium">Description:</label>
-              <input
-                type="text"
-                value={paper.desc}
-                onChange={(e) => handlePaperChange(index, "desc", e.target.value)}
-                className="border p-2 w-full rounded mt-1"
-              />
-              <label className="font-medium mt-2 block">Link:</label>
-              <input
-                type="text"
-                value={paper.link}
-                onChange={(e) => handlePaperChange(index, "link", e.target.value)}
-                className="border p-2 w-full rounded mt-1"
-              />
-              <button
-                onClick={() => removePaper(index)}
-                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
         </div>
-        <button
-          onClick={addPaper}
-          className="mt-3 bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Add Paper
-        </button>
-      </div>
-
-      {/* Modal Buttons */}
-      <div className="flex justify-end gap-4 mt-4">
-        <button
-          onClick={handleEditClose}
-          className="bg-gray-400 text-white px-4 py-2 rounded"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleSave}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
       </div>
     );
   }
 
-  return <SignIn_SignUP role="faculty" />;
+  // =======================================================
+  // MAIN PAGE
+  // =======================================================
+
+  return (
+    <div
+      className="
+        min-h-screen
+        bg-gray-50
+      "
+    >
+
+      {/* =================================================
+          MOBILE HEADER
+      ================================================= */}
+
+      <header
+        className="
+          lg:hidden
+          fixed
+          top-0
+          left-0
+          right-0
+          h-16
+          bg-white
+          border-b
+          border-gray-200
+          z-40
+          flex
+          items-center
+          justify-between
+          px-4
+        "
+      >
+
+        <button
+          type="button"
+          onClick={() =>
+            setSidebarOpen(true)
+          }
+          className="
+            w-10
+            h-10
+            rounded-xl
+            bg-gray-100
+            flex
+            items-center
+            justify-center
+            text-gray-700
+          "
+        >
+          <FaBars />
+        </button>
+
+        <div className="text-center">
+
+          <p
+            className="
+              text-sm
+              font-extrabold
+              text-gray-900
+            "
+          >
+            Faculty CMS
+          </p>
+
+          <p
+            className="
+              text-[10px]
+              text-gray-400
+            "
+          >
+            Teacher Portal
+          </p>
+
+        </div>
+
+        <div
+          className="
+            w-10
+            h-10
+            rounded-full
+            overflow-hidden
+            bg-cyan-100
+            flex
+            items-center
+            justify-center
+          "
+        >
+
+          {photoUrl ? (
+
+            <img
+              src={photoUrl}
+              alt={fullName}
+              className="
+                w-full
+                h-full
+                object-cover
+              "
+            />
+
+          ) : (
+
+            <FaUserCircle
+              className="
+                text-cyan-700
+                text-xl
+              "
+            />
+
+          )}
+
+        </div>
+
+      </header>
+
+      {/* =================================================
+          MOBILE OVERLAY
+      ================================================= */}
+
+      {sidebarOpen && (
+        <div
+          className="
+            lg:hidden
+            fixed
+            inset-0
+            bg-black/40
+            z-40
+          "
+          onClick={() =>
+            setSidebarOpen(false)
+          }
+        />
+      )}
+
+      {/* =================================================
+          SIDEBAR
+      ================================================= */}
+
+      <aside
+        className={`
+          fixed
+          top-0
+          left-0
+          bottom-0
+          w-72
+          bg-white
+          border-r
+          border-gray-200
+          z-50
+          transform
+          transition-transform
+          duration-300
+          lg:translate-x-0
+          ${
+            sidebarOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+          }
+        `}
+      >
+
+        <div
+          className="
+            h-20
+            px-6
+            flex
+            items-center
+            justify-between
+            border-b
+            border-gray-100
+          "
+        >
+
+          <div>
+
+            <h1
+              className="
+                text-lg
+                font-extrabold
+                text-gray-900
+              "
+            >
+              Faculty CMS
+            </h1>
+
+            <p
+              className="
+                text-[10px]
+                text-gray-400
+                font-semibold
+                uppercase
+                tracking-wider
+              "
+            >
+              Teacher Portal
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setSidebarOpen(false)
+            }
+            className="
+              lg:hidden
+              w-9
+              h-9
+              rounded-lg
+              bg-gray-100
+              flex
+              items-center
+              justify-center
+            "
+          >
+            <FaTimes />
+          </button>
+
+        </div>
+
+        {/* Faculty */}
+
+        <div
+          className="
+            px-5
+            py-5
+            border-b
+            border-gray-100
+          "
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+            "
+          >
+
+            <div
+              className="
+                w-12
+                h-12
+                rounded-full
+                overflow-hidden
+                bg-cyan-100
+                border-2
+                border-cyan-100
+                flex-shrink-0
+              "
+            >
+
+              {photoUrl ? (
+
+                <img
+                  src={photoUrl}
+                  alt={fullName}
+                  className="
+                    w-full
+                    h-full
+                    object-cover
+                  "
+                />
+
+              ) : (
+
+                <FaUserCircle
+                  className="
+                    text-cyan-700
+                    text-4xl
+                    m-1
+                  "
+                />
+
+              )}
+
+            </div>
+
+            <div className="min-w-0">
+
+              <p
+                className="
+                  text-sm
+                  font-bold
+                  text-gray-900
+                  truncate
+                "
+              >
+                {fullName ||
+                  faculty?.username ||
+                  "Faculty"}
+              </p>
+
+              <p
+                className="
+                  text-[11px]
+                  text-gray-500
+                  truncate
+                "
+              >
+                {formatRole(
+                  faculty?.roles
+                )}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Dashboard */}
+
+        <nav className="p-4">
+
+          <button
+            type="button"
+            className="
+              w-full
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-xl
+              text-sm
+              font-semibold
+              bg-cyan-700
+              text-white
+              shadow-md
+            "
+          >
+            <FaHome />
+
+            <span>
+              Dashboard
+            </span>
+          </button>
+
+        </nav>
+
+        {/* Logout */}
+
+        <div
+          className="
+            absolute
+            bottom-0
+            left-0
+            right-0
+            p-4
+            border-t
+            border-gray-100
+          "
+        >
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="
+              w-full
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-xl
+              text-sm
+              font-semibold
+              text-red-600
+              hover:bg-red-50
+              transition
+            "
+          >
+
+            <FaSignOutAlt />
+
+            <span>
+              Logout
+            </span>
+
+          </button>
+
+        </div>
+
+      </aside>
+
+      {/* =================================================
+          MAIN
+      ================================================= */}
+
+      <main
+        className="
+          lg:ml-72
+          min-h-screen
+          pt-16
+          lg:pt-0
+        "
+      >
+
+        {/* Desktop Header */}
+
+        <div
+          className="
+            hidden
+            lg:flex
+            h-20
+            bg-white
+            border-b
+            border-gray-200
+            items-center
+            justify-between
+            px-8
+          "
+        >
+
+          <div>
+
+            <p
+              className="
+                text-xs
+                font-semibold
+                text-gray-400
+                uppercase
+                tracking-wider
+              "
+            >
+              Faculty Portal
+            </p>
+
+            <h2
+              className="
+                text-xl
+                font-extrabold
+                text-gray-900
+              "
+            >
+              Dashboard
+            </h2>
+
+          </div>
+
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+            "
+          >
+
+            <div
+              className="
+                w-10
+                h-10
+                rounded-full
+                overflow-hidden
+                bg-cyan-100
+                flex
+                items-center
+                justify-center
+              "
+            >
+
+              {photoUrl ? (
+
+                <img
+                  src={photoUrl}
+                  alt={fullName}
+                  className="
+                    w-full
+                    h-full
+                    object-cover
+                  "
+                />
+
+              ) : (
+
+                <FaUserCircle
+                  className="
+                    text-cyan-700
+                    text-xl
+                  "
+                />
+
+              )}
+
+            </div>
+
+            <div>
+
+              <p
+                className="
+                  text-sm
+                  font-bold
+                  text-gray-900
+                "
+              >
+                {fullName ||
+                  faculty?.username ||
+                  "Faculty"}
+              </p>
+
+              <p
+                className="
+                  text-[10px]
+                  text-gray-400
+                "
+              >
+                {formatRole(
+                  faculty?.roles
+                )}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* =================================================
+            CONTENT
+        ================================================= */}
+
+        <div
+          className="
+            p-4
+            sm:p-6
+            lg:p-8
+            max-w-7xl
+            mx-auto
+          "
+        >
+
+          {/* =================================================
+              WELCOME
+          ================================================= */}
+
+          <section
+            className="
+              bg-gradient-to-r
+              from-cyan-950
+              via-slate-900
+              to-cyan-900
+              rounded-3xl
+              p-6
+              sm:p-8
+              text-white
+              shadow-xl
+            "
+          >
+
+            <div
+              className="
+                flex
+                flex-col
+                md:flex-row
+                md:items-center
+                justify-between
+                gap-6
+              "
+            >
+
+              <div>
+
+                <p
+                  className="
+                    text-cyan-300
+                    text-xs
+                    font-bold
+                    uppercase
+                    tracking-widest
+                  "
+                >
+                  Welcome back
+                </p>
+
+                <h1
+                  className="
+                    text-2xl
+                    sm:text-3xl
+                    font-extrabold
+                    mt-2
+                  "
+                >
+                  {fullName ||
+                    faculty?.username ||
+                    "Faculty"}
+                </h1>
+
+                <p
+                  className="
+                    text-sm
+                    text-slate-300
+                    mt-2
+                    max-w-xl
+                  "
+                >
+                  Manage your faculty information
+                  and research papers from your
+                  dashboard.
+                </p>
+
+              </div>
+
+              <div
+                className="
+                  w-24
+                  h-24
+                  rounded-full
+                  overflow-hidden
+                  border-4
+                  border-white/20
+                  bg-white/10
+                  flex-shrink-0
+                "
+              >
+
+                {photoUrl ? (
+
+                  <img
+                    src={photoUrl}
+                    alt={fullName}
+                    className="
+                      w-full
+                      h-full
+                      object-cover
+                    "
+                  />
+
+                ) : (
+
+                  <FaUserCircle
+                    className="
+                      text-white/70
+                      text-6xl
+                      m-2
+                    "
+                  />
+
+                )}
+
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* =================================================
+              FACULTY INFORMATION
+          ================================================= */}
+
+          <section
+            className="
+              bg-white
+              rounded-2xl
+              border
+              border-gray-200
+              shadow-sm
+              mt-6
+            "
+          >
+
+            <div
+              className="
+                px-6
+                py-5
+                border-b
+                border-gray-100
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-3
+              "
+            >
+
+              <div>
+
+                <h2
+                  className="
+                    text-lg
+                    font-extrabold
+                    text-gray-900
+                  "
+                >
+                  Faculty Information
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    text-gray-400
+                    mt-1
+                  "
+                >
+                  Edit your professional information
+                </p>
+
+              </div>
+
+              {!editingFaculty ? (
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditingFaculty(true)
+                  }
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    bg-cyan-700
+                    hover:bg-cyan-800
+                    text-white
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    text-sm
+                    font-bold
+                  "
+                >
+
+                  <FaEdit />
+
+                  Edit Information
+
+                </button>
+
+              ) : (
+
+                <div
+                  className="
+                    flex
+                    gap-2
+                  "
+                >
+
+                  <button
+                    type="button"
+                    onClick={
+                      cancelFacultyEdit
+                    }
+                    disabled={
+                      savingFaculty
+                    }
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      bg-gray-100
+                      hover:bg-gray-200
+                      text-gray-700
+                      px-4
+                      py-2.5
+                      rounded-xl
+                      text-sm
+                      font-bold
+                    "
+                  >
+
+                    <FaTimesCircle />
+
+                    Cancel
+
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={
+                      handleSaveFaculty
+                    }
+                    disabled={
+                      savingFaculty
+                    }
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      bg-green-600
+                      hover:bg-green-700
+                      text-white
+                      px-4
+                      py-2.5
+                      rounded-xl
+                      text-sm
+                      font-bold
+                    "
+                  >
+
+                    <FaSave />
+
+                    {savingFaculty
+                      ? "Saving..."
+                      : "Save"}
+
+                  </button>
+
+                </div>
+
+              )}
+
+            </div>
+
+            {/* Faculty Table */}
+
+            <div className="overflow-x-auto">
+
+              <table
+                className="
+                  w-full
+                  min-w-[700px]
+                "
+              >
+
+                <tbody>
+
+                  {/* Name */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        w-1/3
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Full Name
+                    </td>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-gray-800
+                      "
+                    >
+
+                      {editingFaculty ? (
+
+                        <div
+                          className="
+                            grid
+                            grid-cols-2
+                            md:grid-cols-4
+                            gap-2
+                          "
+                        >
+
+                          <input
+                            value={
+                              facultyForm.namePrefix ||
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleFacultyChange(
+                                "namePrefix",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Prefix"
+                            className="
+                              border
+                              border-gray-200
+                              rounded-lg
+                              px-3
+                              py-2
+                              text-sm
+                              outline-none
+                              focus:ring-2
+                              focus:ring-cyan-500
+                            "
+                          />
+
+                          <input
+                            value={
+                              facultyForm.firstName ||
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleFacultyChange(
+                                "firstName",
+                                e.target.value
+                              )
+                            }
+                            placeholder="First name"
+                            className="
+                              border
+                              border-gray-200
+                              rounded-lg
+                              px-3
+                              py-2
+                              text-sm
+                              outline-none
+                              focus:ring-2
+                              focus:ring-cyan-500
+                            "
+                          />
+
+                          <input
+                            value={
+                              facultyForm.middleName ||
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleFacultyChange(
+                                "middleName",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Middle name"
+                            className="
+                              border
+                              border-gray-200
+                              rounded-lg
+                              px-3
+                              py-2
+                              text-sm
+                              outline-none
+                              focus:ring-2
+                              focus:ring-cyan-500
+                            "
+                          />
+
+                          <input
+                            value={
+                              facultyForm.lastName ||
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleFacultyChange(
+                                "lastName",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Last name"
+                            className="
+                              border
+                              border-gray-200
+                              rounded-lg
+                              px-3
+                              py-2
+                              text-sm
+                              outline-none
+                              focus:ring-2
+                              focus:ring-cyan-500
+                            "
+                          />
+
+                        </div>
+
+                      ) : (
+
+                        fullName ||
+                        faculty?.username ||
+                        "Not available"
+
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Email */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Email
+                    </td>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-gray-800
+                      "
+                    >
+
+                      {faculty?.email ||
+                        user?.email ||
+                        "Not available"}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Phone */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Phone
+                    </td>
+
+                    <td className="px-6 py-4">
+
+                      {editingFaculty ? (
+
+                        <input
+                          value={
+                            facultyForm.phoneNumber ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "phoneNumber",
+                              e.target.value
+                            )
+                          }
+                          className="
+                            w-full
+                            max-w-md
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        />
+
+                      ) : (
+
+                        <span
+                          className="
+                            text-sm
+                            font-semibold
+                            text-gray-800
+                          "
+                        >
+                          {faculty?.phoneNumber ||
+                            "Not available"}
+                        </span>
+
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Department */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Department
+                    </td>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-gray-800
+                      "
+                    >
+
+                      {getDepartmentName(
+                        faculty?.department ||
+                        faculty?.departmentId
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Role */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Faculty Role
+                    </td>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-gray-800
+                      "
+                    >
+
+                      {formatRole(
+                        faculty?.roles
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Highest Degree */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Highest Degree
+                    </td>
+
+                    <td className="px-6 py-4">
+
+                      {editingFaculty ? (
+
+                        <input
+                          value={
+                            facultyForm.highestDegree ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "highestDegree",
+                              e.target.value
+                            )
+                          }
+                          className="
+                            w-full
+                            max-w-md
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        />
+
+                      ) : (
+
+                        <span
+                          className="
+                            text-sm
+                            font-semibold
+                            text-gray-800
+                          "
+                        >
+                          {faculty?.highestDegree ||
+                            "Not available"}
+                        </span>
+
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Gender */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Gender
+                    </td>
+
+                    <td className="px-6 py-4">
+
+                      {editingFaculty ? (
+
+                        <select
+                          value={
+                            facultyForm.sex ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "sex",
+                              e.target.value
+                            )
+                          }
+                          className="
+                            w-full
+                            max-w-md
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        >
+
+                          <option value="">
+                            Select
+                          </option>
+
+                          <option value="male">
+                            Male
+                          </option>
+
+                          <option value="female">
+                            Female
+                          </option>
+
+                          <option value="other">
+                            Other
+                          </option>
+
+                          <option value="prefer not to say">
+                            Prefer not to say
+                          </option>
+
+                        </select>
+
+                      ) : (
+
+                        <span
+                          className="
+                            text-sm
+                            font-semibold
+                            text-gray-800
+                            capitalize
+                          "
+                        >
+                          {faculty?.sex ||
+                            "Not available"}
+                        </span>
+
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Start Date */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      Start Date
+                    </td>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-gray-800
+                      "
+                    >
+
+                      {formatDate(
+                        faculty?.startDate
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* HOD */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                      "
+                    >
+                      HOD Status
+                    </td>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-gray-800
+                      "
+                    >
+
+                      {faculty?.hod
+                        ? "Head of Department"
+                        : "Faculty Member"}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Biography */}
+
+                  <tr
+                    className="
+                      border-b
+                      border-gray-100
+                    "
+                  >
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                        align-top
+                      "
+                    >
+                      Biography
+                    </td>
+
+                    <td className="px-6 py-4">
+
+                      {editingFaculty ? (
+
+                        <textarea
+                          value={
+                            facultyForm.bios ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "bios",
+                              e.target.value
+                            )
+                          }
+                          rows={5}
+                          className="
+                            w-full
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            resize-y
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        />
+
+                      ) : (
+
+                        <p
+                          className="
+                            text-sm
+                            leading-6
+                            text-gray-600
+                            whitespace-pre-line
+                          "
+                        >
+                          {faculty?.bios ||
+                            "No biography available."}
+                        </p>
+
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                  {/* Expert Fields */}
+
+                  <tr>
+
+                    <td
+                      className="
+                        px-6
+                        py-4
+                        text-xs
+                        font-bold
+                        text-gray-400
+                        uppercase
+                        align-top
+                      "
+                    >
+                      Areas of Expertise
+                    </td>
+
+                    <td className="px-6 py-4">
+
+                      {editingFaculty ? (
+
+                        <input
+                          value={
+                            facultyForm.expertFields?.join(
+                              ", "
+                            ) || ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "expertFields",
+                              e.target.value
+                                .split(",")
+                                .map(
+                                  (item) =>
+                                    item.trim()
+                                )
+                                .filter(
+                                  Boolean
+                                )
+                            )
+                          }
+                          placeholder="AI, Machine Learning, Computer Vision"
+                          className="
+                            w-full
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        />
+
+                      ) : (
+
+                        <div
+                          className="
+                            flex
+                            flex-wrap
+                            gap-2
+                          "
+                        >
+
+                          {faculty?.expertFields &&
+                          faculty.expertFields.length >
+                            0 ? (
+
+                            faculty.expertFields.map(
+                              (
+                                field,
+                                index
+                              ) => (
+
+                                <span
+                                  key={
+                                    `${field}-${index}`
+                                  }
+                                  className="
+                                    px-3
+                                    py-1.5
+                                    rounded-lg
+                                    bg-cyan-50
+                                    text-cyan-800
+                                    text-xs
+                                    font-bold
+                                  "
+                                >
+                                  {field}
+                                </span>
+
+                              )
+                            )
+
+                          ) : (
+
+                            <span
+                              className="
+                                text-sm
+                                text-gray-400
+                              "
+                            >
+                              No expertise information.
+                            </span>
+
+                          )}
+
+                        </div>
+
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </section>
+
+          {/* =================================================
+              PAPERS PANEL
+          ================================================= */}
+
+          <section
+            className="
+              bg-white
+              rounded-2xl
+              border
+              border-gray-200
+              shadow-sm
+              mt-6
+              mb-8
+            "
+          >
+
+            {/* Papers Header */}
+
+            <div
+              className="
+                px-6
+                py-5
+                border-b
+                border-gray-100
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-3
+              "
+            >
+
+              <div>
+
+                <h2
+                  className="
+                    text-lg
+                    font-extrabold
+                    text-gray-900
+                  "
+                >
+                  Research Papers
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    text-gray-400
+                    mt-1
+                  "
+                >
+                  Manage your research papers,
+                  publications and documents.
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={openAddPaper}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  bg-cyan-700
+                  hover:bg-cyan-800
+                  text-white
+                  px-4
+                  py-2.5
+                  rounded-xl
+                  text-sm
+                  font-bold
+                "
+              >
+
+                <FaPlus />
+
+                Add Paper
+
+              </button>
+
+            </div>
+
+            {/* Paper Error */}
+
+            {paperError && !showPaperForm && (
+              <div
+                className="
+                  mx-6
+                  mt-5
+                  px-4
+                  py-3
+                  rounded-xl
+                  bg-red-50
+                  border
+                  border-red-100
+                  text-sm
+                  text-red-600
+                "
+              >
+                {paperError}
+              </div>
+            )}
+
+            {/* Loading */}
+
+            {papersLoading ? (
+
+              <div
+                className="
+                  p-10
+                  text-center
+                "
+              >
+
+                <div
+                  className="
+                    w-8
+                    h-8
+                    border-4
+                    border-cyan-700
+                    border-t-transparent
+                    rounded-full
+                    animate-spin
+                    mx-auto
+                  "
+                />
+
+                <p
+                  className="
+                    mt-3
+                    text-sm
+                    text-gray-400
+                  "
+                >
+                  Loading papers...
+                </p>
+
+              </div>
+
+            ) : papers.length === 0 ? (
+
+              <div
+                className="
+                  p-10
+                  text-center
+                "
+              >
+
+                <FaBookOpen
+                  className="
+                    text-4xl
+                    text-gray-300
+                    mx-auto
+                  "
+                />
+
+                <h3
+                  className="
+                    text-base
+                    font-bold
+                    text-gray-700
+                    mt-4
+                  "
+                >
+                  No papers yet
+                </h3>
+
+                <p
+                  className="
+                    text-sm
+                    text-gray-400
+                    mt-1
+                  "
+                >
+                  Add your first research paper.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={openAddPaper}
+                  className="
+                    mt-5
+                    inline-flex
+                    items-center
+                    gap-2
+                    bg-cyan-700
+                    text-white
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    text-sm
+                    font-bold
+                  "
+                >
+
+                  <FaPlus />
+
+                  Add Paper
+
+                </button>
+
+              </div>
+
+            ) : (
+
+              <div
+                className="
+                  overflow-x-auto
+                "
+              >
+
+                <table
+                  className="
+                    w-full
+                    min-w-[700px]
+                  "
+                >
+
+                  <thead>
+
+                    <tr
+                      className="
+                        bg-gray-50
+                        border-b
+                        border-gray-200
+                      "
+                    >
+
+                      <th
+                        className="
+                          text-left
+                          px-6
+                          py-4
+                          text-[11px]
+                          font-bold
+                          text-gray-400
+                          uppercase
+                        "
+                      >
+                        Title
+                      </th>
+
+                      <th
+                        className="
+                          text-left
+                          px-6
+                          py-4
+                          text-[11px]
+                          font-bold
+                          text-gray-400
+                          uppercase
+                        "
+                      >
+                        Link
+                      </th>
+
+                      <th
+                        className="
+                          text-right
+                          px-6
+                          py-4
+                          text-[11px]
+                          font-bold
+                          text-gray-400
+                          uppercase
+                        "
+                      >
+                        Actions
+                      </th>
+
+                    </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                    {papers.map(
+                      (paper) => (
+
+                        <tr
+                          key={paper._id}
+                          className="
+                            border-b
+                            border-gray-100
+                            hover:bg-gray-50
+                          "
+                        >
+
+                          {/* Title */}
+
+                          <td
+                            className="
+                              px-6
+                              py-5
+                            "
+                          >
+
+                            <p
+                              className="
+                                text-sm
+                                font-bold
+                                text-gray-900
+                              "
+                            >
+                              {paper.title}
+                            </p>
+
+                          </td>
+
+                          {/* URL */}
+
+                          <td
+                            className="
+                              px-6
+                              py-5
+                            "
+                          >
+
+                            {paper.paperUrl ? (
+
+                              <a
+                                href={
+                                  paper.paperUrl
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) =>
+                                  handlePaperLinkClick(
+                                    e,
+                                    paper.paperUrl!
+                                  )
+                                }
+                                className="
+                                  inline-flex
+                                  items-center
+                                  gap-2
+                                  text-sm
+                                  font-bold
+                                  text-cyan-700
+                                  hover:text-cyan-900
+                                "
+                              >
+
+                                Open Paper
+
+                                <FaExternalLinkAlt
+                                  className="
+                                    text-xs
+                                  "
+                                />
+
+                              </a>
+
+                            ) : (
+
+                              <span
+                                className="
+                                  text-sm
+                                  text-gray-400
+                                  italic
+                                "
+                              >
+                                No link provided
+                              </span>
+
+                            )}
+
+                          </td>
+
+                          {/* Actions */}
+
+                          <td
+                            className="
+                              px-6
+                              py-5
+                            "
+                          >
+
+                            <div
+                              className="
+                                flex
+                                items-center
+                                justify-end
+                                gap-2
+                              "
+                            >
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  openEditPaper(
+                                    paper
+                                  )
+                                }
+                                className="
+                                  w-9
+                                  h-9
+                                  rounded-lg
+                                  bg-blue-50
+                                  text-blue-600
+                                  hover:bg-blue-100
+                                  flex
+                                  items-center
+                                  justify-center
+                                "
+                                title="Edit paper"
+                              >
+
+                                <FaEdit />
+
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleDeletePaper(
+                                    paper._id
+                                  )
+                                }
+                                className="
+                                  w-9
+                                  h-9
+                                  rounded-lg
+                                  bg-red-50
+                                  text-red-600
+                                  hover:bg-red-100
+                                  flex
+                                  items-center
+                                  justify-center
+                                "
+                                title="Delete paper"
+                              >
+
+                                <FaTrash />
+
+                              </button>
+
+                            </div>
+
+                          </td>
+
+                        </tr>
+
+                      )
+                    )}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            )}
+
+          </section>
+
+        </div>
+
+      </main>
+
+      {/* =====================================================
+          PAPER MODAL
+      ===================================================== */}
+
+      {showPaperForm && (
+
+        <div
+          className="
+            fixed
+            inset-0
+            z-[100]
+            bg-black/50
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
+
+          <div
+            className="
+              w-full
+              max-w-lg
+              bg-white
+              rounded-2xl
+              shadow-2xl
+              overflow-hidden
+            "
+          >
+
+            {/* Modal Header */}
+
+            <div
+              className="
+                px-6
+                py-5
+                border-b
+                border-gray-100
+                flex
+                items-center
+                justify-between
+              "
+            >
+
+              <div>
+
+                <h2
+                  className="
+                    text-lg
+                    font-extrabold
+                    text-gray-900
+                  "
+                >
+                  {editingPaperId
+                    ? "Edit Paper"
+                    : "Add Research Paper"}
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    text-gray-400
+                    mt-1
+                  "
+                >
+                  Enter your paper information.
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={closePaperForm}
+                disabled={savingPaper}
+                className="
+                  w-9
+                  h-9
+                  rounded-lg
+                  bg-gray-100
+                  text-gray-600
+                  hover:bg-gray-200
+                  flex
+                  items-center
+                  justify-center
+                "
+              >
+                <FaTimes />
+              </button>
+
+            </div>
+
+            {/* Form */}
+
+            <div className="p-6 space-y-5">
+
+              {/* Title */}
+
+              <div>
+
+                <label
+                  className="
+                    block
+                    text-xs
+                    font-bold
+                    text-gray-600
+                    mb-2
+                  "
+                >
+                  Paper Title
+
+                  <span className="text-red-500 ml-1">
+                    *
+                  </span>
+
+                </label>
+
+                <input
+                  value={
+                    paperForm.title
+                  }
+                  onChange={(e) =>
+                    handlePaperChange(
+                      "title",
+                      e.target.value
+                    )
+                  }
+                  placeholder="Enter paper title"
+                  className="
+                    w-full
+                    border
+                    border-gray-200
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-sm
+                    outline-none
+                    focus:ring-2
+                    focus:ring-cyan-500
+                  "
+                />
+
+              </div>
+
+              {/* URL */}
+
+              <div>
+
+                <label
+                  className="
+                    block
+                    text-xs
+                    font-bold
+                    text-gray-600
+                    mb-2
+                  "
+                >
+                  Paper URL
+
+                  <span
+                    className="
+                      ml-2
+                      text-[10px]
+                      font-medium
+                      text-gray-400
+                      normal-case
+                    "
+                  >
+                    Optional
+                  </span>
+
+                </label>
+
+                <input
+                  type="url"
+                  value={
+                    paperForm.paperUrl
+                  }
+                  onChange={(e) =>
+                    handlePaperChange(
+                      "paperUrl",
+                      e.target.value
+                    )
+                  }
+                  placeholder="https://..."
+                  className="
+                    w-full
+                    border
+                    border-gray-200
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-sm
+                    outline-none
+                    focus:ring-2
+                    focus:ring-cyan-500
+                  "
+                />
+
+                <p
+                  className="
+                    mt-2
+                    text-[11px]
+                    text-gray-400
+                  "
+                >
+                  You can leave this empty if the
+                  paper does not have an online link.
+                </p>
+
+              </div>
+
+              {/* Error */}
+
+              {paperError && (
+
+                <div
+                  className="
+                    p-3
+                    rounded-xl
+                    bg-red-50
+                    text-red-600
+                    text-xs
+                    font-semibold
+                  "
+                >
+                  {paperError}
+                </div>
+
+              )}
+
+              {/* Buttons */}
+
+              <div
+                className="
+                  flex
+                  gap-3
+                  pt-2
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={closePaperForm}
+                  disabled={savingPaper}
+                  className="
+                    flex-1
+                    py-3
+                    rounded-xl
+                    bg-gray-100
+                    hover:bg-gray-200
+                    text-gray-700
+                    text-sm
+                    font-bold
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    handleSavePaper
+                  }
+                  disabled={
+                    savingPaper
+                  }
+                  className="
+                    flex-1
+                    py-3
+                    rounded-xl
+                    bg-cyan-700
+                    hover:bg-cyan-800
+                    text-white
+                    text-sm
+                    font-bold
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                  "
+                >
+
+                  <FaSave />
+
+                  {savingPaper
+                    ? "Saving..."
+                    : editingPaperId
+                      ? "Update Paper"
+                      : "Add Paper"}
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+    </div>
+  );
 }

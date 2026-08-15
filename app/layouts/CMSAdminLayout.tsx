@@ -5,11 +5,7 @@ import { useAuth } from "~/context/AuthContext";
 
 export default function CMSLayout() {
   const { token, role } = useAuth();
-  console.log(token, role)
-
   const isAdmin = Boolean(token && role === "admin");
-
-  console.log(isAdmin)
 
   return (
     <div className="bg-slate-50">

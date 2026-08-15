@@ -16,6 +16,11 @@ export default function Navbar({
     setActiveDropdown(activeDropdown === index ? null : index);
   };
 
+  const closeMobileMenu = () => {
+    setIsOpen(false);
+    setActiveDropdown(null);
+  };
+
   // 🔹 Detect external link
   const isExternalLink = (url: string) => {
     try {
@@ -28,11 +33,14 @@ export default function Navbar({
 
   // 🔹 Handle navigation click
   const handleNavClick = (
-    e: React.MouseEvent,
-    href: string,
-    target?: string
-  ) => {
-    if (!isExternalLink(href)) return;
+      e: React.MouseEvent,
+      href: string,
+      target?: string
+    ) => {
+      if (!isExternalLink(href)) {
+        closeMobileMenu();
+        return;
+      }
 
     e.preventDefault();
 
@@ -50,6 +58,8 @@ export default function Navbar({
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        closeMobileMenu();
+
         target === "_blank"
           ? window.open(href, "_blank")
           : (window.location.href = href);

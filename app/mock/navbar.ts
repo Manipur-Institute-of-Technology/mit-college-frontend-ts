@@ -111,6 +111,8 @@ export const navigationData: NavigationData[] = [
         href: "/confrence",
       },
       { name: "NIRF", href: "/NIRF" },
+      { name: "AICTE-VAANI", href: "/aicte-vaani" },
+      { name: "Student List", href: "/student-list" },
       { name: "Gallery", href: "/gallery" },
       { name: "Contact Us", href: "/Contact_Us" },
     ],

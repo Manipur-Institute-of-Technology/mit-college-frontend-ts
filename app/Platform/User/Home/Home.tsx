@@ -1,4 +1,3 @@
-import { HomeData } from "~/DB_Sample/Home";
 import ImageCarousel from "./ImageCarousel/ImageCarrousel";
 import Informations from "~/Common/Informations/Informations";
 import "./Home.css";

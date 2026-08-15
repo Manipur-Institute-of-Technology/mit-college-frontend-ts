@@ -37,7 +37,10 @@ export default [
     route("Classroom", "./routes/classroom.tsx"),
     route("Nirf", "./routes/nirf.tsx"),
     route("Confrence", "./routes/confrence.tsx"),
-    route("teacher/:teacherName", "./routes/teacher.$teacherName.tsx"),
+    route("aicte-vaani", "./routes/aicte_vaani.tsx"),
+    route("Aicte-Vaani", "./routes/aicte_vaani.tsx", { id: "aicteVaaniCaps" }),
+    route("student-list", "./routes/student_list.tsx"),
+    route("all-notifications", "./routes/all_notification.tsx")
   ]),
   // CMS Route
   ...prefix("cms", [
@@ -57,15 +60,23 @@ export default [
         id: "AdminHome1",
       }),
       route("/faculty", "./routes/admin/admin_faculty_page.tsx"),
+      route("/image-carousel", "./routes/admin/admin_image_carousel_page.tsx"),
+      route("/news-notification", "./routes/admin/admin_news_notification_page.tsx"),
+      route("/gallery", "./routes/admin/admin_gallery_page.tsx"),
+      route("/conference", "./routes/admin/admin_conference_page.tsx"),
+      route("/nirf", "./routes/admin/admin_nirf_page.tsx"),
+      route("/aicte-vaani", "./routes/admin/admin_aicte_vaani_page.tsx"),
+      route("/administration", "./routes/admin/admin_authority.tsx"),
+      route("/institute-admin", "./routes/admin/admin_institute_admin_page.tsx"),
+      route("/hostel-admin", "./routes/admin/admin_hostel_admin_page.tsx"),
+      route("/library-admin", "./routes/admin/admin_library_admin_page.tsx"),
+      route("/student-list", "./routes/admin/admin_student_list_page.tsx"),
     ]),
   ]),
   // Routes Specific for Faculty
   ...prefix("faculty", [
     layout("./layouts/CMSFacultyLayout.tsx", [
       index("./routes/Faculty/teacher_home_page.tsx"),
-      route("/faculty", "./routes/Faculty/teacher_home_page.tsx", {
-        id: "FacultyHome1",
-      }),
     ]),
   ]),
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Informations from "~/Common/Informations/Informations";
+import Department from "../DepartmentData"
 import "../Department.css";
 
 function CE() {
@@ -43,6 +44,7 @@ function CE() {
               <li className="Department-List-Items">Graduates will develop their communication skills when working as team members or leaders, so that they can actively participate in their communities and their profession.</li>
             </ul>
           </div>
+          <Department name="civil engineering" />
           <Informations />
         </div>
       </>
