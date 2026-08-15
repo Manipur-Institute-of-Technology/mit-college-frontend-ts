@@ -92,7 +92,7 @@ export const navigationData: NavigationData[] = [
       },
       {
         name: "Samarth",
-        href: "https://manipuruniv.samarth.edu.in/feeportal/index.php/site/login",
+        href: "https://manipuruniv.samarth.edu.in/index.php/site/login",
         target: "_blank",
       },
     ],
