@@ -14,7 +14,7 @@ import {
 
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
-import apiClient from "~/utils/apiClient";
+import apiClient, {  API_BASE_URL,} from "~/utils/apiClient";
 
 export type AuthorityItem = {
   _id: string;
@@ -709,10 +709,10 @@ export default function Admin_Authority() {
     const imageSrc = item.photo
       ? item.photo.startsWith("http")
         ? item.photo
-        : `/uploads/authority/${item.photo}`
+        : `${API_BASE_URL}/uploads/authority/${item.photo}`
       : "";
 
-    /*
+    /*`${API_BASE_URL}/uploads/faculty/${faculty.photoId}`
      * ========================================================
      * CARD
      * ========================================================

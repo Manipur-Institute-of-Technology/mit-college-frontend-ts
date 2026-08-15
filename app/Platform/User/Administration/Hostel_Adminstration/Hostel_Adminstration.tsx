@@ -27,10 +27,10 @@ export default function HostelAdminstration() {
 
         const hostelList = list.filter(
           (item) =>
-            (item.facility
-              ? item.facility.toLowerCase().includes("hostel")
+            (item.key
+              ? item.key.toLowerCase().includes("hostel")
               : true) &&
-            !item.info?.toLowerCase().includes("librarian")
+            !item.key?.toLowerCase().includes("librarian")
         );
 
         setAdmins(hostelList);

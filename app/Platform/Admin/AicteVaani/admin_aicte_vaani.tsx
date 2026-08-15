@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+
 import {
   Sparkles,
   Plus,
@@ -8,7 +10,6 @@ import {
   Calendar,
   Clock,
   MapPin,
-  FileText,
   Edit2,
   X,
   User,
@@ -102,9 +103,11 @@ export default function Admin_AICTE_VAANI() {
   const [coordinator, setCoordinator] = useState("");
   const [coCoordinator, setCoCoordinator] = useState("");
   const [department, setDepartment] = useState("");
+
   const [website, setWebsite] = useState(
     "https://mitimphal.manipuruniv.ac.in/"
   );
+
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -156,7 +159,10 @@ export default function Admin_AICTE_VAANI() {
 
       setItems(data);
     } catch (error: any) {
-      console.error("Fetch AICTE-VAANI error:", error);
+      console.error(
+        "Fetch AICTE-VAANI error:",
+        error
+      );
 
       toast.error(
         error?.response?.data?.error ||
@@ -196,9 +202,11 @@ export default function Admin_AICTE_VAANI() {
     setCoordinator("");
     setCoCoordinator("");
     setDepartment("");
+
     setWebsite(
       "https://mitimphal.manipuruniv.ac.in/"
     );
+
     setEmail("");
     setPhone("");
 
@@ -221,7 +229,9 @@ export default function Admin_AICTE_VAANI() {
   // OPEN EDIT MODAL
   // ==========================================================
 
-  const openEditModal = (item: AicteVaaniItem) => {
+  const openEditModal = (
+    item: AicteVaaniItem
+  ) => {
     setEditingId(item._id);
 
     setHeader(
@@ -231,9 +241,17 @@ export default function Admin_AICTE_VAANI() {
 
     setTopic(item.topic || "");
     setDates(item.dates || "");
-    setTime(item.time || "9:00 AM – 5:00 PM");
-    setVenue(item.venue || "MIT, MU Campus");
-    setInformation(item.information || "");
+    setTime(
+      item.time || "9:00 AM – 5:00 PM"
+    );
+
+    setVenue(
+      item.venue || "MIT, MU Campus"
+    );
+
+    setInformation(
+      item.information || ""
+    );
 
     setCoordinator(
       item.contact?.coordinator || ""
@@ -252,8 +270,13 @@ export default function Admin_AICTE_VAANI() {
         "https://mitimphal.manipuruniv.ac.in/"
     );
 
-    setEmail(item.contact?.email || "");
-    setPhone(item.contact?.phone || "");
+    setEmail(
+      item.contact?.email || ""
+    );
+
+    setPhone(
+      item.contact?.phone || ""
+    );
 
     setAttachments(
       Array.isArray(item.attachments)
@@ -267,7 +290,9 @@ export default function Admin_AICTE_VAANI() {
         : []
     );
 
-    setStatus(item.status || "Active");
+    setStatus(
+      item.status || "Active"
+    );
 
     setShowModal(true);
   };
@@ -315,7 +340,9 @@ export default function Admin_AICTE_VAANI() {
     );
   };
 
-  const removeAttachment = (index: number) => {
+  const removeAttachment = (
+    index: number
+  ) => {
     setAttachments((prev) =>
       prev.filter((_, i) => i !== index)
     );
@@ -353,7 +380,9 @@ export default function Admin_AICTE_VAANI() {
     );
   };
 
-  const removeExtraLink = (index: number) => {
+  const removeExtraLink = (
+    index: number
+  ) => {
     setExtraLinks((prev) =>
       prev.filter((_, i) => i !== index)
     );
@@ -369,12 +398,16 @@ export default function Admin_AICTE_VAANI() {
     e.preventDefault();
 
     if (!topic.trim()) {
-      toast.error("Please enter the workshop topic.");
+      toast.error(
+        "Please enter the workshop topic."
+      );
       return;
     }
 
     if (!dates.trim()) {
-      toast.error("Please enter the event dates.");
+      toast.error(
+        "Please enter the event dates."
+      );
       return;
     }
 
@@ -397,28 +430,42 @@ export default function Admin_AICTE_VAANI() {
         venue.trim() ||
         "MIT, MU Campus",
 
-      information: information.trim(),
+      information:
+        information.trim(),
 
       contact: {
-        coordinator: coordinator.trim(),
-        coCoordinator: coCoordinator.trim(),
-        department: department.trim(),
-        website: website.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
+        coordinator:
+          coordinator.trim(),
+
+        coCoordinator:
+          coCoordinator.trim(),
+
+        department:
+          department.trim(),
+
+        website:
+          website.trim(),
+
+        email:
+          email.trim(),
+
+        phone:
+          phone.trim(),
       },
 
-      attachments: attachments.filter(
-        (item) =>
-          item.title.trim() ||
-          item.url.trim()
-      ),
+      attachments:
+        attachments.filter(
+          (item) =>
+            item.title.trim() ||
+            item.url.trim()
+        ),
 
-      extraLinks: extraLinks.filter(
-        (item) =>
-          item.title.trim() ||
-          item.url.trim()
-      ),
+      extraLinks:
+        extraLinks.filter(
+          (item) =>
+            item.title.trim() ||
+            item.url.trim()
+        ),
 
       status,
     };
@@ -429,10 +476,11 @@ export default function Admin_AICTE_VAANI() {
       // ======================================================
 
       if (editingId) {
-        const response = await apiClient.put(
-          `/aicte-vaani/edit/${editingId}`,
-          payload
-        );
+        const response =
+          await apiClient.put(
+            `/aicte-vaani/edit/${editingId}`,
+            payload
+          );
 
         const updatedItem =
           response.data?.data;
@@ -461,10 +509,11 @@ export default function Admin_AICTE_VAANI() {
       // ======================================================
 
       else {
-        const response = await apiClient.post(
-          "/aicte-vaani/add",
-          payload
-        );
+        const response =
+          await apiClient.post(
+            "/aicte-vaani/add",
+            payload
+          );
 
         const createdItem =
           response.data?.data;
@@ -504,18 +553,32 @@ export default function Admin_AICTE_VAANI() {
   };
 
   // ==========================================================
-  // DELETE
+  // DELETE WITH SWEETALERT
   // ==========================================================
 
   const handleDelete = async (
     id: string,
     topicName: string
   ) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${topicName}"?`
-    );
+    const result = await Swal.fire({
+      title: "Delete AICTE-VAANI Event?",
+      text: `Are you sure you want to delete "${topicName}"?`,
+      icon: "warning",
 
-    if (!confirmed) return;
+      showCancelButton: true,
+
+      confirmButtonColor: "#be123c",
+      cancelButtonColor: "#6b7280",
+
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
 
     try {
       await apiClient.delete(
@@ -528,19 +591,34 @@ export default function Admin_AICTE_VAANI() {
         )
       );
 
-      toast.success(
-        "AICTE-VAANI event deleted successfully."
-      );
+      await Swal.fire({
+        title: "Deleted!",
+        text:
+          "AICTE-VAANI event deleted successfully.",
+        icon: "success",
+
+        confirmButtonColor: "#be123c",
+
+        timer: 1800,
+        showConfirmButton: false,
+      });
     } catch (error: any) {
       console.error(
         "Delete AICTE-VAANI error:",
         error
       );
 
-      toast.error(
-        error?.response?.data?.error ||
-          "Failed to delete AICTE-VAANI event."
-      );
+      await Swal.fire({
+        title: "Delete Failed",
+
+        text:
+          error?.response?.data?.error ||
+          "Failed to delete AICTE-VAANI event.",
+
+        icon: "error",
+
+        confirmButtonColor: "#be123c",
+      });
     }
   };
 
@@ -621,10 +699,12 @@ export default function Admin_AICTE_VAANI() {
         <AlertTriangle className="w-5 h-5 mt-0.5 text-amber-500 flex-shrink-0" />
 
         <div>
-          <strong>AICTE-VAANI Management:</strong>{" "}
-          Only events stored in the backend are shown.
-          Add, edit and delete operations are saved
-          directly to MongoDB.
+          <strong>
+            AICTE-VAANI Management:
+          </strong>{" "}
+          Only events stored in the backend
+          are shown. Add, edit and delete
+          operations are saved directly to MongoDB.
         </div>
 
       </div>
@@ -647,7 +727,7 @@ export default function Admin_AICTE_VAANI() {
 
         </div>
 
-        {/* Loading */}
+        {/* LOADING */}
 
         {isLoading ? (
           <div className="p-16 flex flex-col items-center justify-center text-gray-500">
@@ -661,7 +741,7 @@ export default function Admin_AICTE_VAANI() {
           </div>
         ) : items.length === 0 ? (
 
-          /* Empty */
+          /* EMPTY */
 
           <div className="p-16 text-center">
 
@@ -679,7 +759,7 @@ export default function Admin_AICTE_VAANI() {
           </div>
         ) : (
 
-          /* List */
+          /* LIST */
 
           <div className="divide-y divide-gray-200">
 
@@ -773,7 +853,7 @@ export default function Admin_AICTE_VAANI() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
 
-                  {/* Contact */}
+                  {/* CONTACT */}
 
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
 
@@ -786,6 +866,7 @@ export default function Admin_AICTE_VAANI() {
                       {event.contact?.coordinator && (
                         <div className="flex gap-2">
                           <User className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+
                           <span>
                             {event.contact.coordinator}
                           </span>
@@ -795,6 +876,7 @@ export default function Admin_AICTE_VAANI() {
                       {event.contact?.department && (
                         <div className="flex gap-2">
                           <Building className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+
                           <span>
                             {event.contact.department}
                           </span>
@@ -804,6 +886,7 @@ export default function Admin_AICTE_VAANI() {
                       {event.contact?.email && (
                         <div className="flex gap-2">
                           <Mail className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+
                           <span>
                             {event.contact.email}
                           </span>
@@ -813,6 +896,7 @@ export default function Admin_AICTE_VAANI() {
                       {event.contact?.phone && (
                         <div className="flex gap-2">
                           <Phone className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+
                           <span>
                             {event.contact.phone}
                           </span>
@@ -832,8 +916,7 @@ export default function Admin_AICTE_VAANI() {
 
                           <span className="truncate">
                             {
-                              event.contact
-                                .website
+                              event.contact.website
                             }
                           </span>
 
@@ -845,7 +928,7 @@ export default function Admin_AICTE_VAANI() {
 
                   </div>
 
-                  {/* Attachments */}
+                  {/* ATTACHMENTS */}
 
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
 
@@ -864,7 +947,10 @@ export default function Admin_AICTE_VAANI() {
                           </p>
 
                           {event.attachments.map(
-                            (attachment, index) => (
+                            (
+                              attachment,
+                              index
+                            ) => (
                               <a
                                 key={
                                   attachment.id ??
@@ -899,7 +985,10 @@ export default function Admin_AICTE_VAANI() {
                           </p>
 
                           {event.extraLinks.map(
-                            (link, index) => (
+                            (
+                              link,
+                              index
+                            ) => (
                               <a
                                 key={
                                   link.id ??
@@ -1001,9 +1090,7 @@ export default function Admin_AICTE_VAANI() {
               className="p-6 space-y-7"
             >
 
-              {/* ==================================================
-                  EVENT OVERVIEW
-              ================================================== */}
+              {/* EVENT OVERVIEW */}
 
               <section>
 
@@ -1127,9 +1214,7 @@ export default function Admin_AICTE_VAANI() {
 
               </section>
 
-              {/* ==================================================
-                  CONTACT
-              ================================================== */}
+              {/* CONTACT */}
 
               <section>
 
@@ -1246,9 +1331,7 @@ export default function Admin_AICTE_VAANI() {
 
               </section>
 
-              {/* ==================================================
-                  ATTACHMENTS
-              ================================================== */}
+              {/* ATTACHMENTS */}
 
               <section>
 
@@ -1264,6 +1347,7 @@ export default function Admin_AICTE_VAANI() {
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 rounded-lg"
                   >
                     <Plus className="w-3.5 h-3.5" />
+
                     Add Attachment
                   </button>
 
@@ -1272,7 +1356,10 @@ export default function Admin_AICTE_VAANI() {
                 <div className="space-y-3">
 
                   {attachments.map(
-                    (attachment, index) => (
+                    (
+                      attachment,
+                      index
+                    ) => (
 
                       <div
                         key={
@@ -1340,9 +1427,7 @@ export default function Admin_AICTE_VAANI() {
 
               </section>
 
-              {/* ==================================================
-                  EXTRA LINKS
-              ================================================== */}
+              {/* EXTRA LINKS */}
 
               <section>
 
@@ -1358,6 +1443,7 @@ export default function Admin_AICTE_VAANI() {
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 rounded-lg"
                   >
                     <Plus className="w-3.5 h-3.5" />
+
                     Add Link
                   </button>
 
@@ -1366,7 +1452,10 @@ export default function Admin_AICTE_VAANI() {
                 <div className="space-y-3">
 
                   {extraLinks.map(
-                    (link, index) => (
+                    (
+                      link,
+                      index
+                    ) => (
 
                       <div
                         key={
@@ -1430,9 +1519,7 @@ export default function Admin_AICTE_VAANI() {
 
               </section>
 
-              {/* ==================================================
-                  STATUS
-              ================================================== */}
+              {/* STATUS */}
 
               <section>
 
@@ -1462,9 +1549,7 @@ export default function Admin_AICTE_VAANI() {
 
               </section>
 
-              {/* ==================================================
-                  BUTTONS
-              ================================================== */}
+              {/* BUTTONS */}
 
               <div className="flex justify-end gap-3 border-t pt-5">
 

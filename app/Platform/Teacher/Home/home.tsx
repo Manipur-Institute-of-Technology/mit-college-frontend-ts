@@ -18,7 +18,7 @@ import {
 } from "react-icons/fa";
 
 import { useAuth } from "~/context/AuthContext";
-import apiClient from "~/utils/apiClient";
+import apiClient, {  API_BASE_URL,} from "~/utils/apiClient";
 
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 
@@ -399,6 +399,8 @@ export default function TeacherHomePage() {
             responseData?.data?.faculty ||
             responseData?.faculty ||
             responseData?.data;
+          
+          console.log("FACULTY:", responseData);
 
           if (!facultyData) {
             throw new Error(
@@ -521,8 +523,10 @@ export default function TeacherHomePage() {
 
   const photoUrl =
     faculty?.photoId
-      ? `${apiClient.defaults.baseURL}/image/${faculty.photoId}`
+      ? `${API_BASE_URL}/uploads/faculty/${faculty.photoId}`
       : "";
+  console.log("PHOTO ID:", faculty?.photoId);
+  console.log("PHOTO URL:", photoUrl);
 
   // =======================================================
   // FACULTY FORM CHANGE
