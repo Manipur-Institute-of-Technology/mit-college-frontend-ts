@@ -23,29 +23,6 @@ type Conference = {
   status: "Active" | "Inactive";
 };
 
-// ─── Sample data fallback ─────────────────────────────────────────────────────
-
-const sampleConferences: Conference[] = [
-  {
-    _id: "sample-1",
-    category: "International",
-    title:
-      "NORTH EAST INTERNATIONAL CONFERENCE ON Innovation in Science and Technology (NE-ICIST 2025)",
-    date: "9–11 December 2025",
-    link: "https://neicist2025.in/",
-    status: "Active",
-  },
-  {
-    _id: "sample-2",
-    category: "National",
-    title:
-      "National Conference on Innovations in Science and Technology 2017",
-    date: "20–21 March 2017",
-    link: "https://mitimphal.manipuruniv.ac.in/",
-    status: "Active",
-  },
-];
-
 // ─── Conference Card ──────────────────────────────────────────────────────────
 
 function ConferenceCard({
@@ -105,7 +82,7 @@ function ConferenceCard({
 
 export default function Confrence() {
   const [conferences, setConferences] =
-    useState<Conference[]>(sampleConferences);
+    useState<Conference[]>([]);
 
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
@@ -184,10 +161,7 @@ export default function Confrence() {
       } catch (error) {
         console.error("CONFERENCE FETCH ERROR:", error);
 
-        /*
-         * Keep sample data as fallback if API fails.
-         */
-        setConferences(sampleConferences);
+        setConferences([]);
       } finally {
         setLoading(false);
       }
