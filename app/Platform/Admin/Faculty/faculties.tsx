@@ -823,7 +823,7 @@ export default function Admin_Faculty_Page() {
 
       try {
         await apiClient.delete(
-          `/faculty-update/${faculty._id}`
+          `/faculty-update/${faculty.accountId}`
         );
 
         setFacultyList(
