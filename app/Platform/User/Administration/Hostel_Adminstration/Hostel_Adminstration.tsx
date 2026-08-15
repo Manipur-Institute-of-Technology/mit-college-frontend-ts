@@ -24,9 +24,15 @@ export default function HostelAdminstration() {
           : Array.isArray(res.data)
           ? res.data
           : [];
-        const hostelList = list.filter((item) =>
-          item.facility ? item.facility.includes("hostel") : true
+
+        const hostelList = list.filter(
+          (item) =>
+            (item.facility
+              ? item.facility.toLowerCase().includes("hostel")
+              : true) &&
+            !item.info?.toLowerCase().includes("librarian")
         );
+
         setAdmins(hostelList);
       })
       .catch(() => {})
@@ -74,6 +80,7 @@ export default function HostelAdminstration() {
           )}
         </div>
       </div>
+
       <Informations />
     </>
   );
