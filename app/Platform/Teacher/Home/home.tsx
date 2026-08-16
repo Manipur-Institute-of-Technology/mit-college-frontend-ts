@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { confirmExternalLink, showAlert } from "~/utils/alert_utils";
 
 import {
   FaUserCircle,
@@ -18,7 +18,7 @@ import {
 } from "react-icons/fa";
 
 import { useAuth } from "~/context/AuthContext";
-import apiClient, {  API_BASE_URL,} from "~/utils/apiClient";
+import apiClient, { API_BASE_URL } from "~/utils/apiClient";
 
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 
@@ -53,10 +53,9 @@ type Faculty = {
     | "other"
     | "prefer not to say";
 
-  startDate?: string;
+  dob?: string;
 
   department?: Department;
-
   departmentId?: string | Department;
 
   hod?: boolean;
@@ -143,10 +142,9 @@ const formatRole = (
     return "Faculty";
   }
 
-  const value =
-    Array.isArray(role)
-      ? role[0]
-      : role;
+  const value = Array.isArray(role)
+    ? role[0]
+    : role;
 
   return value
     .split(" ")
@@ -186,6 +184,39 @@ const formatDate = (
 };
 
 // =========================================================
+// DATE FOR INPUT
+// =========================================================
+
+const formatDateForInput = (
+  date?: string
+) => {
+  if (!date) {
+    return "";
+  }
+
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  const year =
+    parsed.getFullYear();
+
+  const month =
+    String(
+      parsed.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      parsed.getDate()
+    ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+// =========================================================
 // DEPARTMENT NAME
 // =========================================================
 
@@ -201,6 +232,43 @@ const getDepartmentName = (
   }
 
   return department.name;
+};
+
+// =========================================================
+// GET DEPARTMENT ID
+// =========================================================
+
+const getDepartmentId = (
+  faculty?: Faculty
+): string => {
+  if (!faculty) {
+    return "";
+  }
+
+  if (
+    typeof faculty.departmentId ===
+    "string"
+  ) {
+    return faculty.departmentId;
+  }
+
+  if (
+    faculty.departmentId &&
+    typeof faculty.departmentId ===
+      "object"
+  ) {
+    return faculty.departmentId._id;
+  }
+
+  if (
+    faculty.department &&
+    typeof faculty.department ===
+      "object"
+  ) {
+    return faculty.department._id;
+  }
+
+  return "";
 };
 
 // =========================================================
@@ -239,6 +307,16 @@ export default function TeacherHomePage() {
     useState(false);
 
   // =======================================================
+  // DEPARTMENTS
+  // =======================================================
+
+  const [departments, setDepartments] =
+    useState<Department[]>([]);
+
+  const [departmentsLoading, setDepartmentsLoading] =
+    useState(false);
+
+  // =======================================================
   // EDIT FACULTY
   // =======================================================
 
@@ -273,10 +351,11 @@ export default function TeacherHomePage() {
   const [savingPaper, setSavingPaper] =
     useState(false);
 
-  const [paperForm, setPaperForm] = useState({
-    title: "",
-    paperUrl: "",
-  });
+  const [paperForm, setPaperForm] =
+    useState({
+      title: "",
+      paperUrl: "",
+    });
 
   // =======================================================
   // ACCOUNT ID
@@ -304,6 +383,32 @@ export default function TeacherHomePage() {
       role === "faculty" &&
       user
     );
+
+  // =======================================================
+  // FACULTY ROLE OPTIONS
+  // =======================================================
+
+  const facultyRoleOptions = [
+    "faculty",
+    "assistant professor",
+    "associate professor",
+    "professor",
+    "guest faculty",
+    "lecturer",
+    "head of department",
+  ];
+
+  // =======================================================
+  // PREFIX OPTIONS
+  // =======================================================
+
+  const prefixOptions = [
+    "Dr.",
+    "Mr.",
+    "Ms.",
+    "Mrs.",
+    "Prof.",
+  ];
 
   // =======================================================
   // EXTERNAL LINK CHECK
@@ -342,11 +447,9 @@ export default function TeacherHomePage() {
 
     e.preventDefault();
 
-    Swal.fire({
+    confirmExternalLink({
       title: "Leave this site?",
       text: "You are being redirected to an external website.",
-      icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Continue",
       cancelButtonText: "Cancel",
       confirmButtonColor: "#22c55e",
@@ -354,8 +457,8 @@ export default function TeacherHomePage() {
       customClass: {
         popup: "rounded-xl",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
+    }).then((confirmed) => {
+      if (confirmed) {
         window.open(
           href,
           "_blank",
@@ -364,6 +467,57 @@ export default function TeacherHomePage() {
       }
     });
   };
+
+  // =======================================================
+  // FETCH DEPARTMENTS
+  // =======================================================
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const fetchDepartments =
+      async () => {
+        try {
+          setDepartmentsLoading(true);
+
+          const response =
+            await apiClient.get(
+              "/department"
+            );
+
+          const responseData =
+            response.data;
+
+          const departmentData =
+            responseData?.data?.departments ||
+            responseData?.data ||
+            responseData?.departments ||
+            [];
+
+          if (
+            Array.isArray(
+              departmentData
+            )
+          ) {
+            setDepartments(
+              departmentData
+            );
+          } else {
+            setDepartments([]);
+          }
+
+        } catch (err) {
+          setDepartments([]);
+        } finally {
+          setDepartmentsLoading(false);
+        }
+      };
+
+    fetchDepartments();
+
+  }, [isAuthenticated]);
 
   // =======================================================
   // FETCH FACULTY
@@ -399,8 +553,6 @@ export default function TeacherHomePage() {
             responseData?.data?.faculty ||
             responseData?.faculty ||
             responseData?.data;
-          
-          console.log("FACULTY:", responseData);
 
           if (!facultyData) {
             throw new Error(
@@ -417,14 +569,17 @@ export default function TeacherHomePage() {
 
           setFacultyForm({
             ...loadedFaculty,
+            departmentId:
+              getDepartmentId(
+                loadedFaculty
+              ),
+            dob:
+              formatDateForInput(
+                loadedFaculty.dob
+              ),
           });
 
         } catch (err: any) {
-          console.error(
-            "FACULTY FETCH ERROR:",
-            err
-          );
-
           setError(
             getApiErrorMessage(
               err,
@@ -480,11 +635,6 @@ export default function TeacherHomePage() {
           );
 
         } catch (err: any) {
-          console.error(
-            "PAPERS FETCH ERROR:",
-            err
-          );
-
           setPaperError(
             getApiErrorMessage(
               err,
@@ -525,8 +675,6 @@ export default function TeacherHomePage() {
     faculty?.photoId
       ? `${API_BASE_URL}/uploads/faculty/${faculty.photoId}`
       : "";
-  console.log("PHOTO ID:", faculty?.photoId);
-  console.log("PHOTO URL:", photoUrl);
 
   // =======================================================
   // FACULTY FORM CHANGE
@@ -550,6 +698,7 @@ export default function TeacherHomePage() {
 
   const handleSaveFaculty =
     async () => {
+
       if (!faculty?._id) {
         return;
       }
@@ -558,9 +707,14 @@ export default function TeacherHomePage() {
         setSavingFaculty(true);
         setError("");
 
+        const departmentId =
+          getDepartmentId(
+            facultyForm
+          );
+
         const response =
           await apiClient.put(
-            `/faculty/${faculty._id}`,
+            `/faculty-update/me`,
             {
               namePrefix:
                 facultyForm.namePrefix,
@@ -580,6 +734,15 @@ export default function TeacherHomePage() {
               sex:
                 facultyForm.sex,
 
+              dob:
+                facultyForm.dob || undefined,
+
+              departmentId:
+                departmentId || undefined,
+
+              roles:
+                facultyForm.roles,
+
               highestDegree:
                 facultyForm.highestDegree,
 
@@ -597,26 +760,50 @@ export default function TeacherHomePage() {
           response.data?.data;
 
         if (updatedFaculty) {
+
+          const normalizedFaculty =
+            {
+              ...updatedFaculty,
+              dob:
+                formatDateForInput(
+                  updatedFaculty.dob
+                ),
+              departmentId:
+                getDepartmentId(
+                  updatedFaculty
+                ),
+            };
+
           setFaculty(
             updatedFaculty
           );
 
           setFacultyForm(
-            updatedFaculty
+            normalizedFaculty
           );
+
         } else {
+
           setFaculty(
             facultyForm
           );
+
         }
 
         setEditingFaculty(false);
 
+        await showAlert({
+          title: "Updated!",
+          text: "Your faculty information has been updated successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#22c55e",
+          customClass: {
+            popup: "rounded-xl",
+          },
+        });
+
       } catch (err: any) {
-        console.error(
-          "FACULTY UPDATE ERROR:",
-          err
-        );
 
         setError(
           getApiErrorMessage(
@@ -636,8 +823,17 @@ export default function TeacherHomePage() {
 
   const cancelFacultyEdit =
     () => {
+
       setFacultyForm({
         ...(faculty || {}),
+        departmentId:
+          getDepartmentId(
+            faculty || undefined
+          ),
+        dob:
+          formatDateForInput(
+            faculty?.dob
+          ),
       });
 
       setEditingFaculty(false);
@@ -649,6 +845,7 @@ export default function TeacherHomePage() {
 
   const openAddPaper =
     () => {
+
       setEditingPaperId(null);
 
       setPaperForm({
@@ -666,6 +863,7 @@ export default function TeacherHomePage() {
 
   const openEditPaper =
     (paper: Paper) => {
+
       setEditingPaperId(
         paper._id
       );
@@ -688,6 +886,7 @@ export default function TeacherHomePage() {
 
   const closePaperForm =
     () => {
+
       if (savingPaper) {
         return;
       }
@@ -714,6 +913,7 @@ export default function TeacherHomePage() {
       | "paperUrl",
     value: string
   ) => {
+
     setPaperForm(
       (previous) => ({
         ...previous,
@@ -732,6 +932,7 @@ export default function TeacherHomePage() {
       if (
         !paperForm.title.trim()
       ) {
+
         setPaperError(
           "Please enter the paper title."
         );
@@ -740,6 +941,7 @@ export default function TeacherHomePage() {
       }
 
       try {
+
         setSavingPaper(true);
         setPaperError("");
 
@@ -768,6 +970,7 @@ export default function TeacherHomePage() {
             response.data?.data;
 
           if (updatedPaper) {
+
             setPapers(
               (previous) =>
                 previous.map(
@@ -798,6 +1001,7 @@ export default function TeacherHomePage() {
             response.data?.data;
 
           if (newPaper) {
+
             setPapers(
               (previous) => [
                 newPaper,
@@ -807,29 +1011,36 @@ export default function TeacherHomePage() {
           }
         }
 
+        const wasEditing =
+          Boolean(
+            editingPaperId
+          );
+
         closePaperForm();
 
-        await Swal.fire({
-          title: editingPaperId
+        await showAlert({
+          title: wasEditing
             ? "Paper updated!"
             : "Paper added!",
-          text: editingPaperId
+
+          text: wasEditing
             ? "The paper has been updated successfully."
             : "The paper has been added successfully.",
+
           icon: "success",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#22c55e",
+
+          confirmButtonText:
+            "OK",
+
+          confirmButtonColor:
+            "#22c55e",
+
           customClass: {
             popup: "rounded-xl",
           },
         });
 
       } catch (err: any) {
-
-        console.error(
-          "PAPER SAVE ERROR:",
-          err
-        );
 
         const message =
           getApiErrorMessage(
@@ -839,12 +1050,22 @@ export default function TeacherHomePage() {
 
         setPaperError(message);
 
-        await Swal.fire({
-          title: "Unable to save paper",
-          text: message,
-          icon: "error",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#ef4444",
+        await showAlert({
+          title:
+            "Unable to save paper",
+
+          text:
+            message,
+
+          icon:
+            "error",
+
+          confirmButtonText:
+            "OK",
+
+          confirmButtonColor:
+            "#ef4444",
+
           customClass: {
             popup: "rounded-xl",
           },
@@ -865,17 +1086,34 @@ export default function TeacherHomePage() {
     ) => {
 
       const result =
-        await Swal.fire({
-          title: "Delete paper?",
-          text: "This paper will be permanently deleted.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Delete",
-          cancelButtonText: "Cancel",
-          confirmButtonColor: "#ef4444",
-          cancelButtonColor: "#22c55e",
+        await showAlert({
+          title:
+            "Delete paper?",
+
+          text:
+            "This paper will be permanently deleted.",
+
+          icon:
+            "warning",
+
+          showCancelButton:
+            true,
+
+          confirmButtonText:
+            "Delete",
+
+          cancelButtonText:
+            "Cancel",
+
+          confirmButtonColor:
+            "#ef4444",
+
+          cancelButtonColor:
+            "#22c55e",
+
           customClass: {
-            popup: "rounded-xl",
+            popup:
+              "rounded-xl",
           },
         });
 
@@ -895,27 +1133,34 @@ export default function TeacherHomePage() {
           (previous) =>
             previous.filter(
               (paper) =>
-                paper._id !== paperId
+                paper._id !==
+                paperId
             )
         );
 
-        await Swal.fire({
-          title: "Deleted!",
-          text: "The paper has been deleted successfully.",
-          icon: "success",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#22c55e",
+        await showAlert({
+          title:
+            "Deleted!",
+
+          text:
+            "The paper has been deleted successfully.",
+
+          icon:
+            "success",
+
+          confirmButtonText:
+            "OK",
+
+          confirmButtonColor:
+            "#22c55e",
+
           customClass: {
-            popup: "rounded-xl",
+            popup:
+              "rounded-xl",
           },
         });
 
       } catch (err: any) {
-
-        console.error(
-          "PAPER DELETE ERROR:",
-          err
-        );
 
         const message =
           getApiErrorMessage(
@@ -925,14 +1170,25 @@ export default function TeacherHomePage() {
 
         setPaperError(message);
 
-        await Swal.fire({
-          title: "Delete failed",
-          text: message,
-          icon: "error",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#ef4444",
+        await showAlert({
+          title:
+            "Delete failed",
+
+          text:
+            message,
+
+          icon:
+            "error",
+
+          confirmButtonText:
+            "OK",
+
+          confirmButtonColor:
+            "#ef4444",
+
           customClass: {
-            popup: "rounded-xl",
+            popup:
+              "rounded-xl",
           },
         });
       }
@@ -946,17 +1202,34 @@ export default function TeacherHomePage() {
     async () => {
 
       const result =
-        await Swal.fire({
-          title: "Logout?",
-          text: "Are you sure you want to sign out?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Logout",
-          cancelButtonText: "Cancel",
-          confirmButtonColor: "#ef4444",
-          cancelButtonColor: "#22c55e",
+        await showAlert({
+          title:
+            "Logout?",
+
+          text:
+            "Are you sure you want to sign out?",
+
+          icon:
+            "warning",
+
+          showCancelButton:
+            true,
+
+          confirmButtonText:
+            "Logout",
+
+          cancelButtonText:
+            "Cancel",
+
+          confirmButtonColor:
+            "#ef4444",
+
+          cancelButtonColor:
+            "#22c55e",
+
           customClass: {
-            popup: "rounded-xl",
+            popup:
+              "rounded-xl",
           },
         });
 
@@ -967,19 +1240,17 @@ export default function TeacherHomePage() {
       try {
 
         if (user?.email) {
+
           await apiClient.post(
             "/account/logout",
             {
-              email: user.email,
+              email:
+                user.email,
             }
           );
         }
 
       } catch (error) {
-        console.error(
-          "LOGOUT ERROR:",
-          error
-        );
 
       } finally {
 
@@ -997,11 +1268,14 @@ export default function TeacherHomePage() {
   // =======================================================
 
   if (!isAuthenticated) {
+
     return (
       <div className="p-4">
+
         <SignIn_SignUP
           role="faculty"
         />
+
       </div>
     );
   }
@@ -1011,6 +1285,7 @@ export default function TeacherHomePage() {
   // =======================================================
 
   if (loading) {
+
     return (
       <div
         className="
@@ -1021,6 +1296,7 @@ export default function TeacherHomePage() {
           justify-center
         "
       >
+
         <div className="text-center">
 
           <div
@@ -1048,6 +1324,7 @@ export default function TeacherHomePage() {
           </p>
 
         </div>
+
       </div>
     );
   }
@@ -1057,6 +1334,7 @@ export default function TeacherHomePage() {
   // =======================================================
 
   if (error) {
+
     return (
       <div
         className="
@@ -1496,11 +1774,13 @@ export default function TeacherHomePage() {
               shadow-md
             "
           >
+
             <FaHome />
 
             <span>
               Dashboard
             </span>
+
           </button>
 
         </nav>
@@ -1825,6 +2105,8 @@ export default function TeacherHomePage() {
             "
           >
 
+            {/* Header */}
+
             <div
               className="
                 px-6
@@ -1981,7 +2263,9 @@ export default function TeacherHomePage() {
 
                 <tbody>
 
-                  {/* Name */}
+                  {/* =================================================
+                      NAME
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2025,7 +2309,9 @@ export default function TeacherHomePage() {
                           "
                         >
 
-                          <input
+                          {/* PREFIX DROPDOWN */}
+
+                          <select
                             value={
                               facultyForm.namePrefix ||
                               ""
@@ -2036,7 +2322,6 @@ export default function TeacherHomePage() {
                                 e.target.value
                               )
                             }
-                            placeholder="Prefix"
                             className="
                               border
                               border-gray-200
@@ -2045,10 +2330,32 @@ export default function TeacherHomePage() {
                               py-2
                               text-sm
                               outline-none
+                              bg-white
                               focus:ring-2
                               focus:ring-cyan-500
                             "
-                          />
+                          >
+
+                            <option value="">
+                              Prefix
+                            </option>
+
+                            {prefixOptions.map(
+                              (prefix) => (
+
+                                <option
+                                  key={prefix}
+                                  value={prefix}
+                                >
+                                  {prefix}
+                                </option>
+
+                              )
+                            )}
+
+                          </select>
+
+                          {/* FIRST NAME */}
 
                           <input
                             value={
@@ -2075,6 +2382,8 @@ export default function TeacherHomePage() {
                             "
                           />
 
+                          {/* MIDDLE NAME */}
+
                           <input
                             value={
                               facultyForm.middleName ||
@@ -2099,6 +2408,8 @@ export default function TeacherHomePage() {
                               focus:ring-cyan-500
                             "
                           />
+
+                          {/* LAST NAME */}
 
                           <input
                             value={
@@ -2139,7 +2450,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Email */}
+                  {/* =================================================
+                      EMAIL
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2179,7 +2492,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Phone */}
+                  {/* =================================================
+                      PHONE
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2250,7 +2565,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Department */}
+                  {/* =================================================
+                      DEPARTMENT - DROPDOWN
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2272,26 +2589,92 @@ export default function TeacherHomePage() {
                       Department
                     </td>
 
-                    <td
-                      className="
-                        px-6
-                        py-4
-                        text-sm
-                        font-semibold
-                        text-gray-800
-                      "
-                    >
+                    <td className="px-6 py-4">
 
-                      {getDepartmentName(
-                        faculty?.department ||
-                        faculty?.departmentId
+                      {editingFaculty ? (
+
+                        <select
+                          value={
+                            getDepartmentId(
+                              facultyForm
+                            )
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "departmentId",
+                              e.target.value
+                            )
+                          }
+                          disabled={
+                            departmentsLoading
+                          }
+                          className="
+                            w-full
+                            max-w-md
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            bg-white
+                            focus:ring-2
+                            focus:ring-cyan-500
+                            disabled:bg-gray-100
+                            disabled:cursor-not-allowed
+                          "
+                        >
+
+                          <option value="">
+                            {departmentsLoading
+                              ? "Loading departments..."
+                              : "Select Department"}
+                          </option>
+
+                          {departments.map(
+                            (department) => (
+
+                              <option
+                                key={
+                                  department._id
+                                }
+                                value={
+                                  department._id
+                                }
+                              >
+                                {department.name}
+                              </option>
+
+                            )
+                          )}
+
+                        </select>
+
+                      ) : (
+
+                        <span
+                          className="
+                            text-sm
+                            font-semibold
+                            text-gray-800
+                          "
+                        >
+                          {getDepartmentName(
+                            faculty?.department ||
+                            faculty?.departmentId
+                          )}
+                        </span>
+
                       )}
 
                     </td>
 
                   </tr>
 
-                  {/* Role */}
+                  {/* =================================================
+                      FACULTY ROLE - DROPDOWN
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2313,25 +2696,90 @@ export default function TeacherHomePage() {
                       Faculty Role
                     </td>
 
-                    <td
-                      className="
-                        px-6
-                        py-4
-                        text-sm
-                        font-semibold
-                        text-gray-800
-                      "
-                    >
+                    <td className="px-6 py-4">
 
-                      {formatRole(
-                        faculty?.roles
+                      {editingFaculty ? (
+
+                        <select
+                          value={
+                            Array.isArray(
+                              facultyForm.roles
+                            )
+                              ? facultyForm.roles[0] ||
+                                ""
+                              : facultyForm.roles ||
+                                ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "roles",
+                              e.target.value
+                            )
+                          }
+                          className="
+                            w-full
+                            max-w-md
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            bg-white
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        >
+
+                          <option value="">
+                            Select Faculty Role
+                          </option>
+
+                          {facultyRoleOptions.map(
+                            (roleOption) => (
+
+                              <option
+                                key={
+                                  roleOption
+                                }
+                                value={
+                                  roleOption
+                                }
+                              >
+                                {formatRole(
+                                  roleOption
+                                )}
+                              </option>
+
+                            )
+                          )}
+
+                        </select>
+
+                      ) : (
+
+                        <span
+                          className="
+                            text-sm
+                            font-semibold
+                            text-gray-800
+                          "
+                        >
+                          {formatRole(
+                            faculty?.roles
+                          )}
+                        </span>
+
                       )}
 
                     </td>
 
                   </tr>
 
-                  {/* Highest Degree */}
+                  {/* =================================================
+                      HIGHEST DEGREE
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2402,7 +2850,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Gender */}
+                  {/* =================================================
+                      GENDER
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2449,6 +2899,7 @@ export default function TeacherHomePage() {
                             py-2
                             text-sm
                             outline-none
+                            bg-white
                             focus:ring-2
                             focus:ring-cyan-500
                           "
@@ -2496,7 +2947,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Start Date */}
+                  {/* =================================================
+                      DATE OF BIRTH - DATE PICKER
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2515,28 +2968,67 @@ export default function TeacherHomePage() {
                         uppercase
                       "
                     >
-                      Start Date
+                      Date of Birth
                     </td>
 
-                    <td
-                      className="
-                        px-6
-                        py-4
-                        text-sm
-                        font-semibold
-                        text-gray-800
-                      "
-                    >
+                    <td className="px-6 py-4">
 
-                      {formatDate(
-                        faculty?.startDate
+                      {editingFaculty ? (
+
+                        <input
+                          type="date"
+                          value={
+                            facultyForm.dob
+                              ? formatDateForInput(
+                                  facultyForm.dob
+                                )
+                              : ""
+                          }
+                          onChange={(e) =>
+                            handleFacultyChange(
+                              "dob",
+                              e.target.value
+                            )
+                          }
+                          className="
+                            w-full
+                            max-w-md
+                            border
+                            border-gray-200
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            outline-none
+                            bg-white
+                            focus:ring-2
+                            focus:ring-cyan-500
+                          "
+                        />
+
+                      ) : (
+
+                        <span
+                          className="
+                            text-sm
+                            font-semibold
+                            text-gray-800
+                          "
+                        >
+                          {formatDate(
+                            faculty?.dob
+                          )}
+                        </span>
+
                       )}
 
                     </td>
 
                   </tr>
 
-                  {/* HOD */}
+                  {/* =================================================
+                      HOD
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2576,7 +3068,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Biography */}
+                  {/* =================================================
+                      BIOGRAPHY
+                  ================================================= */}
 
                   <tr
                     className="
@@ -2650,7 +3144,9 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* Expert Fields */}
+                  {/* =================================================
+                      EXPERT FIELDS
+                  ================================================= */}
 
                   <tr>
 
@@ -2863,24 +3359,25 @@ export default function TeacherHomePage() {
 
             {/* Paper Error */}
 
-            {paperError && !showPaperForm && (
-              <div
-                className="
-                  mx-6
-                  mt-5
-                  px-4
-                  py-3
-                  rounded-xl
-                  bg-red-50
-                  border
-                  border-red-100
-                  text-sm
-                  text-red-600
-                "
-              >
-                {paperError}
-              </div>
-            )}
+            {paperError &&
+              !showPaperForm && (
+                <div
+                  className="
+                    mx-6
+                    mt-5
+                    px-4
+                    py-3
+                    rounded-xl
+                    bg-red-50
+                    border
+                    border-red-100
+                    text-sm
+                    text-red-600
+                  "
+                >
+                  {paperError}
+                </div>
+              )}
 
             {/* Loading */}
 
@@ -3067,8 +3564,6 @@ export default function TeacherHomePage() {
                           "
                         >
 
-                          {/* Title */}
-
                           <td
                             className="
                               px-6
@@ -3087,8 +3582,6 @@ export default function TeacherHomePage() {
                             </p>
 
                           </td>
-
-                          {/* URL */}
 
                           <td
                             className="
@@ -3147,8 +3640,6 @@ export default function TeacherHomePage() {
                             )}
 
                           </td>
-
-                          {/* Actions */}
 
                           <td
                             className="
@@ -3269,8 +3760,6 @@ export default function TeacherHomePage() {
             "
           >
 
-            {/* Modal Header */}
-
             <div
               className="
                 px-6
@@ -3329,8 +3818,6 @@ export default function TeacherHomePage() {
               </button>
 
             </div>
-
-            {/* Form */}
 
             <div className="p-6 space-y-5">
 

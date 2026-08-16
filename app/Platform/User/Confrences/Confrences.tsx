@@ -8,7 +8,7 @@ import {
   Calendar,
   ArrowRight,
 } from "lucide-react";
-import Swal from "sweetalert2";
+import { confirmExternalLink } from "~/utils/alert_utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -111,11 +111,9 @@ export default function Confrence() {
       return;
     }
 
-    Swal.fire({
+    confirmExternalLink({
       title: "Leave this site?",
       text: "You are being redirected to an external website.",
-      icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Continue",
       cancelButtonText: "Stay here",
       confirmButtonColor: "#06b6d4",
@@ -125,8 +123,8 @@ export default function Confrence() {
         confirmButton: "rounded-lg",
         cancelButton: "rounded-lg",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
+    }).then((confirmed) => {
+      if (confirmed) {
         window.open(pendingHref, "_blank", "noopener,noreferrer");
       }
 
@@ -159,8 +157,6 @@ export default function Confrence() {
          */
         setConferences(active);
       } catch (error) {
-        console.error("CONFERENCE FETCH ERROR:", error);
-
         setConferences([]);
       } finally {
         setLoading(false);

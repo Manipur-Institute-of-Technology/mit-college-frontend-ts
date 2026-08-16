@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 
 import {
   Plus,
@@ -153,12 +153,6 @@ export default function Admin_Image_Carousel() {
   const getErrorMessage = (error: any): string => {
     const responseData = error?.response?.data;
 
-    console.error("BACKEND ERROR DATA:", responseData);
-    console.error(
-      "BACKEND ERROR:",
-      responseData?.error
-    );
-
     if (
       responseData?.error?.message
     ) {
@@ -192,16 +186,6 @@ export default function Admin_Image_Carousel() {
   const getAuthHeaders = () => {
     const authToken = getAuthToken();
 
-    console.log(
-      "AUTH TOKEN EXISTS:",
-      Boolean(authToken)
-    );
-
-    console.log(
-      "AUTH TOKEN LENGTH:",
-      authToken.length
-    );
-
     if (!authToken) {
       throw new Error(
         "Authentication token not found. Please login again."
@@ -223,23 +207,11 @@ export default function Admin_Image_Carousel() {
     try {
       const headers = getAuthHeaders();
 
-      console.log(
-        "FETCH CAROUSEL AUTHORIZATION:",
-        headers.Authorization
-          ? "Bearer token attached"
-          : "Missing"
-      );
-
       const response = await apiClient.get(
         "/carousel",
         {
           headers,
         }
-      );
-
-      console.log(
-        "CAROUSEL RESPONSE:",
-        response.data
       );
 
       const rawData =
@@ -268,16 +240,11 @@ export default function Admin_Image_Carousel() {
 
       setImages(formatted);
     } catch (error: any) {
-      console.error(
-        "FETCH CAROUSEL ERROR:",
-        error
-      );
-
       if (
         error?.response?.status === 401 ||
         error?.response?.status === 403
       ) {
-        await Swal.fire({
+        await showAlert({
           icon: "warning",
           title: "Session Expired",
           text:
@@ -287,7 +254,7 @@ export default function Admin_Image_Carousel() {
         return;
       }
 
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text: getErrorMessage(error),
@@ -365,7 +332,7 @@ export default function Admin_Image_Carousel() {
     // ---------------------------------------------------
 
     if (!file.type.startsWith("image/")) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Invalid File",
         text:
@@ -387,7 +354,7 @@ export default function Admin_Image_Carousel() {
       10 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "File Too Large",
         text:
@@ -414,7 +381,7 @@ export default function Admin_Image_Carousel() {
     e.preventDefault();
 
     if (!selectedFile) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Image Required",
         text:
@@ -427,54 +394,11 @@ export default function Admin_Image_Carousel() {
     setUploading(true);
 
     try {
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "CAROUSEL UPLOAD REQUEST"
-      );
-
-      console.log(
-        "FILE:",
-        selectedFile
-      );
-
-      console.log(
-        "FILE NAME:",
-        selectedFile.name
-      );
-
-      console.log(
-        "FILE TYPE:",
-        selectedFile.type
-      );
-
-      console.log(
-        "FILE SIZE:",
-        selectedFile.size
-      );
-
-      console.log(
-        "CAPTION:",
-        caption
-      );
-
       // -------------------------------------------------
       // AUTH TOKEN
       // -------------------------------------------------
 
       const authToken = getAuthToken();
-
-      console.log(
-        "TOKEN EXISTS:",
-        Boolean(authToken)
-      );
-
-      console.log(
-        "TOKEN LENGTH:",
-        authToken.length
-      );
 
       if (!authToken) {
         throw new Error(
@@ -499,20 +423,6 @@ export default function Admin_Image_Carousel() {
         caption.trim()
       );
 
-      console.log(
-        "FORM DATA image:",
-        formData.get("image")
-      );
-
-      console.log(
-        "FORM DATA caption:",
-        formData.get("caption")
-      );
-
-      console.log(
-        "================================="
-      );
-
       // IMPORTANT:
       // Do NOT manually set Content-Type.
       //
@@ -535,16 +445,7 @@ export default function Admin_Image_Carousel() {
           }
         );
 
-      console.log(
-        "UPLOAD RESPONSE:",
-        response.data
-      );
-
-      console.log(
-        "================================="
-      );
-
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Uploaded",
         text:
@@ -559,59 +460,6 @@ export default function Admin_Image_Carousel() {
 
       await fetchCarousel();
     } catch (error: any) {
-      console.error(
-        "================================="
-      );
-
-      console.error(
-        "CAROUSEL UPLOAD ERROR"
-      );
-
-      console.error(
-        "ERROR:",
-        error
-      );
-
-      console.error(
-        "STATUS:",
-        error?.response?.status
-      );
-
-      console.error(
-        "RESPONSE:",
-        error?.response?.data
-      );
-
-      console.error(
-        "ERROR OBJECT:",
-        error?.response?.data?.error
-      );
-
-      console.error(
-        "MESSAGE:",
-        error?.response?.data?.error
-          ?.message
-      );
-
-      console.error(
-        "URL:",
-        error?.config?.url
-      );
-
-      console.error(
-        "METHOD:",
-        error?.config?.method
-      );
-
-      console.error(
-        "HEADERS:",
-        error?.config?.headers
-      );
-
-      console.error(
-        "================================="
-      );
-
       const status =
         error?.response?.status;
 
@@ -619,7 +467,7 @@ export default function Admin_Image_Carousel() {
         status === 401 ||
         status === 403
       ) {
-        await Swal.fire({
+        await showAlert({
           icon: "warning",
           title: "Authentication Failed",
           text:
@@ -629,7 +477,7 @@ export default function Admin_Image_Carousel() {
         return;
       }
 
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Upload Failed",
         text: getErrorMessage(error),
@@ -681,7 +529,7 @@ export default function Admin_Image_Carousel() {
     e.preventDefault();
 
     if (!editingImage?._id) {
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Invalid Image",
         text:
@@ -702,33 +550,6 @@ export default function Admin_Image_Carousel() {
           "Authentication token not found. Please login again."
         );
       }
-
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "CAROUSEL EDIT REQUEST"
-      );
-
-      console.log(
-        "IMAGE ID:",
-        editingImage._id
-      );
-
-      console.log(
-        "CAPTION:",
-        editCaption.trim()
-      );
-
-      console.log(
-        "TOKEN EXISTS:",
-        Boolean(authToken)
-      );
-
-      console.log(
-        "================================="
-      );
 
       // -------------------------------------------------
       // IMPORTANT
@@ -752,12 +573,7 @@ export default function Admin_Image_Carousel() {
           }
         );
 
-      console.log(
-        "EDIT RESPONSE:",
-        response.data
-      );
-
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Updated",
         text:
@@ -774,45 +590,7 @@ export default function Admin_Image_Carousel() {
 
       await fetchCarousel();
     } catch (error: any) {
-      console.error(
-        "================================="
-      );
-
-      console.error(
-        "CAROUSEL EDIT ERROR"
-      );
-
-      console.error(
-        "ERROR:",
-        error
-      );
-
-      console.error(
-        "STATUS:",
-        error?.response?.status
-      );
-
-      console.error(
-        "RESPONSE:",
-        error?.response?.data
-      );
-
-      console.error(
-        "ERROR OBJECT:",
-        error?.response?.data?.error
-      );
-
-      console.error(
-        "MESSAGE:",
-        error?.response?.data?.error
-          ?.message
-      );
-
-      console.error(
-        "================================="
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Update Failed",
         text: getErrorMessage(error),
@@ -830,7 +608,7 @@ export default function Admin_Image_Carousel() {
     image: CarouselImage
   ) => {
     if (!image?._id) {
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Invalid Image",
         text:
@@ -845,7 +623,7 @@ export default function Admin_Image_Carousel() {
     // ---------------------------------------------------
 
     const result =
-      await Swal.fire({
+      await showAlert({
         icon: "warning",
 
         title:
@@ -882,28 +660,6 @@ export default function Admin_Image_Carousel() {
         );
       }
 
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "CAROUSEL DELETE REQUEST"
-      );
-
-      console.log(
-        "IMAGE ID:",
-        image._id
-      );
-
-      console.log(
-        "TOKEN EXISTS:",
-        Boolean(authToken)
-      );
-
-      console.log(
-        "================================="
-      );
-
       // -------------------------------------------------
       // DELETE
       // -------------------------------------------------
@@ -919,12 +675,7 @@ export default function Admin_Image_Carousel() {
           }
         );
 
-      console.log(
-        "DELETE RESPONSE:",
-        response.data
-      );
-
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text:
@@ -935,45 +686,7 @@ export default function Admin_Image_Carousel() {
 
       await fetchCarousel();
     } catch (error: any) {
-      console.error(
-        "================================="
-      );
-
-      console.error(
-        "CAROUSEL DELETE ERROR"
-      );
-
-      console.error(
-        "ERROR:",
-        error
-      );
-
-      console.error(
-        "STATUS:",
-        error?.response?.status
-      );
-
-      console.error(
-        "RESPONSE:",
-        error?.response?.data
-      );
-
-      console.error(
-        "ERROR OBJECT:",
-        error?.response?.data?.error
-      );
-
-      console.error(
-        "MESSAGE:",
-        error?.response?.data?.error
-          ?.message
-      );
-
-      console.error(
-        "================================="
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Delete Failed",
         text: getErrorMessage(error),

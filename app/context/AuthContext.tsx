@@ -98,19 +98,10 @@ export const AuthProvider = ({
             localStorage.removeItem("user");
           }
         } catch (error) {
-          console.error(
-            "USER RESTORE ERROR:",
-            error
-          );
-
           localStorage.removeItem("user");
         }
       }
     } catch (error) {
-      console.error(
-        "AUTH RESTORE ERROR:",
-        error
-      );
     } finally {
       // Authentication restoration is complete.
       setAuthLoading(false);
@@ -193,10 +184,6 @@ export const AuthProvider = ({
         );
       }
     } catch (error) {
-      console.error(
-        "LOGOUT ERROR:",
-        error
-      );
     } finally {
       setTokenAndStore(null);
       setRoleAndStore(null);

@@ -220,11 +220,6 @@ export default function Contact_Us() {
         message: "",
       });
     } catch (error: any) {
-      console.error(
-        "Contact form error:",
-        error
-      );
-
       toast.error(
         error?.response?.data?.message ||
           "Failed to send message. Please try again later."

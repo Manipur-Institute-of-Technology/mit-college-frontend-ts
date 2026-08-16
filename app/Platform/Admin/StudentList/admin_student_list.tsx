@@ -8,7 +8,7 @@ import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient from "~/utils/apiClient";
 
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 
 import {
   GraduationCap,
@@ -156,12 +156,7 @@ export default function Admin_StudentList() {
       setLists(fetched);
 
     } catch (error: any) {
-      console.error(
-        "Fetch student lists error:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         title: "Unable to load",
         text:
           error?.response?.data?.message ||
@@ -437,7 +432,7 @@ export default function Admin_StudentList() {
     e.preventDefault();
 
     if (!uploadCourse) {
-      Swal.fire({
+      showAlert({
         title: "Course Required",
         text: "Please select a course.",
         icon: "warning",
@@ -448,7 +443,7 @@ export default function Admin_StudentList() {
     }
 
     if (!uploadBranch) {
-      Swal.fire({
+      showAlert({
         title: "Branch Required",
         text: "Please select a branch.",
         icon: "warning",
@@ -459,7 +454,7 @@ export default function Admin_StudentList() {
     }
 
     if (!uploadYear.trim()) {
-      Swal.fire({
+      showAlert({
         title: "Year Required",
         text: "Please enter the academic year.",
         icon: "warning",
@@ -470,7 +465,7 @@ export default function Admin_StudentList() {
     }
 
     if (!uploadFile) {
-      Swal.fire({
+      showAlert({
         title: "File Required",
         text: "Please select a CSV or Excel file.",
         icon: "warning",
@@ -495,7 +490,7 @@ export default function Admin_StudentList() {
         extension || ""
       )
     ) {
-      Swal.fire({
+      showAlert({
         title: "Invalid File",
         text: "Only CSV, XLS and XLSX files are allowed.",
         icon: "error",
@@ -543,7 +538,7 @@ export default function Admin_StudentList() {
           }
         );
 
-        await Swal.fire({
+        await showAlert({
           title: "Replaced!",
           text: `${uploadCourse} ${uploadYear} ${uploadBranch} has been replaced successfully.`,
           icon: "success",
@@ -562,7 +557,7 @@ export default function Admin_StudentList() {
           }
         );
 
-        await Swal.fire({
+        await showAlert({
           title: "Uploaded!",
           text: `${uploadCourse} ${uploadYear} ${uploadBranch} uploaded successfully.`,
           icon: "success",
@@ -575,11 +570,6 @@ export default function Admin_StudentList() {
       await fetchStudentLists();
 
     } catch (error: any) {
-      console.error(
-        "Student list upload error:",
-        error
-      );
-
       const status =
         error?.response?.status;
 
@@ -588,7 +578,7 @@ export default function Admin_StudentList() {
           ?.message;
 
       if (status === 409) {
-        Swal.fire({
+        showAlert({
           title: "Already Exists",
           text:
             message ||
@@ -598,7 +588,7 @@ export default function Admin_StudentList() {
             "#be123c",
         });
       } else {
-        Swal.fire({
+        showAlert({
           title: "Upload Failed",
           text:
             message ||
@@ -622,7 +612,7 @@ export default function Admin_StudentList() {
     item: StudentListData
   ) => {
     const result =
-      await Swal.fire({
+      await showAlert({
         title: "Delete Student List?",
         html: `
           <div style="font-size:14px">
@@ -657,7 +647,7 @@ export default function Admin_StudentList() {
         `/studentlist/delete/${item._id}`
       );
 
-      await Swal.fire({
+      await showAlert({
         title: "Deleted!",
         text: "Student list deleted successfully.",
         icon: "success",
@@ -677,7 +667,7 @@ export default function Admin_StudentList() {
       await fetchStudentLists();
 
     } catch (error: any) {
-      Swal.fire({
+      showAlert({
         title: "Delete Failed",
         text:
           error?.response?.data

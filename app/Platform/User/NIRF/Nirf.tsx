@@ -8,7 +8,7 @@ import {
   Award,
   Link as LinkIcon,
 } from "lucide-react";
-import Swal from "sweetalert2";
+import { confirmExternalLink, showAlert } from "~/utils/alert_utils";
 
 // ============================================================
 // TYPES
@@ -211,7 +211,7 @@ const handleNirfClick = (
   const value = getResourceValue(item);
 
   if (!value || value === "#") {
-    Swal.fire({
+    showAlert({
       title: "Resource unavailable",
       text: "The NIRF resource is not available.",
       icon: "warning",
@@ -230,7 +230,7 @@ const handleNirfClick = (
 
   if (resourceType === "link") {
     if (!isHttpUrl(value)) {
-      Swal.fire({
+      showAlert({
         title: "Invalid Link",
         text: "The NIRF link is not a valid HTTP/HTTPS URL.",
         icon: "error",
@@ -248,11 +248,9 @@ const handleNirfClick = (
         url.origin !==
         window.location.origin
       ) {
-        Swal.fire({
+        confirmExternalLink({
           title: "Open Link?",
           text: "You are being redirected to an external website.",
-          icon: "info",
-          showCancelButton: true,
           confirmButtonText: "Continue",
           cancelButtonText: "Cancel",
           confirmButtonColor: "#0891b2",
@@ -262,8 +260,8 @@ const handleNirfClick = (
             confirmButton: "rounded-lg",
             cancelButton: "rounded-lg",
           },
-        }).then((result) => {
-          if (result.isConfirmed) {
+        }).then((confirmed) => {
+          if (confirmed) {
             window.open(
               url.href,
               "_blank",
@@ -282,12 +280,7 @@ const handleNirfClick = (
         "noopener,noreferrer"
       );
     } catch (error) {
-      console.error(
-        "INVALID NIRF LINK:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         title: "Invalid Link",
         text: "Unable to open this NIRF link.",
         icon: "error",
@@ -306,7 +299,7 @@ const handleNirfClick = (
     getFileUrl(value);
 
   if (!fileUrl) {
-    Swal.fire({
+    showAlert({
       title: "Document unavailable",
       text: "The NIRF document could not be located.",
       icon: "warning",
@@ -346,11 +339,6 @@ export default function Nirf() {
         const response =
           await apiClient.get("/nirf");
 
-        console.log(
-          "NIRF RESPONSE:",
-          response.data
-        );
-
         // ------------------------------------------------------
         // Backend can return:
         //
@@ -377,18 +365,8 @@ export default function Nirf() {
               item.status !== "Inactive"
           );
 
-        console.log(
-          "NIRF ACTIVE ITEMS:",
-          activeItems
-        );
-
         setNirfItems(activeItems);
       } catch (error) {
-        console.error(
-          "NIRF FETCH ERROR:",
-          error
-        );
-
         setNirfItems([]);
       } finally {
         setLoading(false);

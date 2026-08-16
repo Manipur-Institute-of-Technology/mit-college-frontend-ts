@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaEdit,
   FaTrash,
@@ -7,11 +8,10 @@ import {
   FaTimes,
   FaSave,
   FaBookOpen,
-  FaArrowLeft,
 } from "react-icons/fa";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
+import { confirmExternalLink, showAlert } from "~/utils/alert_utils";
 
 import "./faculties.css";
 
@@ -21,11 +21,6 @@ import apiClient, {
 
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
-
-// IMPORTANT:
-// Default import only.
-// DO NOT import TeacherDataType from this file.
-import Teacher_Profile_View from "~/Common/Teacher/Teacher_Profile_View";
 
 // =========================================================
 // TYPES
@@ -111,6 +106,7 @@ type FacultyForm = {
   expertFields: string;
   bios: string;
   roles: string;
+  departmentId: string;
   hod: boolean;
 };
 
@@ -223,6 +219,8 @@ export default function Admin_Faculty_Page() {
     role,
   } = useAuth();
 
+  const navigate = useNavigate();
+
   // =======================================================
   // STATE
   // =======================================================
@@ -239,16 +237,14 @@ export default function Admin_Faculty_Page() {
   const [showAllPapersModal, setShowAllPapersModal] =
     useState(false);
 
-  // NEW:
-  // Selected teacher for Teacher_Profile_View
-  const [selectedTeacher, setSelectedTeacher] =
-    useState<FacultyMember | null>(null);
-
   const [requests, setRequests] =
     useState<FacultyRequest[]>([]);
 
   const [facultyList, setFacultyList] =
     useState<FacultyMember[]>([]);
+
+  const [departmentList, setDepartmentList] =
+    useState<Department[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -280,6 +276,7 @@ export default function Admin_Faculty_Page() {
       expertFields: "",
       bios: "",
       roles: "",
+      departmentId: "",
       hod: false,
     });
 
@@ -288,6 +285,59 @@ export default function Admin_Faculty_Page() {
       title: "",
       paperUrl: "",
     });
+
+  // =======================================================
+  // FETCH DEPARTMENTS
+  // =======================================================
+
+  const fetchDepartments = async () => {
+    try {
+      const response =
+        await apiClient.get(
+          "/department"
+        );
+
+      const departmentData =
+        response.data?.data;
+
+      let loadedDepartments: Department[] =
+        [];
+
+      if (
+        Array.isArray(
+          departmentData
+        )
+      ) {
+        loadedDepartments =
+          departmentData;
+      } else if (
+        Array.isArray(
+          departmentData?.departments
+        )
+      ) {
+        loadedDepartments =
+          departmentData.departments;
+      } else if (
+        Array.isArray(
+          response.data?.departments
+        )
+      ) {
+        loadedDepartments =
+          response.data.departments;
+      }
+
+      setDepartmentList(
+        loadedDepartments
+      );
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "Unable to load departments."
+        )
+      );
+    }
+  };
 
   // =======================================================
   // FETCH FACULTY + REQUESTS
@@ -299,12 +349,15 @@ export default function Admin_Faculty_Page() {
 
       try {
         const facultyResponse =
-          await apiClient.get("/faculty");
+          await apiClient.get(
+            "/faculty"
+          );
 
         const facultyData =
           facultyResponse.data?.data;
 
-        let loadedFaculty: FacultyMember[] = [];
+        let loadedFaculty: FacultyMember[] =
+          [];
 
         if (
           facultyData?.faculty &&
@@ -349,11 +402,6 @@ export default function Admin_Faculty_Page() {
             : []
         );
       } catch (error) {
-        console.error(
-          "FACULTY FETCH ERROR:",
-          error
-        );
-
         toast.error(
           getApiErrorMessage(
             error,
@@ -375,63 +423,35 @@ export default function Admin_Faculty_Page() {
       role === "admin"
     ) {
       fetchFacultyAndRequests();
+      fetchDepartments();
     }
   }, [token, role]);
 
   // =======================================================
   // OPEN TEACHER PROFILE
+  // ONLY FACULTY CLICK REDIRECT
   // =======================================================
 
   const openTeacherProfile = (
     teacher: FacultyMember
   ) => {
-    /*
-     * IMPORTANT:
-     *
-     * We are NOT navigating to:
-     *
-     * /teacher/:id
-     *
-     * Instead we pass the already loaded
-     * teacher object directly to
-     * Teacher_Profile_View.
-     *
-     * This follows the same data-driven
-     * approach used by DepartmentData.
-     */
+    const facultyName =
+      getFacultyName(teacher)
+        .trim()
+        .replace(/\s+/g, "-")
+        .toLowerCase();
 
-    setSelectedTeacher(
-      teacher
-    );
-
-    // Close anything else that might be open.
-    setShowRequestModal(
-      false
-    );
-
-    setShowFacultyModal(
-      false
-    );
-
-    setShowPaperModal(
-      false
-    );
-
-    setShowAllPapersModal(
-      false
+    navigate(
+      `/faculty/${encodeURIComponent(
+        facultyName
+      )}`,
+      {
+        state: {
+          teacher,
+        },
+      }
     );
   };
-
-  // =======================================================
-  // CLOSE TEACHER PROFILE
-  // =======================================================
-
-  const closeTeacherProfile =
-    () => {
-      setSelectedTeacher(
-        null
-      );
-    };
 
   // =======================================================
   // ACCEPT REQUEST
@@ -461,11 +481,6 @@ export default function Admin_Faculty_Page() {
 
         fetchFacultyAndRequests();
       } catch (error) {
-        console.error(
-          "ACCEPT FACULTY ERROR:",
-          error
-        );
-
         toast.error(
           getApiErrorMessage(
             error,
@@ -485,7 +500,7 @@ export default function Admin_Faculty_Page() {
       name: string
     ) => {
       const confirmation =
-        await Swal.fire({
+        await showAlert({
           title: "Reject registration?",
           text: `Reject the faculty registration request for ${name}?`,
           icon: "warning",
@@ -516,21 +531,18 @@ export default function Admin_Faculty_Page() {
             )
         );
 
-        toast.success(
-          `Rejected registration for ${name}`
-        );
+        showAlert({
+          icon: "success",
+          text: `Rejected registration for ${name}`,
+        });
       } catch (error) {
-        console.error(
-          "REJECT FACULTY ERROR:",
-          error
-        );
-
-        toast.error(
-          getApiErrorMessage(
+        showAlert({
+          icon: "error",
+          text: getApiErrorMessage(
             error,
             "Failed to reject faculty request."
-          )
-        );
+          ),
+        });
       }
     };
 
@@ -588,8 +600,13 @@ export default function Admin_Faculty_Page() {
           Array.isArray(
             faculty.roles
           )
-            ? faculty.roles.join(", ")
+            ? faculty.roles[0] || ""
             : faculty.roles || "",
+
+        departmentId:
+          faculty.departmentId ||
+          faculty.department?._id ||
+          "",
 
         hod:
           Boolean(faculty.hod),
@@ -663,6 +680,22 @@ export default function Admin_Faculty_Page() {
         return;
       }
 
+      if (!facultyForm.departmentId) {
+        toast.error(
+          "Please select a department."
+        );
+
+        return;
+      }
+
+      if (!facultyForm.roles) {
+        toast.error(
+          "Please select a role."
+        );
+
+        return;
+      }
+
       try {
         setSavingFaculty(true);
 
@@ -700,14 +733,12 @@ export default function Admin_Faculty_Page() {
           bios:
             facultyForm.bios.trim(),
 
-          roles:
-            facultyForm.roles
-              .split(",")
-              .map(
-                (item) =>
-                  item.trim()
-              )
-              .filter(Boolean),
+          roles: [
+            facultyForm.roles,
+          ],
+
+          departmentId:
+            facultyForm.departmentId,
 
           hod:
             facultyForm.hod,
@@ -736,24 +767,6 @@ export default function Admin_Faculty_Page() {
                     : faculty
               )
           );
-
-          // Keep profile data synchronized
-          setSelectedTeacher(
-            (previous) => {
-              if (
-                !previous ||
-                previous._id !==
-                  editingFacultyId
-              ) {
-                return previous;
-              }
-
-              return {
-                ...previous,
-                ...updatedFaculty,
-              };
-            }
-          );
         }
 
         toast.success(
@@ -762,11 +775,6 @@ export default function Admin_Faculty_Page() {
 
         closeFacultyModal();
       } catch (error) {
-        console.error(
-          "FACULTY UPDATE ERROR:",
-          error
-        );
-
         toast.error(
           getApiErrorMessage(
             error,
@@ -792,7 +800,7 @@ export default function Admin_Faculty_Page() {
         );
 
       const confirmation =
-        await Swal.fire({
+        await showAlert({
           title: "Delete faculty?",
           html: `
             <div style="font-size:14px">
@@ -835,31 +843,18 @@ export default function Admin_Faculty_Page() {
             )
         );
 
-        // If deleted teacher is currently
-        // being viewed, close profile.
-        setSelectedTeacher(
-          (previous) =>
-            previous?._id ===
-            faculty._id
-              ? null
-              : previous
-        );
-
-        toast.success(
-          `${name} was deleted successfully.`
-        );
+        showAlert({
+          icon: "success",
+          text: `${name} was deleted successfully.`,
+        });
       } catch (error) {
-        console.error(
-          "DELETE FACULTY ERROR:",
-          error
-        );
-
-        toast.error(
-          getApiErrorMessage(
+        showAlert({
+          icon: "error",
+          text: getApiErrorMessage(
             error,
             "Unable to delete faculty."
-          )
-        );
+          ),
+        });
       }
     };
 
@@ -1033,10 +1028,6 @@ export default function Admin_Faculty_Page() {
             undefined,
         };
 
-        // =================================================
-        // EDIT PAPER
-        // =================================================
-
         if (editingPaperId) {
           const response =
             await apiClient.put(
@@ -1097,43 +1088,12 @@ export default function Admin_Faculty_Page() {
                 };
               }
             );
-
-            // Also update the teacher profile
-            setSelectedTeacher(
-              (previous) => {
-                if (
-                  !previous ||
-                  previous._id !==
-                    facultyId
-                ) {
-                  return previous;
-                }
-
-                return {
-                  ...previous,
-                  papers:
-                    previous.papers?.map(
-                      (paper) =>
-                        paper._id ===
-                        editingPaperId
-                          ? updatedPaper
-                          : paper
-                    ) || [],
-                };
-              }
-            );
           }
 
           toast.success(
             "Paper updated successfully."
           );
-        }
-
-        // =================================================
-        // ADD PAPER
-        // =================================================
-
-        else {
+        } else {
           const response =
             await apiClient.post(
               `/paper/${facultyId}`,
@@ -1187,27 +1147,6 @@ export default function Admin_Faculty_Page() {
                 };
               }
             );
-
-            setSelectedTeacher(
-              (previous) => {
-                if (
-                  !previous ||
-                  previous._id !==
-                    facultyId
-                ) {
-                  return previous;
-                }
-
-                return {
-                  ...previous,
-                  papers: [
-                    newPaper,
-                    ...(previous.papers ||
-                      []),
-                  ],
-                };
-              }
-            );
           }
 
           toast.success(
@@ -1228,11 +1167,6 @@ export default function Admin_Faculty_Page() {
           paperUrl: "",
         });
       } catch (error) {
-        console.error(
-          "PAPER SAVE ERROR:",
-          error
-        );
-
         toast.error(
           getApiErrorMessage(
             error,
@@ -1254,7 +1188,7 @@ export default function Admin_Faculty_Page() {
       paper: Paper
     ) => {
       const confirmation =
-        await Swal.fire({
+        await showAlert({
           title: "Delete paper?",
           text: `Delete "${paper.title}" permanently?`,
           icon: "warning",
@@ -1327,43 +1261,18 @@ export default function Admin_Faculty_Page() {
           }
         );
 
-        setSelectedTeacher(
-          (previous) => {
-            if (
-              !previous ||
-              previous._id !==
-                faculty._id
-            ) {
-              return previous;
-            }
-
-            return {
-              ...previous,
-              papers:
-                previous.papers?.filter(
-                  (currentPaper) =>
-                    currentPaper._id !==
-                    paper._id
-                ) || [],
-            };
-          }
-        );
-
-        toast.success(
-          "Paper deleted successfully."
-        );
+        showAlert({
+          icon: "success",
+          text: "Paper deleted successfully.",
+        });
       } catch (error) {
-        console.error(
-          "PAPER DELETE ERROR:",
-          error
-        );
-
-        toast.error(
-          getApiErrorMessage(
+        showAlert({
+          icon: "error",
+          text: getApiErrorMessage(
             error,
             "Unable to delete paper."
-          )
-        );
+          ),
+        });
       }
     };
 
@@ -1408,12 +1317,10 @@ export default function Admin_Faculty_Page() {
         return;
       }
 
-      Swal.fire({
+      confirmExternalLink({
         title: "Leave this site?",
         text:
           "You are being redirected to an external website.",
-        icon: "warning",
-        showCancelButton: true,
         confirmButtonText:
           "Continue",
         cancelButtonText:
@@ -1426,9 +1333,9 @@ export default function Admin_Faculty_Page() {
           popup: "rounded-xl",
         },
       }).then(
-        (result) => {
+        (confirmed) => {
           if (
-            result.isConfirmed
+            confirmed
           ) {
             window.open(
               href,
@@ -1458,77 +1365,67 @@ export default function Admin_Faculty_Page() {
   }
 
   // =======================================================
-  // IMPORTANT:
-  // SHOW EXISTING TEACHER PROFILE
+  // GROUP FACULTY BY DEPARTMENT
+  //
+  // ONLY ADDITION:
+  // Department blocks are created here.
+  //
+  // Departments with no faculty are automatically omitted.
+  // No pagination.
+  // No department selection/filter.
   // =======================================================
 
-  if (selectedTeacher) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        {/* Back button */}
+  const groupedFaculty = new Map<
+    string,
+    {
+      department: Department | null;
+      faculty: FacultyMember[];
+    }
+  >();
 
-        <div
-          className="
-            sticky
-            top-0
-            z-40
-            bg-white
-            border-b
-            border-gray-200
-            px-4
-            sm:px-6
-            py-3
-            shadow-sm
-          "
-        >
-          <button
-            type="button"
-            onClick={
-              closeTeacherProfile
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2
-              rounded-xl
-              bg-gray-100
-              hover:bg-gray-200
-              text-gray-700
-              font-bold
-              text-sm
-              transition-colors
-            "
-          >
-            <FaArrowLeft />
+  facultyList.forEach((teacher) => {
+    const departmentId =
+      teacher.departmentId ||
+      teacher.department?._id ||
+      "unknown";
 
-            Back to Faculty
-          </button>
-        </div>
+    const departmentFromList =
+      departmentList.find(
+        (department) =>
+          department._id ===
+          departmentId
+      );
 
-        {/* 
-          =====================================================
-          EXISTING PROFILE COMPONENT
+    const existing =
+      groupedFaculty.get(
+        departmentId
+      );
 
-          The teacher object is passed directly.
+    if (existing) {
+      existing.faculty.push(
+        teacher
+      );
+    } else {
+      groupedFaculty.set(
+        departmentId,
+        {
+          department:
+            teacher.department ||
+            departmentFromList ||
+            null,
+          faculty: [teacher],
+        }
+      );
+    }
+  });
 
-          This is the important part that prevents the
-          white blank route page.
-          =====================================================
-        */}
-
-        <Teacher_Profile_View
-          teachers={[
-            selectedTeacher,
-          ]}
-        />
-      </div>
+  const departmentGroups =
+    Array.from(
+      groupedFaculty.values()
     );
-  }
 
   // =======================================================
-  // RENDER FACULTY ADMIN PAGE
+  // RENDER
   // =======================================================
 
   return (
@@ -1710,8 +1607,7 @@ export default function Admin_Faculty_Page() {
                 pb-2
               "
             >
-              Pending Faculty Account Registration Requests
-              {" "}
+              Pending Faculty Account Registration Requests{" "}
               ({requests.length})
             </h2>
 
@@ -1846,6 +1742,7 @@ export default function Admin_Faculty_Page() {
 
       {/* ===================================================
           FACULTY LIST
+          GROUPED BY DEPARTMENT
       =================================================== */}
 
       {loading ? (
@@ -1875,594 +1772,728 @@ export default function Admin_Faculty_Page() {
           No faculty profiles created in database yet.
         </div>
       ) : (
-        <div
-          className="
-            grid
-            grid-cols-1
-            sm:grid-cols-2
-            lg:grid-cols-3
-            gap-6
-          "
-        >
-          {facultyList.map(
-            (teacher) => {
-              const fullName =
-                getFacultyName(
-                  teacher
-                );
-
-              const photoSrc =
-                teacher.photoId
-                  ? `${API_BASE_URL}/uploads/faculty/${teacher.photoId}`
-                  : teacher.photo ||
-                    "/Images/Faculty/placeholder.jpg";
-
-              const papers =
-                teacher.papers || [];
+        <div className="space-y-10">
+          {departmentGroups.map(
+            (
+              group,
+              departmentIndex
+            ) => {
+              const departmentName =
+                group.department?.name ||
+                "Department";
 
               return (
-                <div
+                <section
                   key={
-                    teacher._id
+                    group.department?._id ||
+                    `department-${departmentIndex}`
                   }
                   className="
-                    relative
-                    flex
-                    flex-col
-                    bg-white
-                    rounded-2xl
-                    shadow-sm
-                    hover:shadow-md
-                    transition-shadow
-                    p-5
-                    border
-                    border-gray-200
+                    space-y-5
                   "
                 >
                   {/* ==========================================
-                      CLICKABLE TEACHER PROFILE AREA
-                  ========================================== */}
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openTeacherProfile(
-                        teacher
-                      )
-                    }
-                    className="
-                      w-full
-                      text-left
-                      flex
-                      items-start
-                      gap-4
-                      cursor-pointer
-                      group
-                    "
-                  >
-                    <img
-                      src={
-                        photoSrc
-                      }
-                      alt={
-                        fullName
-                      }
-                      className="
-                        w-20
-                        h-24
-                        object-cover
-                        rounded-xl
-                        border
-                        border-gray-200
-                        bg-gray-100
-                        flex-shrink-0
-                        group-hover:ring-2
-                        group-hover:ring-cyan-300
-                        transition-all
-                      "
-                    />
-
-                    <div
-                      className="
-                        flex-1
-                        text-xs
-                        space-y-1
-                        min-w-0
-                      "
-                    >
-                      <h3
-                        className="
-                          font-bold
-                          text-sm
-                          text-gray-900
-                          group-hover:text-cyan-700
-                          transition-colors
-                        "
-                      >
-                        {fullName}
-                      </h3>
-
-                      <p
-                        className="
-                          text-cyan-800
-                          font-semibold
-                        "
-                      >
-                        {getFacultyRole(
-                          teacher
-                        )}
-                      </p>
-
-                      <p
-                        className="
-                          text-gray-500
-                          font-mono
-                          truncate
-                        "
-                      >
-                        {getFacultyEmail(
-                          teacher
-                        )}
-                      </p>
-
-                      {teacher.highestDegree && (
-                        <p
-                          className="
-                            text-gray-700
-                            font-medium
-                          "
-                        >
-                          {
-                            teacher.highestDegree
-                          }
-                        </p>
-                      )}
-                    </div>
-                  </button>
-
-                  {/* ==========================================
-                      FACULTY ACTIONS
+                      DEPARTMENT HEADER
                   ========================================== */}
 
                   <div
                     className="
                       flex
                       items-center
-                      justify-between
-                      gap-3
-                      mt-5
-                      pt-4
-                      border-t
-                      border-gray-100
+                      gap-4
+                      border-b
+                      border-gray-200
+                      pb-3
                     "
                   >
                     <div
                       className="
-                        flex
-                        items-center
-                        gap-2
-                        min-w-0
-                      "
-                    >
-                      <span
-                        className="
-                          text-[10px]
-                          sm:text-xs
-                          font-semibold
-                          text-gray-500
-                          whitespace-nowrap
-                        "
-                      >
-                        Security Code:
-                      </span>
-
-                      <span
-                        className="
-                          px-2.5
-                          py-1.5
-                          rounded-lg
-                          bg-gray-100
-                          border
-                          border-gray-200
-                          text-gray-800
-                          font-mono
-                          text-xs
-                          sm:text-sm
-                          font-bold
-                          tracking-widest
-                          whitespace-nowrap
-                        "
-                      >
-                        {teacher.securityCode ||
-                          "------"}
-                      </span>
-                    </div>
-
-                    <div
-                      className="
-                        flex
-                        items-center
-                        gap-2
+                        w-1.5
+                        h-8
+                        bg-cyan-700
+                        rounded-full
                         flex-shrink-0
                       "
-                    >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          openEditFaculty(
-                            teacher
-                          )
-                        }
-                        className="
-                          w-9
-                          h-9
-                          rounded-lg
-                          bg-blue-50
-                          text-blue-600
-                          hover:bg-blue-100
-                          flex
-                          items-center
-                          justify-center
-                        "
-                        title="Edit faculty"
-                      >
-                        <FaEdit />
-                      </button>
+                    />
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          openAddPaper(
-                            teacher
-                          )
-                        }
+                    <div>
+                      <h2
                         className="
-                          w-9
-                          h-9
-                          rounded-lg
-                          bg-cyan-50
-                          text-cyan-700
-                          hover:bg-cyan-100
-                          flex
-                          items-center
-                          justify-center
+                          text-xl
+                          sm:text-2xl
+                          font-extrabold
+                          text-gray-900
                         "
-                        title="Add paper"
                       >
-                        <FaPlus />
-                      </button>
+                        {departmentName}
+                      </h2>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDeleteFaculty(
-                            teacher
-                          )
-                        }
+                      <p
                         className="
-                          w-9
-                          h-9
-                          rounded-lg
-                          bg-red-50
-                          text-red-600
-                          hover:bg-red-100
-                          flex
-                          items-center
-                          justify-center
+                          text-xs
+                          sm:text-sm
+                          text-gray-500
+                          font-medium
+                          mt-0.5
                         "
-                        title="Delete faculty"
                       >
-                        <FaTrash />
-                      </button>
+                        {group.faculty.length}{" "}
+                        faculty member
+                        {group.faculty.length !==
+                        1
+                          ? "s"
+                          : ""}
+                      </p>
                     </div>
                   </div>
 
                   {/* ==========================================
-                      PAPERS PREVIEW
+                      DEPARTMENT FACULTY
                   ========================================== */}
 
                   <div
                     className="
-                      mt-5
-                      pt-4
-                      border-t
-                      border-gray-100
+                      grid
+                      grid-cols-1
+                      sm:grid-cols-2
+                      lg:grid-cols-3
+                      gap-6
                     "
                   >
-                    <div
-                      className="
-                        flex
-                        items-center
-                        justify-between
-                        mb-3
-                      "
-                    >
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-2
-                        "
-                      >
-                        <FaBookOpen
-                          className="
-                            text-cyan-700
-                          "
-                        />
+                    {group.faculty.map(
+                      (teacher) => {
+                        const fullName =
+                          getFacultyName(
+                            teacher
+                          );
 
-                        <h4
-                          className="
-                            text-sm
-                            font-bold
-                            text-gray-900
-                          "
-                        >
-                          Papers
-                        </h4>
+                        /*
+                         * ORIGINAL PHOTO LOGIC
+                         * LEFT UNCHANGED
+                         */
+                        const photoSrc =
+                          teacher.photoId
+                            ? `${API_BASE_URL}/uploads/faculty/${teacher.photoId}`
+                            : teacher.photo ||
+                              "/Images/Faculty/placeholder.jpg";
 
-                        <span
-                          className="
-                            min-w-[24px]
-                            h-6
-                            px-1.5
-                            rounded-full
-                            bg-cyan-100
-                            text-cyan-700
-                            text-xs
-                            font-bold
-                            flex
-                            items-center
-                            justify-center
-                          "
-                        >
-                          {papers.length}
-                        </span>
-                      </div>
+                        const papers =
+                          teacher.papers || [];
 
-                      {papers.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            openAllPapers(
-                              teacher
-                            )
-                          }
-                          className="
-                            text-xs
-                            font-bold
-                            text-cyan-700
-                            hover:text-cyan-900
-                            hover:underline
-                          "
-                        >
-                          View all
-                        </button>
-                      )}
-                    </div>
+                        return (
+                          <div
+                            key={
+                              teacher._id
+                            }
+                            className="
+                              relative
+                              flex
+                              flex-col
+                              bg-white
+                              rounded-2xl
+                              shadow-sm
+                              hover:shadow-md
+                              transition-shadow
+                              p-5
+                              border
+                              border-gray-200
+                            "
+                          >
+                            {/* ==========================================
+                                CLICKABLE TEACHER PROFILE AREA
 
-                    {papers.length === 0 ? (
-                      <div
-                        className="
-                          flex
-                          items-center
-                          justify-between
-                          gap-3
-                          bg-gray-50
-                          border
-                          border-gray-100
-                          rounded-xl
-                          px-3
-                          py-3
-                        "
-                      >
-                        <p
-                          className="
-                            text-xs
-                            text-gray-400
-                            italic
-                          "
-                        >
-                          No papers added.
-                        </p>
+                                ONLY FACULTY CLICK REDIRECT
+                            ========================================== */}
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            openAddPaper(
-                              teacher
-                            )
-                          }
-                          className="
-                            text-xs
-                            font-bold
-                            text-cyan-700
-                            hover:text-cyan-900
-                            whitespace-nowrap
-                          "
-                        >
-                          + Add Paper
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <div
-                          className="
-                            space-y-2
-                          "
-                        >
-                          {papers
-                            .slice(0, 1)
-                            .map(
-                              (paper) => (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openTeacherProfile(
+                                  teacher
+                                )
+                              }
+                              className="
+                                w-full
+                                text-left
+                                flex
+                                items-start
+                                gap-4
+                                cursor-pointer
+                                group
+                              "
+                            >
+                              <img
+                                src={
+                                  photoSrc
+                                }
+                                alt={
+                                  fullName
+                                }
+                                className="
+                                  w-20
+                                  h-24
+                                  object-cover
+                                  rounded-xl
+                                  border
+                                  border-gray-200
+                                  bg-gray-100
+                                  flex-shrink-0
+                                  group-hover:ring-2
+                                  group-hover:ring-cyan-300
+                                  transition-all
+                                "
+                              />
+
+                              <div
+                                className="
+                                  flex-1
+                                  text-xs
+                                  space-y-1
+                                  min-w-0
+                                "
+                              >
                                 <div
-                                  key={
-                                    paper._id
+                                  className="
+                                    flex
+                                    flex-wrap
+                                    items-center
+                                    gap-2
+                                  "
+                                >
+                                  <h3
+                                    className="
+                                      font-bold
+                                      text-sm
+                                      text-gray-900
+                                      group-hover:text-cyan-700
+                                      transition-colors
+                                    "
+                                  >
+                                    {fullName}
+                                  </h3>
+
+                                  {/* =====================================
+                                      HOD BADGE
+                                      ONLY ADDITION
+                                  ===================================== */}
+
+                                  {teacher.hod && (
+                                    <span
+                                      className="
+                                        inline-flex
+                                        items-center
+                                        px-2
+                                        py-0.5
+                                        rounded-full
+                                        bg-amber-100
+                                        text-amber-700
+                                        border
+                                        border-amber-200
+                                        text-[10px]
+                                        font-extrabold
+                                        whitespace-nowrap
+                                      "
+                                    >
+                                      HOD
+                                    </span>
+                                  )}
+                                </div>
+
+                                <p
+                                  className="
+                                    text-cyan-800
+                                    font-semibold
+                                  "
+                                >
+                                  {getFacultyRole(
+                                    teacher
+                                  )}
+                                </p>
+
+                                <p
+                                  className="
+                                    text-gray-500
+                                    font-mono
+                                    truncate
+                                  "
+                                >
+                                  {getFacultyEmail(
+                                    teacher
+                                  )}
+                                </p>
+
+                                {teacher.highestDegree && (
+                                  <p
+                                    className="
+                                      text-gray-700
+                                      font-medium
+                                    "
+                                  >
+                                    {
+                                      teacher.highestDegree
+                                    }
+                                  </p>
+                                )}
+                              </div>
+                            </button>
+
+                            {/* ==========================================
+                                FACULTY ACTIONS
+                            ========================================== */}
+
+                            <div
+                              className="
+                                flex
+                                items-center
+                                justify-between
+                                gap-3
+                                mt-5
+                                pt-4
+                                border-t
+                                border-gray-100
+                              "
+                            >
+                              <div
+                                className="
+                                  flex
+                                  items-center
+                                  gap-2
+                                  min-w-0
+                                "
+                              >
+                                <span
+                                  className="
+                                    text-[10px]
+                                    sm:text-xs
+                                    font-semibold
+                                    text-gray-500
+                                    whitespace-nowrap
+                                  "
+                                >
+                                  Security Code:
+                                </span>
+
+                                <span
+                                  className="
+                                    px-2.5
+                                    py-1.5
+                                    rounded-lg
+                                    bg-gray-100
+                                    border
+                                    border-gray-200
+                                    text-gray-800
+                                    font-mono
+                                    text-xs
+                                    sm:text-sm
+                                    font-bold
+                                    tracking-widest
+                                    whitespace-nowrap
+                                  "
+                                >
+                                  {teacher.securityCode ||
+                                    "------"}
+                                </span>
+                              </div>
+
+                              <div
+                                className="
+                                  flex
+                                  items-center
+                                  gap-2
+                                  flex-shrink-0
+                                "
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    openEditFaculty(
+                                      teacher
+                                    )
                                   }
+                                  className="
+                                    w-9
+                                    h-9
+                                    rounded-lg
+                                    bg-blue-50
+                                    text-blue-600
+                                    hover:bg-blue-100
+                                    flex
+                                    items-center
+                                    justify-center
+                                  "
+                                  title="Edit faculty"
+                                >
+                                  <FaEdit />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    openAddPaper(
+                                      teacher
+                                    )
+                                  }
+                                  className="
+                                    w-9
+                                    h-9
+                                    rounded-lg
+                                    bg-cyan-50
+                                    text-cyan-700
+                                    hover:bg-cyan-100
+                                    flex
+                                    items-center
+                                    justify-center
+                                  "
+                                  title="Add paper"
+                                >
+                                  <FaPlus />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDeleteFaculty(
+                                      teacher
+                                    )
+                                  }
+                                  className="
+                                    w-9
+                                    h-9
+                                    rounded-lg
+                                    bg-red-50
+                                    text-red-600
+                                    hover:bg-red-100
+                                    flex
+                                    items-center
+                                    justify-center
+                                  "
+                                  title="Delete faculty"
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* ==========================================
+                                PAPERS PREVIEW
+                            ========================================== */}
+
+                            <div
+                              className="
+                                mt-5
+                                pt-4
+                                border-t
+                                border-gray-100
+                              "
+                            >
+                              <div
+                                className="
+                                  flex
+                                  items-center
+                                  justify-between
+                                  mb-3
+                                "
+                              >
+                                <div
+                                  className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                  "
+                                >
+                                  <FaBookOpen
+                                    className="
+                                      text-cyan-700
+                                    "
+                                  />
+
+                                  <h4
+                                    className="
+                                      text-sm
+                                      font-bold
+                                      text-gray-900
+                                    "
+                                  >
+                                    Papers
+                                  </h4>
+
+                                  <span
+                                    className="
+                                      min-w-[24px]
+                                      h-6
+                                      px-1.5
+                                      rounded-full
+                                      bg-cyan-100
+                                      text-cyan-700
+                                      text-xs
+                                      font-bold
+                                      flex
+                                      items-center
+                                      justify-center
+                                    "
+                                  >
+                                    {
+                                      papers.length
+                                    }
+                                  </span>
+                                </div>
+
+                                {papers.length >
+                                  0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      openAllPapers(
+                                        teacher
+                                      )
+                                    }
+                                    className="
+                                      text-xs
+                                      font-bold
+                                      text-cyan-700
+                                      hover:text-cyan-900
+                                      hover:underline
+                                    "
+                                  >
+                                    View all
+                                  </button>
+                                )}
+                              </div>
+
+                              {papers.length ===
+                              0 ? (
+                                <div
                                   className="
                                     flex
                                     items-center
                                     justify-between
-                                    gap-2
+                                    gap-3
                                     bg-gray-50
                                     border
                                     border-gray-100
-                                    rounded-lg
-                                    p-2.5
+                                    rounded-xl
+                                    px-3
+                                    py-3
                                   "
                                 >
-                                  <div
+                                  <p
                                     className="
-                                      min-w-0
-                                      flex-1
+                                      text-xs
+                                      text-gray-400
+                                      italic
                                     "
                                   >
-                                    <p
+                                    No papers added.
+                                  </p>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      openAddPaper(
+                                        teacher
+                                      )
+                                    }
+                                    className="
+                                      text-xs
+                                      font-bold
+                                      text-cyan-700
+                                      hover:text-cyan-900
+                                      whitespace-nowrap
+                                    "
+                                  >
+                                    + Add Paper
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  <div
+                                    className="
+                                      space-y-2
+                                    "
+                                  >
+                                    {papers
+                                      .slice(0, 1)
+                                      .map(
+                                        (
+                                          paper
+                                        ) => (
+                                          <div
+                                            key={
+                                              paper._id
+                                            }
+                                            className="
+                                              flex
+                                              items-center
+                                              justify-between
+                                              gap-2
+                                              bg-gray-50
+                                              border
+                                              border-gray-100
+                                              rounded-lg
+                                              p-2.5
+                                            "
+                                          >
+                                            <div
+                                              className="
+                                                min-w-0
+                                                flex-1
+                                              "
+                                            >
+                                              <p
+                                                className="
+                                                  text-xs
+                                                  font-bold
+                                                  text-gray-800
+                                                  truncate
+                                                "
+                                                title={
+                                                  paper.title
+                                                }
+                                              >
+                                                {
+                                                  paper.title
+                                                }
+                                              </p>
+
+                                              {paper.paperUrl && (
+                                                <button
+                                                  type="button"
+                                                  onClick={() =>
+                                                    openPaperLink(
+                                                      paper.paperUrl!
+                                                    )
+                                                  }
+                                                  className="
+                                                    inline-flex
+                                                    items-center
+                                                    gap-1
+                                                    text-[11px]
+                                                    text-cyan-700
+                                                    font-semibold
+                                                    mt-1
+                                                    hover:underline
+                                                  "
+                                                >
+                                                  Open
+
+                                                  <FaExternalLinkAlt
+                                                    className="
+                                                      text-[9px]
+                                                    "
+                                                  />
+                                                </button>
+                                              )}
+                                            </div>
+
+                                            <div
+                                              className="
+                                                flex
+                                                items-center
+                                                gap-1
+                                                flex-shrink-0
+                                              "
+                                            >
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  openEditPaper(
+                                                    teacher,
+                                                    paper
+                                                  )
+                                                }
+                                                className="
+                                                  w-7
+                                                  h-7
+                                                  rounded-md
+                                                  bg-blue-50
+                                                  text-blue-600
+                                                  flex
+                                                  items-center
+                                                  justify-center
+                                                  hover:bg-blue-100
+                                                "
+                                              >
+                                                <FaEdit
+                                                  className="
+                                                    text-xs
+                                                  "
+                                                />
+                                              </button>
+
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  handleDeletePaper(
+                                                    teacher,
+                                                    paper
+                                                  )
+                                                }
+                                                className="
+                                                  w-7
+                                                  h-7
+                                                  rounded-md
+                                                  bg-red-50
+                                                  text-red-600
+                                                  flex
+                                                  items-center
+                                                  justify-center
+                                                  hover:bg-red-100
+                                                "
+                                              >
+                                                <FaTrash
+                                                  className="
+                                                    text-xs
+                                                  "
+                                                />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )
+                                      )}
+                                  </div>
+
+                                  {papers.length >
+                                    2 && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        openAllPapers(
+                                          teacher
+                                        )
+                                      }
                                       className="
+                                        w-full
+                                        mt-2
+                                        py-2
+                                        rounded-lg
+                                        bg-cyan-50
+                                        hover:bg-cyan-100
+                                        text-cyan-700
                                         text-xs
                                         font-bold
-                                        text-gray-800
-                                        truncate
-                                      "
-                                      title={
-                                        paper.title
-                                      }
-                                    >
-                                      {
-                                        paper.title
-                                      }
-                                    </p>
-
-                                    {paper.paperUrl && (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          openPaperLink(
-                                            paper.paperUrl!
-                                          )
-                                        }
-                                        className="
-                                          inline-flex
-                                          items-center
-                                          gap-1
-                                          text-[11px]
-                                          text-cyan-700
-                                          font-semibold
-                                          mt-1
-                                          hover:underline
-                                        "
-                                      >
-                                        Open
-
-                                        <FaExternalLinkAlt
-                                          className="
-                                            text-[9px]
-                                          "
-                                        />
-                                      </button>
-                                    )}
-                                  </div>
-
-                                  <div
-                                    className="
-                                      flex
-                                      items-center
-                                      gap-1
-                                      flex-shrink-0
-                                    "
-                                  >
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        openEditPaper(
-                                          teacher,
-                                          paper
-                                        )
-                                      }
-                                      className="
-                                        w-7
-                                        h-7
-                                        rounded-md
-                                        bg-blue-50
-                                        text-blue-600
-                                        flex
-                                        items-center
-                                        justify-center
-                                        hover:bg-blue-100
                                       "
                                     >
-                                      <FaEdit
-                                        className="
-                                          text-xs
-                                        "
-                                      />
+                                      +{" "}
+                                      {papers.length -
+                                        1}{" "}
+                                      more paper
+                                      {papers.length -
+                                        1 !==
+                                      1
+                                        ? "s"
+                                        : ""}{" "}
+                                      — View All
                                     </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleDeletePaper(
-                                          teacher,
-                                          paper
-                                        )
-                                      }
-                                      className="
-                                        w-7
-                                        h-7
-                                        rounded-md
-                                        bg-red-50
-                                        text-red-600
-                                        flex
-                                        items-center
-                                        justify-center
-                                        hover:bg-red-100
-                                      "
-                                    >
-                                      <FaTrash
-                                        className="
-                                          text-xs
-                                        "
-                                      />
-                                    </button>
-                                  </div>
-                                </div>
-                              )
-                            )}
-                        </div>
-
-                        {papers.length > 2 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              openAllPapers(
-                                teacher
-                              )
-                            }
-                            className="
-                              w-full
-                              mt-2
-                              py-2
-                              rounded-lg
-                              bg-cyan-50
-                              hover:bg-cyan-100
-                              text-cyan-700
-                              text-xs
-                              font-bold
-                            "
-                          >
-                            +{" "}
-                            {papers.length - 1}{" "}
-                            more paper
-                            {papers.length - 1 !==
-                            1
-                              ? "s"
-                              : ""}{" "}
-                            — View All
-                          </button>
-                        )}
-                      </>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
                     )}
                   </div>
-                </div>
+                </section>
               );
             }
           )}
@@ -2576,7 +2607,7 @@ export default function Admin_Faculty_Page() {
                     Prefix
                   </label>
 
-                  <input
+                  <select
                     value={
                       facultyForm.namePrefix
                     }
@@ -2586,8 +2617,30 @@ export default function Admin_Faculty_Page() {
                         e.target.value
                       )
                     }
-                    className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-cyan-500"
-                  />
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
+                  >
+                    <option value="">
+                      Select Prefix
+                    </option>
+                    <option value="Dr.">
+                      Dr.
+                    </option>
+                    <option value="Prof.">
+                      Prof.
+                    </option>
+                    <option value="Mr.">
+                      Mr.
+                    </option>
+                    <option value="Mrs.">
+                      Mrs.
+                    </option>
+                    <option value="Ms.">
+                      Ms.
+                    </option>
+                    <option value="Er.">
+                      Er.
+                    </option>
+                  </select>
                 </div>
 
                 <div>
@@ -2722,10 +2775,50 @@ export default function Admin_Faculty_Page() {
 
                 <div>
                   <label className="block text-xs font-bold text-gray-600 mb-2">
-                    Roles
+                    Department
                   </label>
 
-                  <input
+                  <select
+                    value={
+                      facultyForm.departmentId
+                    }
+                    onChange={(e) =>
+                      handleFacultyChange(
+                        "departmentId",
+                        e.target.value
+                      )
+                    }
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
+                  >
+                    <option value="">
+                      Select Department
+                    </option>
+
+                    {departmentList.map(
+                      (department) => (
+                        <option
+                          key={
+                            department._id
+                          }
+                          value={
+                            department._id
+                          }
+                        >
+                          {
+                            department.name
+                          }
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-2">
+                    Role
+                  </label>
+
+                  <select
                     value={
                       facultyForm.roles
                     }
@@ -2735,9 +2828,33 @@ export default function Admin_Faculty_Page() {
                         e.target.value
                       )
                     }
-                    placeholder="professor, dean"
-                    className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-cyan-500"
-                  />
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
+                  >
+                    <option value="">
+                      Select Role
+                    </option>
+                    <option value="faculty">
+                      Faculty
+                    </option>
+                    <option value="assistant professor">
+                      Assistant Professor
+                    </option>
+                    <option value="associate professor">
+                      Associate Professor
+                    </option>
+                    <option value="professor">
+                      Professor
+                    </option>
+                    <option value="head of department">
+                      Head of Department
+                    </option>
+                    <option value="dean">
+                      Dean
+                    </option>
+                    <option value="principal">
+                      Principal
+                    </option>
+                  </select>
                 </div>
               </div>
 

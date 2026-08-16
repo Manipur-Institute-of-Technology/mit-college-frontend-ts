@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient, { API_BASE_URL } from "~/utils/apiClient";
@@ -183,12 +183,7 @@ export default function Admin_Gallery() {
         }
       }
     } catch (error: any) {
-      console.error(
-        "FETCH GALLERY ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -223,7 +218,7 @@ export default function Admin_Gallery() {
       newFolderName.trim();
 
     if (!name) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Folder Name Required",
         text: "Please enter a gallery folder name.",
@@ -246,7 +241,7 @@ export default function Admin_Gallery() {
           }
         );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Gallery Created",
         text:
@@ -261,12 +256,7 @@ export default function Admin_Gallery() {
 
       await fetchGalleries();
     } catch (error: any) {
-      console.error(
-        "CREATE GALLERY ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Creation Failed",
         text:
@@ -294,7 +284,7 @@ export default function Admin_Gallery() {
       folder.galleryName?.toLowerCase() ===
       CAROUSAL_FOLDER.toLowerCase()
     ) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Reserved Gallery",
         text:
@@ -305,7 +295,7 @@ export default function Admin_Gallery() {
     }
 
     const result =
-      await Swal.fire({
+      await showAlert({
         icon: "warning",
         title: "Delete Gallery?",
         text:
@@ -342,7 +332,7 @@ export default function Admin_Gallery() {
         setActiveFolder(null);
       }
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text:
@@ -351,12 +341,7 @@ export default function Admin_Gallery() {
         showConfirmButton: false,
       });
     } catch (error: any) {
-      console.error(
-        "DELETE GALLERY ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Delete Failed",
         text:
@@ -390,7 +375,7 @@ export default function Admin_Gallery() {
     e.preventDefault();
 
     if (!uploadFile) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Image Required",
         text: "Please select an image.",
@@ -400,7 +385,7 @@ export default function Admin_Gallery() {
     }
 
     if (!activeFolder) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Gallery Required",
         text: "Please select a gallery first.",
@@ -438,7 +423,7 @@ export default function Admin_Gallery() {
         }
       );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Uploaded",
         text:
@@ -457,12 +442,7 @@ export default function Admin_Gallery() {
 
       await fetchGalleries();
     } catch (error: any) {
-      console.error(
-        "UPLOAD IMAGE ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Upload Failed",
         text:
@@ -483,7 +463,7 @@ export default function Admin_Gallery() {
     image: GalleryImage
   ) => {
     const result =
-      await Swal.fire({
+      await showAlert({
         icon: "warning",
         title: "Delete Image?",
         text:
@@ -506,7 +486,7 @@ export default function Admin_Gallery() {
         `/image/delete/${image._id}`
       );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text:
@@ -517,12 +497,7 @@ export default function Admin_Gallery() {
 
       await fetchGalleries();
     } catch (error: any) {
-      console.error(
-        "DELETE IMAGE ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Delete Failed",
         text:

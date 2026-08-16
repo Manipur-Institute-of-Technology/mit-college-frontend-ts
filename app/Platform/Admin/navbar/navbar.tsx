@@ -1,8 +1,17 @@
 import { useState } from "react";
-import { ChevronDown, Menu, X, LogOut } from "lucide-react";
+import {
+  ChevronDown,
+  Menu,
+  X,
+  LogOut,
+} from "lucide-react";
 import { NavLink, useNavigate } from "react-router";
-import axios from "axios";
-import Swal from "sweetalert2";
+
+import apiClient from "~/utils/apiClient";
+import {
+  confirmAction,
+  showAlert,
+} from "~/utils/alert_utils";
 
 import { useAuth } from "~/context/AuthContext";
 
@@ -87,6 +96,7 @@ const adminNavigation: AdminNavItem[] = [
 
 export default function AdminNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+
   const [activeDropdown, setActiveDropdown] =
     useState<number | null>(null);
 
@@ -94,6 +104,7 @@ export default function AdminNavbar() {
     useState(false);
 
   const { token } = useAuth();
+
   const navigate = useNavigate();
 
   /*
@@ -128,7 +139,9 @@ export default function AdminNavbar() {
   */
 
   const handleLogout = async () => {
-    if (loggingOut) return;
+    if (loggingOut) {
+      return;
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -136,12 +149,9 @@ export default function AdminNavbar() {
     |--------------------------------------------------------------------------
     */
 
-    const result = await Swal.fire({
+    const confirmed = await confirmAction({
       title: "Logout?",
       text: "Are you sure you want to logout from the admin portal?",
-      icon: "warning",
-
-      showCancelButton: true,
 
       confirmButtonText: "Yes, Logout",
       cancelButtonText: "Cancel",
@@ -150,13 +160,14 @@ export default function AdminNavbar() {
       cancelButtonColor: "#6b7280",
 
       reverseButtons: true,
-
       focusCancel: true,
 
       customClass: {
         popup: "rounded-2xl",
+
         confirmButton:
           "px-5 py-2.5 rounded-lg font-semibold",
+
         cancelButton:
           "px-5 py-2.5 rounded-lg font-semibold",
       },
@@ -168,7 +179,7 @@ export default function AdminNavbar() {
     |--------------------------------------------------------------------------
     */
 
-    if (!result.isConfirmed) {
+    if (!confirmed) {
       return;
     }
 
@@ -178,33 +189,27 @@ export default function AdminNavbar() {
     |--------------------------------------------------------------------------
     | LOGOUT API
     |--------------------------------------------------------------------------
+    |
+    | apiClient automatically:
+    |
+    | 1. Adds API_BASE_URL
+    | 2. Adds /mit prefix
+    | 3. Adds Authorization Bearer token
+    |
+    |--------------------------------------------------------------------------
     */
 
     try {
-      await axios.post(
-        "/api/account/logout",
+      await apiClient.post(
+        "/account/logout",
         {
           email:
-            localStorage.getItem(
-              "email"
-            ),
+            localStorage.getItem("email"),
 
           token:
             token ||
-            localStorage.getItem(
-              "token"
-            ),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${
-              token ||
-              localStorage.getItem(
-                "token"
-              ) ||
-              ""
-            }`,
-          },
+            sessionStorage.getItem("token") ||
+            localStorage.getItem("token"),
         }
       );
 
@@ -214,9 +219,10 @@ export default function AdminNavbar() {
       |--------------------------------------------------------------------------
       */
 
-      await Swal.fire({
+      await showAlert({
         title: "Logged Out",
         text: "You have been logged out successfully.",
+
         icon: "success",
 
         confirmButtonText: "OK",
@@ -227,27 +233,26 @@ export default function AdminNavbar() {
 
         customClass: {
           popup: "rounded-2xl",
+
           confirmButton:
             "px-5 py-2.5 rounded-lg font-semibold",
         },
       });
-    } catch (error) {
-      console.error(
-        "LOGOUT ERROR:",
-        error
-      );
-
+    } catch (error: any) {
       /*
       |--------------------------------------------------------------------------
       | BACKEND LOGOUT FAILED
+      |--------------------------------------------------------------------------
       |
-      | Still clear local authentication.
+      | Even if the backend logout fails, clear the
+      | local authentication session.
+      |
       |--------------------------------------------------------------------------
       */
-
-      await Swal.fire({
+      await showAlert({
         title: "Logged Out",
         text: "Your local admin session has been cleared.",
+
         icon: "info",
 
         confirmButtonText: "Continue",
@@ -258,6 +263,7 @@ export default function AdminNavbar() {
 
         customClass: {
           popup: "rounded-2xl",
+
           confirmButton:
             "px-5 py-2.5 rounded-lg font-semibold",
         },
@@ -285,7 +291,21 @@ export default function AdminNavbar() {
         "user"
       );
 
-      sessionStorage.clear();
+      sessionStorage.removeItem(
+        "token"
+      );
+
+      sessionStorage.removeItem(
+        "email"
+      );
+
+      sessionStorage.removeItem(
+        "role"
+      );
+
+      sessionStorage.removeItem(
+        "user"
+      );
 
       /*
       |--------------------------------------------------------------------------
@@ -317,6 +337,12 @@ export default function AdminNavbar() {
     }
   };
 
+  /*
+  |--------------------------------------------------------------------------
+  | UI
+  |--------------------------------------------------------------------------
+  */
+
   return (
     <nav className="bg-rose-700/90 backdrop-blur-sm shadow-lg rounded-b-lg sticky top-0 z-[999] mb-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -337,8 +363,7 @@ export default function AdminNavbar() {
 
                   onMouseEnter={() => {
                     if (
-                      item.childrens
-                        ?.length
+                      item.childrens?.length
                     ) {
                       setActiveDropdown(
                         index
@@ -348,8 +373,7 @@ export default function AdminNavbar() {
 
                   onMouseLeave={() => {
                     if (
-                      item.childrens
-                        ?.length
+                      item.childrens?.length
                     ) {
                       setActiveDropdown(
                         null

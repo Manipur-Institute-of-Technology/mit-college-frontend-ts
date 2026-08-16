@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient from "~/utils/apiClient";
@@ -84,9 +84,7 @@ export default function Admin_SideAdmin({
 
       setAdmins(list);
     } catch (error: any) {
-      console.error("FETCH SIDE ADMIN ERROR:", error);
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -169,7 +167,7 @@ export default function Admin_SideAdmin({
     e.preventDefault();
 
     if (!name.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Name Required",
         text: "Please enter the administration name.",
@@ -179,7 +177,7 @@ export default function Admin_SideAdmin({
     }
 
     if (!info.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Information Required",
         text: "Please enter administration information.",
@@ -217,7 +215,7 @@ export default function Admin_SideAdmin({
           )
         );
 
-        await Swal.fire({
+        await showAlert({
           icon: "success",
           title: "Updated",
           text: `${getFacilityLabel(
@@ -245,7 +243,7 @@ export default function Admin_SideAdmin({
           created,
         ]);
 
-        await Swal.fire({
+        await showAlert({
           icon: "success",
           title: "Added",
           text: `${getFacilityLabel(
@@ -261,12 +259,7 @@ export default function Admin_SideAdmin({
       // Make sure UI matches DB
       await fetchSideAdmins();
     } catch (error: any) {
-      console.error(
-        "SAVE SIDE ADMIN ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -292,7 +285,7 @@ export default function Admin_SideAdmin({
       return;
     }
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       icon: "warning",
       title: "Delete Administration?",
       text: `Delete ${getFacilityLabel(
@@ -319,7 +312,7 @@ export default function Admin_SideAdmin({
         )
       );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text: `${getFacilityLabel(
@@ -329,12 +322,7 @@ export default function Admin_SideAdmin({
         showConfirmButton: false,
       });
     } catch (error: any) {
-      console.error(
-        "DELETE SIDE ADMIN ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:

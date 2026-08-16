@@ -1,7 +1,7 @@
 import "./Informations.css";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import Swal from "sweetalert2";
+import { confirmExternalLink } from "~/utils/alert_utils";
 import apiClient, { API_BASE_URL } from "~/utils/apiClient";
 
 export type InfoItem = {
@@ -99,11 +99,6 @@ export default function Informations() {
             : []
         );
       } catch (error) {
-        console.error(
-          "FETCH INFORMATION DATA ERROR:",
-          error
-        );
-
         setDownloadData([]);
         setInformationData([]);
         setNewsNotificationData([]);
@@ -218,13 +213,9 @@ const handleExternalClick = (
 
   e.preventDefault();
 
-  Swal.fire({
+  confirmExternalLink({
     title: "Leave this site?",
     text: "You are being redirected to an external website.",
-    icon: "warning",
-
-    showCancelButton: true,
-
     confirmButtonText: "Continue",
     cancelButtonText: "Stay here",
 
@@ -234,8 +225,8 @@ const handleExternalClick = (
     customClass: {
       popup: "rounded-xl",
     },
-  }).then((result) => {
-    if (result.isConfirmed) {
+  }).then((confirmed) => {
+    if (confirmed) {
       window.open(
         href,
         "_blank",

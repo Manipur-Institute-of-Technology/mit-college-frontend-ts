@@ -33,7 +33,6 @@ export default function Hostel_Facility() {
 
         setHostels(activeHostels);
       } catch (error) {
-        console.error("HOSTEL SIDE ADMIN FETCH ERROR:", error);
         setHostels([]);
       } finally {
         setLoading(false);

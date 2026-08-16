@@ -3,7 +3,7 @@ import axios from "axios";
 // Centralized Backend Base URL
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string) 
-  || "https://mit-college-backend.onrender.com" 
+  // || "https://mit-college-backend.onrender.com" 
   || "http://192.168.1.8:3001";
 
 export const API_PREFIX = "/mit";

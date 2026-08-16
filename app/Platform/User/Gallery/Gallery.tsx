@@ -527,11 +527,6 @@ export default function Gallery() {
 
     } catch (error) {
 
-      console.error(
-        "Failed to fetch galleries:",
-        error
-      );
-
       setFolders([]);
 
     } finally {

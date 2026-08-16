@@ -3,6 +3,7 @@ import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient from "~/utils/apiClient";
 import { toast } from "react-toastify";
+import { alertSuccess } from "~/utils/alert_utils";
 
 import {
   Mail,
@@ -19,6 +20,11 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+/**
+ * =========================================================
+ * CONTACT MAIL TYPE
+ * =========================================================
+ */
 export type ContactMail = {
   _id: string;
   name: string;
@@ -28,6 +34,11 @@ export type ContactMail = {
   createdAt?: string;
 };
 
+/**
+ * =========================================================
+ * FACULTY REQUEST TYPE
+ * =========================================================
+ */
 export type FacultyRequest = {
   _id: string;
   email: string;
@@ -61,6 +72,11 @@ export type FacultyRequest = {
   createdAt?: string;
 };
 
+/**
+ * =========================================================
+ * CONFIRMATION ACTION TYPE
+ * =========================================================
+ */
 type ConfirmationAction =
   | {
       type: "deleteMail";
@@ -79,19 +95,32 @@ type ConfirmationAction =
     }
   | null;
 
+/**
+ * =========================================================
+ * COMPONENT
+ * =========================================================
+ */
 export default function Admin_Home() {
   const { token, role } = useAuth();
 
+  /**
+   * =======================================================
+   * STATE
+   * =======================================================
+   */
+
   const [mails, setMails] = useState<ContactMail[]>([]);
-  const [facultyRequests, setFacultyRequests] = useState<
-    FacultyRequest[]
-  >([]);
+
+  const [facultyRequests, setFacultyRequests] =
+    useState<FacultyRequest[]>([]);
 
   const [loading, setLoading] = useState(false);
 
-  // =========================================================
-  // CONFIRMATION MODAL
-  // =========================================================
+  /**
+   * =======================================================
+   * CONFIRMATION MODAL STATE
+   * =======================================================
+   */
 
   const [confirmationAction, setConfirmationAction] =
     useState<ConfirmationAction>(null);
@@ -99,10 +128,11 @@ export default function Admin_Home() {
   const [confirmationLoading, setConfirmationLoading] =
     useState(false);
 
-  // =========================================================
-  // FETCH DASHBOARD DATA
-  // =========================================================
-
+  /**
+   * =========================================================
+   * FETCH DASHBOARD DATA
+   * =========================================================
+   */
   const fetchDashboardData = async () => {
     if (!token || role !== "admin") {
       return;
@@ -110,14 +140,14 @@ export default function Admin_Home() {
 
     setLoading(true);
 
-    // =======================================================
-    // FETCH CONTACT MAILS
-    // =======================================================
+    /**
+     * =======================================================
+     * FETCH CONTACT MAILS
+     * =======================================================
+     */
 
     try {
       const mailRes = await apiClient.get("/mail/GetMails");
-
-      console.log("MAIL RESPONSE:", mailRes.data);
 
       const mailData = Array.isArray(mailRes.data)
         ? mailRes.data
@@ -125,18 +155,6 @@ export default function Admin_Home() {
 
       setMails(mailData);
     } catch (error: any) {
-      console.error("FETCH MAILS ERROR:", error);
-
-      console.error(
-        "MAIL STATUS:",
-        error?.response?.status
-      );
-
-      console.error(
-        "MAIL RESPONSE:",
-        error?.response?.data
-      );
-
       setMails([]);
 
       toast.error(
@@ -146,18 +164,15 @@ export default function Admin_Home() {
       );
     }
 
-    // =======================================================
-    // FETCH FACULTY REQUESTS
-    // =======================================================
+    /**
+     * =======================================================
+     * FETCH FACULTY REQUESTS
+     * =======================================================
+     */
 
     try {
       const reqRes = await apiClient.get(
         "/account/requestfaculty"
-      );
-
-      console.log(
-        "FACULTY REQUEST RESPONSE:",
-        reqRes.data
       );
 
       const reqData =
@@ -167,21 +182,6 @@ export default function Admin_Home() {
 
       setFacultyRequests(reqData);
     } catch (error: any) {
-      console.error(
-        "FETCH FACULTY REQUESTS ERROR:",
-        error
-      );
-
-      console.error(
-        "FACULTY STATUS:",
-        error?.response?.status
-      );
-
-      console.error(
-        "FACULTY RESPONSE:",
-        error?.response?.data
-      );
-
       setFacultyRequests([]);
 
       toast.error(
@@ -194,21 +194,23 @@ export default function Admin_Home() {
     }
   };
 
-  // =========================================================
-  // INITIAL LOAD
-  // =========================================================
-
+  /**
+   * =========================================================
+   * INITIAL LOAD
+   * =========================================================
+   */
   useEffect(() => {
     if (token && role === "admin") {
       fetchDashboardData();
     }
   }, [token, role]);
 
-  // =========================================================
-  // OPEN DELETE MAIL CONFIRMATION
-  // =========================================================
-
-  const handleDeleteMail = async (
+  /**
+   * =========================================================
+   * OPEN DELETE MAIL CONFIRMATION
+   * =========================================================
+   */
+  const handleDeleteMail = (
     id: string,
     name: string
   ) => {
@@ -219,11 +221,12 @@ export default function Admin_Home() {
     });
   };
 
-  // =========================================================
-  // OPEN ACCEPT FACULTY CONFIRMATION
-  // =========================================================
-
-  const handleAcceptFaculty = async (
+  /**
+   * =========================================================
+   * OPEN ACCEPT FACULTY CONFIRMATION
+   * =========================================================
+   */
+  const handleAcceptFaculty = (
     id: string,
     name: string
   ) => {
@@ -234,11 +237,12 @@ export default function Admin_Home() {
     });
   };
 
-  // =========================================================
-  // OPEN DELETE FACULTY CONFIRMATION
-  // =========================================================
-
-  const handleDeleteFaculty = async (
+  /**
+   * =========================================================
+   * OPEN DELETE FACULTY CONFIRMATION
+   * =========================================================
+   */
+  const handleDeleteFaculty = (
     id: string,
     name: string
   ) => {
@@ -249,10 +253,11 @@ export default function Admin_Home() {
     });
   };
 
-  // =========================================================
-  // CLOSE CONFIRMATION MODAL
-  // =========================================================
-
+  /**
+   * =========================================================
+   * CLOSE CONFIRMATION MODAL
+   * =========================================================
+   */
   const closeConfirmationModal = () => {
     if (confirmationLoading) {
       return;
@@ -261,10 +266,11 @@ export default function Admin_Home() {
     setConfirmationAction(null);
   };
 
-  // =========================================================
-  // CONFIRM ACTION
-  // =========================================================
-
+  /**
+   * =========================================================
+   * CONFIRM ACTION
+   * =========================================================
+   */
   const handleConfirmAction = async () => {
     if (!confirmationAction) {
       return;
@@ -273,10 +279,11 @@ export default function Admin_Home() {
     setConfirmationLoading(true);
 
     try {
-      // =====================================================
-      // DELETE CONTACT MAIL
-      // =====================================================
-
+      /**
+       * =====================================================
+       * DELETE CONTACT MAIL
+       * =====================================================
+       */
       if (
         confirmationAction.type ===
         "deleteMail"
@@ -290,21 +297,33 @@ export default function Admin_Home() {
           `/mail/DeleteMail/${id}`
         );
 
+        /**
+         * Remove deleted mail from UI
+         */
         setMails((previous) =>
           previous.filter(
             (mail) => mail._id !== id
           )
         );
 
-        toast.success(
-          `Deleted message from ${name}`
+        /**
+         * Close custom confirmation modal
+         */
+        setConfirmationAction(null);
+
+        /**
+         * Show SweetAlert success message
+         */
+        await alertSuccess(
+          `Message from ${name} has been deleted successfully.`
         );
       }
 
-      // =====================================================
-      // ACCEPT FACULTY
-      // =====================================================
-
+      /**
+       * =====================================================
+       * ACCEPT FACULTY
+       * =====================================================
+       */
       else if (
         confirmationAction.type ===
         "acceptFaculty"
@@ -319,6 +338,9 @@ export default function Admin_Home() {
             `/account/requestfaculty/accept/${id}`
           );
 
+        /**
+         * Remove request from pending list
+         */
         setFacultyRequests(
           (previous) =>
             previous.filter(
@@ -327,24 +349,33 @@ export default function Admin_Home() {
             )
         );
 
-        toast.success(
+        /**
+         * Close custom confirmation modal
+         */
+        setConfirmationAction(null);
+
+        /**
+         * Show SweetAlert success message
+         */
+        await alertSuccess(
           response.data?.message ||
-            response.data?.data
-              ?.message ||
-            "Faculty approved successfully."
+            response.data?.data?.message ||
+            `Faculty registration for ${name} approved successfully.`
         );
       }
 
-      // =====================================================
-      // DELETE FACULTY REQUEST
-      // =====================================================
-
+      /**
+       * =====================================================
+       * DELETE FACULTY REQUEST
+       * =====================================================
+       */
       else if (
         confirmationAction.type ===
         "deleteFaculty"
       ) {
         const {
           id,
+          name,
         } = confirmationAction;
 
         const response =
@@ -352,6 +383,9 @@ export default function Admin_Home() {
             `/account/requestfaculty/delete/${id}`
           );
 
+        /**
+         * Remove request from UI
+         */
         setFacultyRequests(
           (previous) =>
             previous.filter(
@@ -360,37 +394,30 @@ export default function Admin_Home() {
             )
         );
 
-        toast.success(
-          response.data?.data
-            ?.message ||
+        /**
+         * Close custom confirmation modal
+         */
+        setConfirmationAction(null);
+
+        /**
+         * Show SweetAlert success message
+         */
+        await alertSuccess(
+          response.data?.data?.message ||
             response.data?.message ||
-            "Faculty request deleted successfully."
+            `Faculty request for ${name} has been deleted successfully.`
         );
       }
-
-      // Close modal after successful action
-      setConfirmationAction(null);
     } catch (error: any) {
-      console.error(
-        "CONFIRM ACTION ERROR:",
-        error
-      );
-
-      console.error(
-        "STATUS:",
-        error?.response?.status
-      );
-
-      console.error(
-        "RESPONSE:",
-        error?.response?.data
-      );
-
+      /**
+       * =====================================================
+       * BACKEND ERROR MESSAGE
+       * =====================================================
+       */
       const backendMessage =
         error?.response?.data?.error ||
         error?.response?.data?.message ||
-        error?.response?.data?.error
-          ?.message;
+        error?.response?.data?.error?.message;
 
       toast.error(
         backendMessage ||
@@ -401,10 +428,11 @@ export default function Admin_Home() {
     }
   };
 
-  // =========================================================
-  // GET FACULTY NAME
-  // =========================================================
-
+  /**
+   * =========================================================
+   * GET FACULTY NAME
+   * =========================================================
+   */
   const getFacultyName = (
     request: FacultyRequest
   ) => {
@@ -420,10 +448,11 @@ export default function Admin_Home() {
     return name || request.username;
   };
 
-  // =========================================================
-  // FORMAT DATE
-  // =========================================================
-
+  /**
+   * =========================================================
+   * FORMAT DATE
+   * =========================================================
+   */
   const formatDate = (
     date?: string
   ) => {
@@ -451,10 +480,11 @@ export default function Admin_Home() {
     );
   };
 
-  // =========================================================
-  // FORMAT EXPERT FIELDS
-  // =========================================================
-
+  /**
+   * =========================================================
+   * FORMAT EXPERT FIELDS
+   * =========================================================
+   */
   const getExpertFields = (
     fields?: string[]
   ) => {
@@ -468,10 +498,11 @@ export default function Admin_Home() {
     return fields.join(", ");
   };
 
-  // =========================================================
-  // FORMAT ROLES
-  // =========================================================
-
+  /**
+   * =========================================================
+   * FORMAT ROLES
+   * =========================================================
+   */
   const getRoles = (
     roles?: string[]
   ) => {
@@ -485,10 +516,11 @@ export default function Admin_Home() {
     return roles.join(", ");
   };
 
-  // =========================================================
-  // AUTH CHECK
-  // =========================================================
-
+  /**
+   * =========================================================
+   * AUTH CHECK
+   * =========================================================
+   */
   if (!token || role !== "admin") {
     return (
       <div className="p-4 space-y-6">
@@ -497,9 +529,11 @@ export default function Admin_Home() {
     );
   }
 
-  // =========================================================
-  // MODAL TEXT
-  // =========================================================
+  /**
+   * =========================================================
+   * MODAL TEXT
+   * =========================================================
+   */
 
   const getConfirmationTitle = () => {
     if (!confirmationAction) {
@@ -587,10 +621,11 @@ export default function Admin_Home() {
     }
   };
 
-  // =========================================================
-  // RENDER
-  // =========================================================
-
+  /**
+   * =========================================================
+   * RENDER
+   * =========================================================
+   */
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-8">
 
@@ -599,6 +634,7 @@ export default function Admin_Home() {
       ===================================================== */}
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-4 border-gray-200">
+
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900">
             Admin Dashboard Overview
@@ -613,7 +649,23 @@ export default function Admin_Home() {
         <button
           onClick={fetchDashboardData}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 text-gray-700 text-sm font-semibold rounded-xl border border-gray-300 transition-colors"
+          className="
+            flex
+            items-center
+            gap-2
+            px-4
+            py-2
+            bg-gray-100
+            hover:bg-gray-200
+            disabled:opacity-60
+            text-gray-700
+            text-sm
+            font-semibold
+            rounded-xl
+            border
+            border-gray-300
+            transition-colors
+          "
         >
           <RefreshCw
             className={`w-4 h-4 ${
@@ -636,6 +688,7 @@ export default function Admin_Home() {
       <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
 
         <div className="flex items-center justify-between border-b pb-3">
+
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <UserCheck className="w-5 h-5 text-rose-700" />
 
@@ -665,7 +718,13 @@ export default function Admin_Home() {
                 return (
                   <div
                     key={request._id}
-                    className="p-5 bg-gray-50 rounded-2xl border border-gray-200"
+                    className="
+                      p-5
+                      bg-gray-50
+                      rounded-2xl
+                      border
+                      border-gray-200
+                    "
                   >
 
                     <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
@@ -714,7 +773,22 @@ export default function Admin_Home() {
                               facultyName
                             )
                           }
-                          className="flex items-center justify-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+                          className="
+                            flex
+                            items-center
+                            justify-center
+                            gap-1.5
+                            px-4
+                            py-2
+                            bg-green-600
+                            hover:bg-green-700
+                            text-white
+                            text-xs
+                            font-bold
+                            rounded-lg
+                            transition-colors
+                            shadow-sm
+                          "
                         >
                           <Check className="w-4 h-4" />
 
@@ -728,7 +802,22 @@ export default function Admin_Home() {
                               facultyName
                             )
                           }
-                          className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+                          className="
+                            flex
+                            items-center
+                            justify-center
+                            gap-1.5
+                            px-4
+                            py-2
+                            bg-red-600
+                            hover:bg-red-700
+                            text-white
+                            text-xs
+                            font-bold
+                            rounded-lg
+                            transition-colors
+                            shadow-sm
+                          "
                         >
                           <Trash2 className="w-4 h-4" />
 
@@ -736,7 +825,6 @@ export default function Admin_Home() {
                         </button>
 
                       </div>
-
                     </div>
 
                     {/* FACULTY INFORMATION */}
@@ -909,7 +997,19 @@ export default function Admin_Home() {
 
               <div
                 key={msg._id}
-                className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200"
+                className="
+                  flex
+                  flex-col
+                  md:flex-row
+                  md:items-center
+                  justify-between
+                  gap-4
+                  p-4
+                  bg-gray-50
+                  rounded-xl
+                  border
+                  border-gray-200
+                "
               >
 
                 <div className="space-y-1">
@@ -955,7 +1055,26 @@ export default function Admin_Home() {
                       msg.name
                     )
                   }
-                  className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-lg border border-red-200 transition-colors self-start md:self-auto flex-shrink-0"
+                  className="
+                    flex
+                    items-center
+                    justify-center
+                    gap-1.5
+                    px-3
+                    py-1.5
+                    bg-red-50
+                    hover:bg-red-100
+                    text-red-700
+                    text-xs
+                    font-bold
+                    rounded-lg
+                    border
+                    border-red-200
+                    transition-colors
+                    self-start
+                    md:self-auto
+                    flex-shrink-0
+                  "
                 >
                   <Trash2 className="w-4 h-4" />
 
@@ -988,9 +1107,7 @@ export default function Admin_Home() {
             backdrop-blur-sm
             px-4
           "
-          onClick={
-            closeConfirmationModal
-          }
+          onClick={closeConfirmationModal}
         >
           <div
             className="
@@ -1017,6 +1134,7 @@ export default function Admin_Home() {
             ================================================= */}
 
             <div className="flex justify-end">
+
               <button
                 type="button"
                 onClick={
@@ -1040,6 +1158,7 @@ export default function Admin_Home() {
               >
                 <X className="w-5 h-5" />
               </button>
+
             </div>
 
             {/* =================================================
@@ -1064,6 +1183,7 @@ export default function Admin_Home() {
                   }
                 `}
               >
+
                 {confirmationAction.type ===
                 "acceptFaculty" ? (
                   <Check
@@ -1082,6 +1202,7 @@ export default function Admin_Home() {
                     "
                   />
                 )}
+
               </div>
 
             </div>
@@ -1133,6 +1254,7 @@ export default function Admin_Home() {
                 text-center
               "
             >
+
               <p className="text-xs text-gray-500">
                 Selected
               </p>
@@ -1140,6 +1262,7 @@ export default function Admin_Home() {
               <p className="text-sm font-bold text-gray-800 mt-1">
                 {confirmationAction.name}
               </p>
+
             </div>
 
             {/* =================================================

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 
 import {
   UserCheck,
@@ -98,11 +98,6 @@ export default function Admin_Authority() {
 
       setAuthorities(data);
     } catch (error: any) {
-      console.error(
-        "FETCH AUTHORITY ERROR:",
-        error
-      );
-
       toast.error(
         error?.response?.data?.error ||
           error?.response?.data?.message ||
@@ -356,7 +351,7 @@ export default function Admin_Authority() {
          * SUCCESS POPUP
          */
 
-        await Swal.fire({
+        await showAlert({
           title: "Updated!",
           text: `${position} updated successfully.`,
           icon: "success",
@@ -398,7 +393,7 @@ export default function Admin_Authority() {
          * SUCCESS POPUP
          */
 
-        await Swal.fire({
+        await showAlert({
           title: "Created!",
           text: `${position} added successfully.`,
           icon: "success",
@@ -416,16 +411,11 @@ export default function Admin_Authority() {
 
       closeModal();
     } catch (error: any) {
-      console.error(
-        "AUTHORITY SAVE ERROR:",
-        error
-      );
-
       /*
        * ERROR POPUP
        */
 
-      Swal.fire({
+      showAlert({
         title: "Operation Failed",
         text:
           error?.response?.data?.error ||
@@ -458,7 +448,7 @@ export default function Admin_Authority() {
     authName: string,
     authPosition: string
   ) => {
-    Swal.fire({
+    showAlert({
       title: "Delete Authority?",
 
       text: `Are you sure you want to delete the ${authPosition} record for "${authName}"?`,
@@ -538,7 +528,7 @@ export default function Admin_Authority() {
        * SUCCESS POPUP
        */
 
-      await Swal.fire({
+      await showAlert({
         title: "Deleted!",
 
         text: `${authPosition} "${authName}" has been deleted successfully.`,
@@ -555,16 +545,11 @@ export default function Admin_Authority() {
         },
       });
     } catch (error: any) {
-      console.error(
-        "DELETE AUTHORITY ERROR:",
-        error
-      );
-
       /*
        * ERROR POPUP
        */
 
-      Swal.fire({
+      showAlert({
         title: "Delete Failed",
 
         text:

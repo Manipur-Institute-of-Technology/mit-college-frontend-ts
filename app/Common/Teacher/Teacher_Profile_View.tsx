@@ -1,4 +1,5 @@
 import React from "react";
+import { confirmExternalLink } from "~/utils/alert_utils";
 import { FaUserCircle } from "react-icons/fa";
 import { API_BASE_URL } from "~/utils/apiClient";
 
@@ -10,7 +11,7 @@ export type PaperType = {
 
   link?: string;
   url?: string;
-
+  paperUrl?: string;
   title?: string;
   name?: string;
 };
@@ -24,8 +25,8 @@ export type TeacherDataType = {
 
   roles?: any;
 
+  email?: string;
   contactInfo?: {
-    email?: string;
     phone?: string;
   };
 
@@ -55,7 +56,6 @@ const Teacher_Profile_View: React.FC<
   // ======================================================
   // SAFE ROLE CONVERTER
   // ======================================================
-
   const getRolesText = (
     roles: any
   ): string => {
@@ -176,10 +176,81 @@ const Teacher_Profile_View: React.FC<
   ): string => {
 
     return (
-      paper.link ||
-      paper.url ||
+      paper.paperUrl ||
       ""
     );
+  };
+
+  // ======================================================
+  // CHECK EXTERNAL LINK
+  // ======================================================
+
+  const isExternalLink = (
+    href: string
+  ): boolean => {
+
+    try {
+      const url = new URL(
+        href,
+        window.location.origin
+      );
+
+      return (
+        url.origin !==
+        window.location.origin
+      );
+
+    } catch {
+      return false;
+    }
+  };
+
+  // ======================================================
+  // PAPER NAVIGATION
+  // ======================================================
+
+  const handlePaperClick = (
+    e: React.MouseEvent,
+    href: string
+  ) => {
+
+    if (!href || href === "#") {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    // INTERNAL LINK
+
+    if (!isExternalLink(href)) {
+      window.location.href = href;
+      return;
+    }
+
+    // EXTERNAL LINK
+
+    confirmExternalLink({
+      title: "Leave this site?",
+      text: "You are being redirected to an external website.",
+      confirmButtonText: "Continue",
+      cancelButtonText: "Stay here",
+      confirmButtonColor: "#22c55e",
+      cancelButtonColor: "#ef4444",
+      customClass: {
+        popup: "rounded-xl",
+      },
+    }).then((confirmed) => {
+
+      if (confirmed) {
+        window.open(
+          href,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
+
+    });
   };
 
   // ======================================================
@@ -242,9 +313,7 @@ const Teacher_Profile_View: React.FC<
           // EMAIL
           // =================================================
 
-          const email =
-            teacher.contactInfo?.email ||
-            "";
+          const email = teacher?.email || "";
 
           // =================================================
           // PHONE
@@ -797,7 +866,39 @@ const Teacher_Profile_View: React.FC<
                               paper._id ||
                               paperIndex
                             }
-                            className="
+                            onClick={(e) => {
+                              if (paperLink) {
+                                handlePaperClick(
+                                  e,
+                                  paperLink
+                                );
+                              }
+                            }}
+                            role={
+                              paperLink
+                                ? "link"
+                                : undefined
+                            }
+                            tabIndex={
+                              paperLink
+                                ? 0
+                                : undefined
+                            }
+                            onKeyDown={(e) => {
+                              if (
+                                paperLink &&
+                                (e.key === "Enter" ||
+                                  e.key === " ")
+                              ) {
+                                e.preventDefault();
+
+                                handlePaperClick(
+                                  e as any,
+                                  paperLink
+                                );
+                              }
+                            }}
+                            className={`
                               border
                               border-gray-200
                               p-4
@@ -805,7 +906,12 @@ const Teacher_Profile_View: React.FC<
                               bg-gray-50
                               hover:bg-gray-100
                               transition-colors
-                            "
+                              ${
+                                paperLink
+                                  ? "cursor-pointer hover:border-cyan-300"
+                                  : ""
+                              }
+                            `}
                           >
 
                             <div
@@ -838,49 +944,38 @@ const Teacher_Profile_View: React.FC<
 
                               {/* DESCRIPTION */}
 
-                              <p
-                                className="
-                                  font-semibold
-                                  text-gray-900
-                                  text-sm
-                                  leading-relaxed
-                                "
-                              >
-                                {
-                                  paperDescription
-                                }
-                              </p>
+                              <div className="flex-1">
 
-                            </div>
-
-                            {/* LINK */}
-
-                            {paperLink &&
-                              paperLink !== "#" && (
-                                <a
-                                  href={
-                                    paperLink
-                                  }
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) =>
-                                    e.stopPropagation()
-                                  }
+                                <p
                                   className="
-                                    ml-10
-                                    mt-2
-                                    text-cyan-700
-                                    hover:text-cyan-900
-                                    hover:underline
-                                    text-xs
-                                    font-bold
-                                    inline-block
+                                    font-semibold
+                                    text-gray-900
+                                    text-sm
+                                    leading-relaxed
                                   "
                                 >
-                                  View Publication
-                                  Link →
-                                </a>
-                              )}
+                                  {
+                                    paperDescription
+                                  }
+                                </p>
+
+                                {paperLink &&
+                                  paperLink !== "#" && (
+                                    <p
+                                      className="
+                                        mt-2
+                                        text-cyan-700
+                                        text-xs
+                                        font-bold
+                                      "
+                                    >
+                                      Click to view publication →
+                                    </p>
+                                  )}
+
+                              </div>
+
+                            </div>
 
                           </div>
                         );

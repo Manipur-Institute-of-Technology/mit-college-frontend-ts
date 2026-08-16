@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import apiClient, { API_BASE_URL } from "~/utils/apiClient";
-import Teacher_Profile_View from "../../../Common/Teacher/Teacher_Profile_View";
 
 type DepartmentDataProps = {
   name: string;
@@ -14,6 +14,7 @@ type Paper = {
   name?: string;
   description?: string;
   url?: string;
+  paperUrl?: string;
 };
 
 type FacultyMember = {
@@ -24,7 +25,7 @@ type FacultyMember = {
   namePrefix?: string;
 
   roles?: any;
-
+  hod?: boolean;
   departmentId?: any;
   department?: any;
 
@@ -48,12 +49,25 @@ type FacultyMember = {
 export default function DepartmentData({
   name,
 }: DepartmentDataProps) {
+  const navigate = useNavigate();
+
   const [faculty, setFaculty] = useState<FacultyMember[]>([]);
 
-  const [selectedTeacher, setSelectedTeacher] =
-    useState<FacultyMember | null>(null);
-
   const [loading, setLoading] = useState(true);
+
+  // ======================================================
+  // FACULTY URL SLUG
+  // ======================================================
+
+  const getFacultySlug = (
+    teacher: FacultyMember
+  ): string => {
+    return `${teacher.firstName || ""}_${teacher.lastName || ""}`
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/_+/g, "_")
+      .toLowerCase();
+  };
 
   // ======================================================
   // FETCH DEPARTMENT FACULTY
@@ -75,20 +89,10 @@ export default function DepartmentData({
       try {
         setLoading(true);
 
-        console.log(
-          "Fetching department faculty:",
-          name
-        );
-
         const response = await apiClient.get(
           `/faculty/department/${encodeURIComponent(
             name.trim()
           )}`
-        );
-
-        console.log(
-          "Faculty API response:",
-          response.data
         );
 
         const facultyData =
@@ -102,16 +106,6 @@ export default function DepartmentData({
           );
         }
       } catch (error: any) {
-        console.error(
-          "Failed to fetch department faculty:",
-          error
-        );
-
-        console.error(
-          "API error response:",
-          error?.response?.data
-        );
-
         if (mounted) {
           setFaculty([]);
         }
@@ -194,48 +188,6 @@ export default function DepartmentData({
         <div className="text-center py-12 text-gray-500 font-semibold">
           Loading faculty list...
         </div>
-      </div>
-    );
-  }
-
-  // ======================================================
-  // SELECTED TEACHER
-  // ======================================================
-
-  if (selectedTeacher) {
-    return (
-      <div className="p-6 max-w-6xl mx-auto">
-
-        {/* BACK BUTTON */}
-
-        <button
-          type="button"
-          onClick={() => setSelectedTeacher(null)}
-          className="
-            mb-5
-            inline-flex
-            items-center
-            gap-2
-            px-4
-            py-2
-            rounded-lg
-            bg-gray-100
-            hover:bg-gray-200
-            text-gray-700
-            font-semibold
-            text-sm
-            transition
-          "
-        >
-          ← Back to Faculty List
-        </button>
-
-        {/* TEACHER PROFILE */}
-
-        <Teacher_Profile_View
-          teachers={[selectedTeacher]}
-        />
-
       </div>
     );
   }
@@ -334,17 +286,6 @@ export default function DepartmentData({
             );
 
           // =================================================
-          // HOD
-          // =================================================
-
-          const rolesLower =
-            rolesText.toLowerCase();
-
-          const isHOD =
-            rolesLower.includes("head") ||
-            rolesLower.includes("hod");
-
-          // =================================================
           // PHOTO
           // =================================================
 
@@ -382,14 +323,25 @@ export default function DepartmentData({
               ? teacher.papers.length
               : 0;
 
+          // =================================================
+          // FACULTY URL
+          // =================================================
+
+          const facultySlug =
+            getFacultySlug(
+              teacher
+            );
+
           return (
             <button
               type="button"
               key={teacher._id}
               onClick={() =>
-                setSelectedTeacher(
-                  teacher
-                )
+                navigate(`/faculty/${facultySlug}`, {
+                  state: {
+                    teacher,
+                  },
+                })
               }
               className="
                 relative
@@ -409,6 +361,7 @@ export default function DepartmentData({
                 border-gray-200
                 hover:border-rose-200
                 cursor-pointer
+                overflow-hidden
               "
             >
 
@@ -416,19 +369,24 @@ export default function DepartmentData({
                   HOD BADGE
               ========================================== */}
 
-              {isHOD && (
+              {teacher.hod === true && (
                 <div
                   className="
                     absolute
-                    top-0
-                    right-0
+                    top-5
+                    right-[-34px]
+                    z-20
+                    w-32
+                    py-1.5
                     bg-rose-700
                     text-white
                     text-xs
-                    px-3
-                    py-1
-                    rounded-bl-xl
-                    font-bold
+                    font-extrabold
+                    text-center
+                    tracking-widest
+                    shadow-md
+                    rotate-45
+                    pointer-events-none
                   "
                 >
                   HOD

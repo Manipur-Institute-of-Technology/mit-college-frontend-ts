@@ -7,7 +7,7 @@ import {
 import apiClient from "~/utils/apiClient";
 import Informations from "~/Common/Informations/Informations";
 
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 
 import {
   Users,
@@ -120,12 +120,7 @@ export default function StudentList() {
 
         } catch (error) {
 
-          console.error(
-            "Failed to fetch student lists:",
-            error
-          );
-
-          Swal.fire({
+          showAlert({
             title:
               "Unable to load student list",
 
@@ -359,7 +354,7 @@ export default function StudentList() {
 
     if (!filepath) {
 
-      Swal.fire({
+      showAlert({
         title: "Notice",
 
         text:
@@ -381,7 +376,7 @@ export default function StudentList() {
         ? filepath
         : `/${filepath}`;
 
-    Swal.fire({
+    showAlert({
 
       title:
         "Download Student List?",

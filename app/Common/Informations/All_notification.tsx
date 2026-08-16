@@ -329,11 +329,6 @@ export default function AllNotifications() {
                 "/notification/inactive"
               )
               .catch((error) => {
-                console.warn(
-                  "Inactive notification endpoint unavailable:",
-                  error
-                );
-
                 return null;
               });
 
@@ -490,11 +485,6 @@ export default function AllNotifications() {
             sorted
           );
         } catch (error) {
-          console.error(
-            "FETCH ALL NOTIFICATIONS ERROR:",
-            error
-          );
-
           /*
            * At least retain data sent
            * from Informations.

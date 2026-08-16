@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaEye,
@@ -11,6 +12,7 @@ import {
   FaKey,
   FaLock,
   FaCheckCircle,
+  FaHome,
 } from "react-icons/fa";
 
 import { useAuth } from "~/context/AuthContext";
@@ -54,10 +56,9 @@ type UserFormData = {
     | "other"
     | "prefer not to say";
 
-  startDate: string;
+  dob: string;
 
   departmentName: string;
-  hod: boolean;
   highestDegree: string;
   expertFields: string;
   facultyRole: string;
@@ -109,10 +110,9 @@ const initialFormData: UserFormData = {
 
   sex: "prefer not to say",
 
-  startDate: "",
+  dob: "",
 
   departmentName: "",
-  hod: false,
   highestDegree: "",
   expertFields: "",
   facultyRole: "professor",
@@ -124,11 +124,33 @@ const initialFormData: UserFormData = {
 export default function SignIn_SignUP({
   role,
 }: Props) {
+  // =========================================================
+  // NAVIGATION
+  // =========================================================
+
+  const navigate = useNavigate();
+
+  // =========================================================
+  // AUTH
+  // =========================================================
+
   const {
     setToken,
     setRole,
     setUser,
   } = useAuth();
+
+  const getMinimumDOB = () => {
+    const today = new Date();
+
+    today.setFullYear(
+      today.getFullYear() - 24
+    );
+
+    return today
+      .toISOString()
+      .split("T")[0];
+  };
 
   // =========================================================
   // MODE
@@ -229,27 +251,14 @@ export default function SignIn_SignUP({
     setForgotConfirmPassword,
   ] = useState("");
 
-  /*
-   * otpId returned by:
-   *
-   * POST /account/forgotpassword
-   */
   const [forgotOtpId, setForgotOtpId] =
     useState("");
 
-  /*
-   * Verified JWT returned by:
-   *
-   * POST /account/forgotpassword/verify/otp
-   */
   const [
     forgotVerifiedToken,
     setForgotVerifiedToken,
   ] = useState("");
 
-  /*
-   * Countdown for OTP resend.
-   */
   const [
     resendCountdown,
     setResendCountdown,
@@ -330,11 +339,6 @@ export default function SignIn_SignUP({
             responseData?.departments || []
           );
         } catch (error) {
-          console.error(
-            "Failed to load departments:",
-            error
-          );
-
           setMessage(
             "Unable to load departments."
           );
@@ -525,11 +529,6 @@ export default function SignIn_SignUP({
         "Signed in successfully!"
       );
     } catch (error: any) {
-      console.error(
-        "LOGIN ERROR:",
-        error
-      );
-
       const backendError =
         error.response?.data
           ?.error;
@@ -643,9 +642,9 @@ export default function SignIn_SignUP({
       return;
     }
 
-    if (!formData.startDate) {
+    if (!formData.dob) {
       setMessage(
-        "Start date is required."
+        "Date of birth is required."
       );
 
       return;
@@ -768,8 +767,8 @@ export default function SignIn_SignUP({
       );
 
       payload.append(
-        "startDate",
-        formData.startDate
+        "dob",
+        formData.dob
       );
 
       payload.append(
@@ -779,7 +778,7 @@ export default function SignIn_SignUP({
 
       payload.append(
         "hod",
-        String(formData.hod)
+        "false"
       );
 
       payload.append(
@@ -822,11 +821,6 @@ export default function SignIn_SignUP({
 
       setIsSignUp(false);
     } catch (error: any) {
-      console.error(
-        "FACULTY SIGNUP ERROR:",
-        error
-      );
-
       const backendError =
         error.response?.data
           ?.error;
@@ -927,9 +921,6 @@ export default function SignIn_SignUP({
         return;
       }
 
-      /*
-       * Simple frontend email validation.
-       */
       const emailRegex =
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -944,19 +935,6 @@ export default function SignIn_SignUP({
       setForgotLoading(true);
 
       try {
-        /*
-         * IMPORTANT:
-         *
-         * Backend route:
-         * POST /account/forgotpassword
-         *
-         * Body:
-         * {
-         *   email,
-         *   accountType
-         * }
-         */
-
         const response =
           await apiClient.post(
             "/account/forgotpassword",
@@ -987,19 +965,8 @@ export default function SignIn_SignUP({
             "OTP has been sent to your registered email."
         );
 
-        /*
-         * Start resend countdown.
-         *
-         * Change this value if you want
-         * a different resend interval.
-         */
         setResendCountdown(60);
       } catch (error: any) {
-        console.error(
-          "SEND FORGOT PASSWORD OTP ERROR:",
-          error
-        );
-
         const backendError =
           error.response?.data
             ?.error;
@@ -1081,11 +1048,6 @@ export default function SignIn_SignUP({
           "OTP verified successfully. You can now create a new password."
         );
       } catch (error: any) {
-        console.error(
-          "VERIFY OTP ERROR:",
-          error
-        );
-
         const backendError =
           error.response?.data
             ?.error;
@@ -1150,19 +1112,6 @@ export default function SignIn_SignUP({
       setForgotLoading(true);
 
       try {
-        /*
-         * The backend calls this variable:
-         *
-         * req.body.otpToken
-         *
-         * But at this stage it is NOT the
-         * six-digit OTP anymore.
-         *
-         * It is the JWT returned from:
-         *
-         * /forgotpassword/verify/otp
-         */
-
         const response =
           await apiClient.post(
             "/account/forgotpassword/otp",
@@ -1184,9 +1133,6 @@ export default function SignIn_SignUP({
             "Password changed successfully."
         );
 
-        /*
-         * Close modal after a short delay.
-         */
         window.setTimeout(() => {
           closeForgotPassword();
 
@@ -1205,11 +1151,6 @@ export default function SignIn_SignUP({
           );
         }, 1200);
       } catch (error: any) {
-        console.error(
-          "RESET PASSWORD ERROR:",
-          error
-        );
-
         const backendError =
           error.response?.data
             ?.error;
@@ -1524,9 +1465,7 @@ export default function SignIn_SignUP({
               <AnimatePresence
                 mode="wait"
               >
-                {/* =================================================
-                    EMAIL STEP
-                ================================================= */}
+                {/* EMAIL STEP */}
 
                 {forgotStep ===
                   "email" && (
@@ -1598,9 +1537,7 @@ export default function SignIn_SignUP({
                   </motion.div>
                 )}
 
-                {/* =================================================
-                    OTP STEP
-                ================================================= */}
+                {/* OTP STEP */}
 
                 {forgotStep ===
                   "otp" && (
@@ -1739,9 +1676,7 @@ export default function SignIn_SignUP({
                   </motion.div>
                 )}
 
-                {/* =================================================
-                    PASSWORD STEP
-                ================================================= */}
+                {/* PASSWORD STEP */}
 
                 {forgotStep ===
                   "password" && (
@@ -1919,7 +1854,24 @@ export default function SignIn_SignUP({
             duration: 0.3,
           }}
         >
-          {/* HEADER */}
+          {/* =====================================================
+              HOME BUTTON
+          ===================================================== */}
+
+          <div className="flex justify-start mb-5">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-xl transition"
+            >
+              <FaHome />
+              Home
+            </button>
+          </div>
+
+          {/* =====================================================
+              HEADER
+          ===================================================== */}
 
           <div className="text-center mb-6">
             <span className="px-3 py-1 bg-cyan-100 text-cyan-800 text-xs font-bold uppercase rounded-full tracking-wider">
@@ -1938,7 +1890,9 @@ export default function SignIn_SignUP({
             </h2>
           </div>
 
-          {/* ERROR */}
+          {/* =====================================================
+              ERROR
+          ===================================================== */}
 
           {message && (
             <div className="p-3 mb-4 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center">
@@ -1946,7 +1900,9 @@ export default function SignIn_SignUP({
             </div>
           )}
 
-          {/* SUCCESS */}
+          {/* =====================================================
+              SUCCESS
+          ===================================================== */}
 
           {successMsg && (
             <div className="p-3 mb-4 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-xl text-center">
@@ -2074,8 +2030,6 @@ export default function SignIn_SignUP({
                         Password
                       </label>
 
-                      {/* FORGOT PASSWORD */}
-
                       <button
                         type="button"
                         onClick={
@@ -2138,9 +2092,6 @@ export default function SignIn_SignUP({
                         <label className="block text-xs font-bold text-gray-700">
                           Security Code
                         </label>
-
-                        {/* Faculty security-code login can
-                            also use forgot password */}
 
                         <button
                           type="button"
@@ -2230,7 +2181,9 @@ export default function SignIn_SignUP({
               >
                 {renderStepHeader()}
 
-                {/* STEP 1 */}
+                {/* =================================================
+                    STEP 1
+                ================================================= */}
 
                 {signupStep ===
                   1 && (
@@ -2378,7 +2331,9 @@ export default function SignIn_SignUP({
                   </div>
                 )}
 
-                {/* STEP 2 */}
+                {/* =================================================
+                    STEP 2
+                ================================================= */}
 
                 {signupStep ===
                   2 && (
@@ -2617,27 +2572,34 @@ export default function SignIn_SignUP({
                       </select>
                     </div>
 
-                    {/* START DATE */}
+                    {/* DATE OF BIRTH */}
 
                     <div>
                       <label className="block text-xs font-bold text-gray-700 mb-1">
-                        Start Date *
+                        Date of Birth *
                       </label>
 
                       <input
-                        name="startDate"
+                        name="dob"
                         type="date"
                         value={
-                          formData.startDate
+                          formData.dob
                         }
                         onChange={
                           handleChange
+                        }
+                        max={
+                          getMinimumDOB()
                         }
                         required
                         className={
                           inputClass
                         }
                       />
+
+                      <p className="text-[10px] text-gray-400 mt-1">
+                        You must be at least 24 years old.
+                      </p>
                     </div>
 
                     {/* NAVIGATION */}
@@ -2671,7 +2633,9 @@ export default function SignIn_SignUP({
                   </div>
                 )}
 
-                {/* STEP 3 */}
+                {/* =================================================
+                    STEP 3
+                ================================================= */}
 
                 {signupStep ===
                   3 && (
@@ -2730,27 +2694,6 @@ export default function SignIn_SignUP({
                         )}
                       </select>
                     </div>
-
-                    {/* HOD */}
-
-                    <label className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="hod"
-                        checked={
-                          formData.hod
-                        }
-                        onChange={
-                          handleChange
-                        }
-                        className="w-4 h-4"
-                      />
-
-                      <span className="text-sm font-semibold text-gray-700">
-                        Applying as Head of
-                        Department
-                      </span>
-                    </label>
 
                     {/* DEGREE */}
 

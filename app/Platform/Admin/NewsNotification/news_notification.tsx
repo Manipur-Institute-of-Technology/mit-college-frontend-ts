@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+
+import Swal, {
+  type SweetAlertOptions,
+} from "sweetalert2";
 
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
@@ -23,8 +26,58 @@ import {
   CheckCircle2,
   Archive,
   Loader2,
-  TriangleAlert,
 } from "lucide-react";
+
+/* ==========================================================================
+   SWEET ALERT CONFIGURATION
+========================================================================== */
+
+const SWEET_ALERT_COLOR = "#be123c";
+
+/* ==========================================================================
+   SWEET ALERT HELPERS
+========================================================================== */
+
+const showAlert = (
+  options: SweetAlertOptions
+) =>
+  Swal.fire({
+    confirmButtonColor: SWEET_ALERT_COLOR,
+    ...options,
+  });
+
+const showSuccessAlert = (
+  title: string,
+  text?: string
+) =>
+  showAlert({
+    icon: "success",
+    title,
+    text,
+  });
+
+const showErrorAlert = (
+  title: string,
+  text?: string
+) =>
+  showAlert({
+    icon: "error",
+    title,
+    text,
+  });
+
+const showLoadingAlert = (
+  title: string
+) =>
+  Swal.fire({
+    title,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
 /* ==========================================================================
    TYPES
@@ -41,12 +94,10 @@ export type ResourceItem = {
   title: string;
   fileName: string;
 
-  // Only notification has type
   type?: CategoryType;
 
   submittedBy?: any;
 
-  // Only notification has active_date
   active_date?: string;
 
   createdAt?: string;
@@ -63,11 +114,6 @@ type NotificationFilter =
   | "inactive";
 
 type EditItem = ResourceItem | null;
-
-type DeleteTarget = {
-  item: ResourceItem;
-  tab: ActiveBlockTab;
-} | null;
 
 /* ==========================================================================
    CATEGORY OPTIONS
@@ -107,14 +153,21 @@ export default function Admin_News_Notification() {
   ------------------------------------------------------------------------ */
 
   const [activeTab, setActiveTab] =
-    useState<ActiveBlockTab>("notifications");
+    useState<ActiveBlockTab>(
+      "notifications"
+    );
 
   /* ------------------------------------------------------------------------
      NOTIFICATION FILTER
   ------------------------------------------------------------------------ */
 
-  const [notificationFilter, setNotificationFilter] =
-    useState<NotificationFilter>("active");
+  const [
+    notificationFilter,
+    setNotificationFilter,
+  ] =
+    useState<NotificationFilter>(
+      "active"
+    );
 
   /* ------------------------------------------------------------------------
      DATA
@@ -123,8 +176,10 @@ export default function Admin_News_Notification() {
   const [notifications, setNotifications] =
     useState<ResourceItem[]>([]);
 
-  const [inactiveNotifications, setInactiveNotifications] =
-    useState<ResourceItem[]>([]);
+  const [
+    inactiveNotifications,
+    setInactiveNotifications,
+  ] = useState<ResourceItem[]>([]);
 
   const [informations, setInformations] =
     useState<ResourceItem[]>([]);
@@ -153,16 +208,6 @@ export default function Admin_News_Notification() {
     useState<EditItem>(null);
 
   /* ------------------------------------------------------------------------
-     DELETE CONFIRMATION POPUP
-  ------------------------------------------------------------------------ */
-
-  const [deleteTarget, setDeleteTarget] =
-    useState<DeleteTarget>(null);
-
-  const [isDeleting, setIsDeleting] =
-    useState(false);
-
-  /* ------------------------------------------------------------------------
      FORM
   ------------------------------------------------------------------------ */
 
@@ -170,7 +215,9 @@ export default function Admin_News_Notification() {
     useState("");
 
   const [formType, setFormType] =
-    useState<CategoryType>("miscellaneous");
+    useState<CategoryType>(
+      "miscellaneous"
+    );
 
   const [activeDate, setActiveDate] =
     useState("");
@@ -196,18 +243,22 @@ export default function Admin_News_Notification() {
         downloadResponse,
       ] = await Promise.all([
         apiClient.get("/notification"),
-        apiClient.get("/notification/inactive"),
+        apiClient.get(
+          "/notification/inactive"
+        ),
         apiClient.get("/information"),
         apiClient.get("/download"),
       ]);
 
       const activeNotificationData =
-        activeNotificationResponse.data?.data ??
+        activeNotificationResponse.data
+          ?.data ??
         activeNotificationResponse.data ??
         [];
 
       const inactiveNotificationData =
-        inactiveNotificationResponse.data?.data ??
+        inactiveNotificationResponse.data
+          ?.data ??
         inactiveNotificationResponse.data ??
         [];
 
@@ -222,19 +273,25 @@ export default function Admin_News_Notification() {
         [];
 
       setNotifications(
-        Array.isArray(activeNotificationData)
+        Array.isArray(
+          activeNotificationData
+        )
           ? activeNotificationData
           : []
       );
 
       setInactiveNotifications(
-        Array.isArray(inactiveNotificationData)
+        Array.isArray(
+          inactiveNotificationData
+        )
           ? inactiveNotificationData
           : []
       );
 
       setInformations(
-        Array.isArray(informationData)
+        Array.isArray(
+          informationData
+        )
           ? informationData
           : []
       );
@@ -245,12 +302,8 @@ export default function Admin_News_Notification() {
           : []
       );
     } catch (error) {
-      console.error(
-        "FETCH ADMIN NEWS DATA ERROR:",
-        error
-      );
-
-      toast.error(
+      showErrorAlert(
+        "Failed to Load Data",
         "Failed to load data from backend."
       );
     } finally {
@@ -299,15 +352,20 @@ export default function Admin_News_Notification() {
   const formatDateTimeLocal = (
     value?: string
   ) => {
-    if (!value) return "";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
+    if (!value) {
       return "";
     }
 
-    const year = date.getFullYear();
+    const date = new Date(value);
+
+    if (
+      Number.isNaN(date.getTime())
+    ) {
+      return "";
+    }
+
+    const year =
+      date.getFullYear();
 
     const month = String(
       date.getMonth() + 1
@@ -339,14 +397,17 @@ export default function Admin_News_Notification() {
 
     setEditingItem(item);
 
-    setFormTitle(item.title || "");
+    setFormTitle(
+      item.title || ""
+    );
 
-    /*
-     * Category exists ONLY for notifications.
-     */
-    if (activeTab === "notifications") {
+    if (
+      activeTab ===
+      "notifications"
+    ) {
       setFormType(
-        item.type || "miscellaneous"
+        item.type ||
+          "miscellaneous"
       );
 
       setActiveDate(
@@ -355,11 +416,10 @@ export default function Admin_News_Notification() {
         )
       );
     } else {
-      /*
-       * Information and Download
-       * do NOT have category or active date.
-       */
-      setFormType("miscellaneous");
+      setFormType(
+        "miscellaneous"
+      );
+
       setActiveDate("");
     }
 
@@ -373,7 +433,9 @@ export default function Admin_News_Notification() {
   ========================================================================== */
 
   const closeModal = () => {
-    if (isSubmitting) return;
+    if (isSubmitting) {
+      return;
+    }
 
     setShowModal(false);
 
@@ -394,9 +456,13 @@ export default function Admin_News_Notification() {
 
     let folder = "";
 
-    if (tab === "notifications") {
+    if (
+      tab === "notifications"
+    ) {
       folder = "notifications";
-    } else if (tab === "information") {
+    } else if (
+      tab === "information"
+    ) {
       folder = "informations";
     } else {
       folder = "downloads";
@@ -419,7 +485,8 @@ export default function Admin_News_Notification() {
     ---------------------------------------------------------------------- */
 
     if (!formTitle.trim()) {
-      toast.error(
+      await showErrorAlert(
+        "Title Required",
         "Please enter a title."
       );
 
@@ -430,8 +497,12 @@ export default function Admin_News_Notification() {
        FILE VALIDATION
     ---------------------------------------------------------------------- */
 
-    if (!isEditMode && !selectedFile) {
-      toast.error(
+    if (
+      !isEditMode &&
+      !selectedFile
+    ) {
+      await showErrorAlert(
+        "File Required",
         "Please select a file."
       );
 
@@ -443,10 +514,12 @@ export default function Admin_News_Notification() {
     ---------------------------------------------------------------------- */
 
     if (
-      activeTab === "notifications" &&
+      activeTab ===
+        "notifications" &&
       !activeDate
     ) {
-      toast.error(
+      await showErrorAlert(
+        "Active Date Required",
         "Please select an active date."
       );
 
@@ -456,17 +529,22 @@ export default function Admin_News_Notification() {
     try {
       setIsSubmitting(true);
 
-      const formData = new FormData();
+      const formData =
+        new FormData();
 
       formData.append(
         "title",
         formTitle.trim()
       );
 
-      /*
-       * ONLY NOTIFICATIONS HAVE CATEGORY
-       */
-      if (activeTab === "notifications") {
+      /* --------------------------------------------------------------------
+         NOTIFICATIONS ONLY
+      -------------------------------------------------------------------- */
+
+      if (
+        activeTab ===
+        "notifications"
+      ) {
         formData.append(
           "type",
           formType
@@ -478,10 +556,10 @@ export default function Admin_News_Notification() {
         );
       }
 
-      /*
-       * File is optional during edit.
-       * If no file is selected, backend keeps old file.
-       */
+      /* --------------------------------------------------------------------
+         FILE
+      -------------------------------------------------------------------- */
+
       if (selectedFile) {
         formData.append(
           "file",
@@ -495,12 +573,16 @@ export default function Admin_News_Notification() {
          ENDPOINT
       -------------------------------------------------------------------- */
 
-      if (activeTab === "notifications") {
+      if (
+        activeTab ===
+        "notifications"
+      ) {
         endpoint = isEditMode
           ? `/notification/update/${editingItem?._id}`
           : "/notification/add";
       } else if (
-        activeTab === "information"
+        activeTab ===
+        "information"
       ) {
         endpoint = isEditMode
           ? `/information/update/${editingItem?._id}`
@@ -510,6 +592,16 @@ export default function Admin_News_Notification() {
           ? `/download/update/${editingItem?._id}`
           : "/download/add";
       }
+
+      /* --------------------------------------------------------------------
+         LOADING ALERT
+      -------------------------------------------------------------------- */
+
+      showLoadingAlert(
+        isEditMode
+          ? "Updating..."
+          : "Adding..."
+      );
 
       /* --------------------------------------------------------------------
          API CALL
@@ -527,26 +619,51 @@ export default function Admin_News_Notification() {
         );
       }
 
-      toast.success(
-        isEditMode
-          ? "Item updated successfully."
-          : "Item added successfully."
-      );
+      /* --------------------------------------------------------------------
+         CLOSE LOADING ALERT
+      -------------------------------------------------------------------- */
+
+      Swal.close();
+
+      /* --------------------------------------------------------------------
+         CLOSE FORM
+      -------------------------------------------------------------------- */
 
       setShowModal(false);
 
       resetForm();
 
-      await fetchData();
-    } catch (error: any) {
-      console.error(
-        "SUBMIT ERROR:",
-        error
-      );
+      /* --------------------------------------------------------------------
+         REFRESH DATA
+      -------------------------------------------------------------------- */
 
-      toast.error(
-        error?.response?.data?.error ||
-          "Operation failed."
+      await fetchData();
+
+      /* --------------------------------------------------------------------
+         SUCCESS ALERT
+      -------------------------------------------------------------------- */
+
+      await showSuccessAlert(
+        isEditMode
+          ? "Updated Successfully"
+          : "Added Successfully",
+        isEditMode
+          ? "The item has been updated successfully."
+          : "The item has been added successfully."
+      );
+    } catch (error: any) {
+      Swal.close();
+
+      const backendMessage =
+        error?.response?.data
+          ?.error ||
+        error?.response?.data
+          ?.message ||
+        "Operation failed.";
+
+      await showErrorAlert(
+        "Operation Failed",
+        backendMessage
       );
     } finally {
       setIsSubmitting(false);
@@ -554,78 +671,171 @@ export default function Admin_News_Notification() {
   };
 
   /* ==========================================================================
-     OPEN DELETE POPUP
-  ========================================================================== */
-
-  const openDeletePopup = (
-    item: ResourceItem
-  ) => {
-    setDeleteTarget({
-      item,
-      tab: activeTab,
-    });
-  };
-
-  /* ==========================================================================
-     CLOSE DELETE POPUP
-  ========================================================================== */
-
-  const closeDeletePopup = () => {
-    if (isDeleting) return;
-
-    setDeleteTarget(null);
-  };
-
-  /* ==========================================================================
      DELETE ITEM
   ========================================================================== */
 
-  const confirmDelete = async () => {
-    if (!deleteTarget) {
+  const confirmDelete = async (
+    item: ResourceItem
+  ) => {
+    /* ----------------------------------------------------------------------
+       SWEET ALERT CONFIRMATION
+    ---------------------------------------------------------------------- */
+
+    const result =
+      await showAlert({
+        icon: "warning",
+
+        title: "Delete Item?",
+
+        html: `
+          <div style="text-align:center;">
+            <p style="margin-bottom:12px;">
+              Are you sure you want to permanently delete this item?
+            </p>
+
+            <div style="
+              background:#f9fafb;
+              border:1px solid #e5e7eb;
+              border-radius:12px;
+              padding:12px;
+              margin-top:12px;
+              text-align:left;
+            ">
+              <div style="
+                font-size:11px;
+                font-weight:700;
+                text-transform:uppercase;
+                color:#9ca3af;
+                margin-bottom:4px;
+              ">
+                Item
+              </div>
+
+              <div style="
+                font-size:14px;
+                font-weight:600;
+                color:#111827;
+                word-break:break-word;
+              ">
+                ${item.title}
+              </div>
+
+              ${
+                item.fileName
+                  ? `
+                    <div style="
+                      font-size:12px;
+                      color:#6b7280;
+                      margin-top:6px;
+                      word-break:break-all;
+                    ">
+                      File: ${item.fileName}
+                    </div>
+                  `
+                  : ""
+              }
+            </div>
+
+            <p style="
+              margin-top:14px;
+              font-size:12px;
+              color:#6b7280;
+            ">
+              This action cannot be undone.
+            </p>
+          </div>
+        `,
+
+        showCancelButton: true,
+
+        confirmButtonText:
+          "Yes, Delete",
+
+        cancelButtonText:
+          "Cancel",
+
+        confirmButtonColor:
+          SWEET_ALERT_COLOR,
+
+        cancelButtonColor:
+          SWEET_ALERT_COLOR,
+
+        customClass: {
+          popup: "rounded-xl",
+        },
+      });
+
+    if (!result.isConfirmed) {
       return;
     }
 
+    /* ----------------------------------------------------------------------
+       DELETE
+    ---------------------------------------------------------------------- */
+
     try {
-      setIsDeleting(true);
-
-      const {
-        item,
-        tab,
-      } = deleteTarget;
-
       let endpoint = "";
 
-      if (tab === "notifications") {
+      if (
+        activeTab ===
+        "notifications"
+      ) {
         endpoint = `/notification/delete/${item._id}`;
       } else if (
-        tab === "information"
+        activeTab ===
+        "information"
       ) {
         endpoint = `/information/delete/${item._id}`;
       } else {
         endpoint = `/download/delete/${item._id}`;
       }
 
-      await apiClient.delete(endpoint);
+      /* --------------------------------------------------------------------
+         LOADING
+      -------------------------------------------------------------------- */
 
-      toast.success(
-        `"${item.title}" deleted successfully.`
+      showLoadingAlert(
+        "Deleting..."
       );
 
-      setDeleteTarget(null);
+      await apiClient.delete(
+        endpoint
+      );
+
+      /* --------------------------------------------------------------------
+         CLOSE LOADING
+      -------------------------------------------------------------------- */
+
+      Swal.close();
+
+      /* --------------------------------------------------------------------
+         REFRESH
+      -------------------------------------------------------------------- */
 
       await fetchData();
-    } catch (error: any) {
-      console.error(
-        "DELETE ERROR:",
-        error
-      );
 
-      toast.error(
-        error?.response?.data?.error ||
-          "Failed to delete item."
+      /* --------------------------------------------------------------------
+         SUCCESS
+      -------------------------------------------------------------------- */
+
+      await showSuccessAlert(
+        "Deleted Successfully",
+        `"${item.title}" has been deleted successfully.`
       );
-    } finally {
-      setIsDeleting(false);
+    } catch (error: any) {
+      Swal.close();
+
+      const backendMessage =
+        error?.response?.data
+          ?.error ||
+        error?.response?.data
+          ?.message ||
+        "Failed to delete item.";
+
+      await showErrorAlert(
+        "Delete Failed",
+        backendMessage
+      );
     }
   };
 
@@ -633,38 +843,48 @@ export default function Admin_News_Notification() {
      CURRENT LIST
   ========================================================================== */
 
-  const currentList = useMemo(() => {
-    if (activeTab === "notifications") {
-      return notificationFilter ===
-        "active"
-        ? notifications
-        : inactiveNotifications;
-    }
+  const currentList =
+    useMemo(() => {
+      if (
+        activeTab ===
+        "notifications"
+      ) {
+        return notificationFilter ===
+          "active"
+          ? notifications
+          : inactiveNotifications;
+      }
 
-    if (activeTab === "information") {
-      return informations;
-    }
+      if (
+        activeTab ===
+        "information"
+      ) {
+        return informations;
+      }
 
-    return downloads;
-  }, [
-    activeTab,
-    notificationFilter,
-    notifications,
-    inactiveNotifications,
-    informations,
-    downloads,
-  ]);
+      return downloads;
+    }, [
+      activeTab,
+      notificationFilter,
+      notifications,
+      inactiveNotifications,
+      informations,
+      downloads,
+    ]);
 
   /* ==========================================================================
      PAGE TITLE
   ========================================================================== */
 
   const pageTitle =
-    activeTab === "notifications"
-      ? notificationFilter === "active"
+    activeTab ===
+    "notifications"
+      ? notificationFilter ===
+        "active"
         ? "Active News & Notifications"
         : "Inactive News & Notifications"
-      : activeTab === "information"
+      : activeTab ===
+        "information"
       ? "Information"
       : "Downloads";
 
@@ -672,7 +892,10 @@ export default function Admin_News_Notification() {
      ACCESS CONTROL
   ========================================================================== */
 
-  if (!token || role !== "admin") {
+  if (
+    !token ||
+    role !== "admin"
+  ) {
     return (
       <div className="p-4">
         <SignIn_SignUP role="admin" />
@@ -689,9 +912,9 @@ export default function Admin_News_Notification() {
 
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* ==================================================================
+        {/* ================================================================
             HEADER
-        ================================================================== */}
+        ================================================================ */}
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
 
@@ -700,10 +923,13 @@ export default function Admin_News_Notification() {
             <div className="flex items-center gap-3">
 
               <div className="p-3 rounded-xl bg-rose-100">
+
                 <Bell className="w-7 h-7 text-rose-700" />
+
               </div>
 
               <div>
+
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                   News, Information & Downloads
                 </h1>
@@ -713,6 +939,7 @@ export default function Admin_News_Notification() {
                   information and downloadable
                   resources.
                 </p>
+
               </div>
 
             </div>
@@ -725,6 +952,7 @@ export default function Admin_News_Notification() {
                 disabled={isLoading}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-sm disabled:opacity-50"
               >
+
                 <RefreshCw
                   className={`w-4 h-4 ${
                     isLoading
@@ -734,16 +962,21 @@ export default function Admin_News_Notification() {
                 />
 
                 Refresh
+
               </button>
 
               <button
                 type="button"
-                onClick={openAddModal}
+                onClick={
+                  openAddModal
+                }
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-sm shadow-sm"
               >
+
                 <Plus className="w-4 h-4" />
 
                 Add Item
+
               </button>
 
             </div>
@@ -752,15 +985,15 @@ export default function Admin_News_Notification() {
 
         </div>
 
-        {/* ==================================================================
+        {/* ================================================================
             MAIN TABS
-        ================================================================== */}
+        ================================================================ */}
 
         <div className="bg-white border border-gray-200 rounded-2xl p-2 shadow-sm overflow-x-auto">
 
           <div className="flex gap-2 min-w-max">
 
-            {/* Notifications */}
+            {/* NOTIFICATIONS */}
 
             <button
               type="button"
@@ -780,6 +1013,7 @@ export default function Admin_News_Notification() {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
+
               <Bell className="w-4 h-4" />
 
               News & Notifications
@@ -788,9 +1022,10 @@ export default function Admin_News_Notification() {
                 {notifications.length +
                   inactiveNotifications.length}
               </span>
+
             </button>
 
-            {/* Information */}
+            {/* INFORMATION */}
 
             <button
               type="button"
@@ -806,6 +1041,7 @@ export default function Admin_News_Notification() {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
+
               <Info className="w-4 h-4" />
 
               Information
@@ -813,9 +1049,10 @@ export default function Admin_News_Notification() {
               <span className="px-2 py-0.5 rounded-full text-xs bg-gray-100">
                 {informations.length}
               </span>
+
             </button>
 
-            {/* Downloads */}
+            {/* DOWNLOADS */}
 
             <button
               type="button"
@@ -831,6 +1068,7 @@ export default function Admin_News_Notification() {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
+
               <DownloadIcon className="w-4 h-4" />
 
               Downloads
@@ -838,15 +1076,16 @@ export default function Admin_News_Notification() {
               <span className="px-2 py-0.5 rounded-full text-xs bg-gray-100">
                 {downloads.length}
               </span>
+
             </button>
 
           </div>
 
         </div>
 
-        {/* ==================================================================
+        {/* ================================================================
             NOTIFICATION FILTER
-        ================================================================== */}
+        ================================================================ */}
 
         {activeTab ===
           "notifications" && (
@@ -868,6 +1107,7 @@ export default function Admin_News_Notification() {
                     : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                 }`}
               >
+
                 <CheckCircle2 className="w-4 h-4" />
 
                 Active
@@ -875,6 +1115,7 @@ export default function Admin_News_Notification() {
                 <span className="px-2 py-0.5 rounded-full text-xs bg-white/20">
                   {notifications.length}
                 </span>
+
               </button>
 
               <button
@@ -891,6 +1132,7 @@ export default function Admin_News_Notification() {
                     : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                 }`}
               >
+
                 <Archive className="w-4 h-4" />
 
                 Inactive / Expired
@@ -898,6 +1140,7 @@ export default function Admin_News_Notification() {
                 <span className="px-2 py-0.5 rounded-full text-xs bg-white/20">
                   {inactiveNotifications.length}
                 </span>
+
               </button>
 
             </div>
@@ -905,9 +1148,9 @@ export default function Admin_News_Notification() {
           </div>
         )}
 
-        {/* ==================================================================
+        {/* ================================================================
             TABLE
-        ================================================================== */}
+        ================================================================ */}
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
@@ -924,7 +1167,9 @@ export default function Admin_News_Notification() {
                 <p className="text-xs text-gray-500 mt-1">
                   Total items:{" "}
                   <span className="font-semibold">
-                    {currentList.length}
+                    {
+                      currentList.length
+                    }
                   </span>
                 </p>
 
@@ -935,10 +1180,12 @@ export default function Admin_News_Notification() {
                 notificationFilter ===
                   "inactive" && (
                   <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">
+
                     <AlertTriangle className="w-4 h-4" />
 
                     These notifications have
                     passed their active date.
+
                   </div>
                 )}
 
@@ -946,7 +1193,7 @@ export default function Admin_News_Notification() {
 
           </div>
 
-          {/* Loading */}
+          {/* LOADING */}
 
           {isLoading ? (
             <div className="p-14 flex flex-col items-center justify-center gap-3">
@@ -958,9 +1205,10 @@ export default function Admin_News_Notification() {
               </p>
 
             </div>
-          ) : currentList.length === 0 ? (
+          ) : currentList.length ===
+            0 ? (
 
-            /* Empty */
+            /* EMPTY */
 
             <div className="p-14 text-center">
 
@@ -989,18 +1237,22 @@ export default function Admin_News_Notification() {
 
               <button
                 type="button"
-                onClick={openAddModal}
+                onClick={
+                  openAddModal
+                }
                 className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-sm font-semibold"
               >
+
                 <Plus className="w-4 h-4" />
 
                 Add Item
+
               </button>
 
             </div>
           ) : (
 
-            /* Table */
+            /* TABLE */
 
             <div className="overflow-x-auto">
 
@@ -1014,16 +1266,12 @@ export default function Admin_News_Notification() {
                       Title
                     </th>
 
-                    {/* Category ONLY notification */}
-
                     {activeTab ===
                       "notifications" && (
                       <th className="px-5 py-3 text-xs font-bold uppercase text-gray-600">
                         Category
                       </th>
                     )}
-
-                    {/* Date ONLY notification */}
 
                     {activeTab ===
                       "notifications" && (
@@ -1079,7 +1327,9 @@ export default function Admin_News_Notification() {
                             <div className="flex items-start gap-3">
 
                               <div className="p-2 rounded-lg bg-rose-50">
+
                                 <FileText className="w-4 h-4 text-rose-700" />
+
                               </div>
 
                               <div>
@@ -1104,21 +1354,23 @@ export default function Admin_News_Notification() {
 
                           </td>
 
-                          {/* CATEGORY - NOTIFICATION ONLY */}
+                          {/* CATEGORY */}
 
                           {activeTab ===
                             "notifications" && (
                             <td className="px-5 py-4">
 
                               <span className="inline-flex px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold capitalize">
+
                                 {item.type ||
                                   "miscellaneous"}
+
                               </span>
 
                             </td>
                           )}
 
-                          {/* ACTIVE DATE - NOTIFICATION ONLY */}
+                          {/* ACTIVE DATE */}
 
                           {activeTab ===
                             "notifications" && (
@@ -1128,14 +1380,17 @@ export default function Admin_News_Notification() {
                                 <div>
 
                                   <div className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+
                                     <CalendarDays className="w-4 h-4 text-gray-400" />
 
                                     {new Date(
                                       item.active_date
                                     ).toLocaleDateString()}
+
                                   </div>
 
                                   <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
+
                                     <Clock className="w-3.5 h-3.5" />
 
                                     {new Date(
@@ -1147,6 +1402,7 @@ export default function Admin_News_Notification() {
                                         minute: "2-digit",
                                       }
                                     )}
+
                                   </div>
 
                                   {isExpired && (
@@ -1175,9 +1431,11 @@ export default function Admin_News_Notification() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold transition"
                             >
+
                               <ExternalLink className="w-3.5 h-3.5" />
 
                               View File
+
                             </a>
 
                           </td>
@@ -1200,7 +1458,9 @@ export default function Admin_News_Notification() {
                                 className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition"
                                 title="Edit"
                               >
+
                                 <Edit2 className="w-4 h-4" />
+
                               </button>
 
                               {/* DELETE */}
@@ -1208,14 +1468,16 @@ export default function Admin_News_Notification() {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  openDeletePopup(
+                                  confirmDelete(
                                     item
                                   )
                                 }
                                 className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:text-red-700 hover:bg-red-50 transition"
                                 title="Delete"
                               >
+
                                 <Trash2 className="w-4 h-4" />
+
                               </button>
 
                             </div>
@@ -1255,7 +1517,7 @@ export default function Admin_News_Notification() {
             }
           >
 
-            {/* Modal Header */}
+            {/* HEADER */}
 
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
 
@@ -1299,12 +1561,14 @@ export default function Admin_News_Notification() {
                 }
                 className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"
               >
+
                 <X className="w-5 h-5" />
+
               </button>
 
             </div>
 
-            {/* Form */}
+            {/* FORM */}
 
             <form
               onSubmit={
@@ -1341,9 +1605,7 @@ export default function Admin_News_Notification() {
 
               </div>
 
-              {/* ============================================================
-                  CATEGORY - NOTIFICATION ONLY
-              ============================================================ */}
+              {/* CATEGORY */}
 
               {activeTab ===
                 "notifications" && (
@@ -1390,9 +1652,7 @@ export default function Admin_News_Notification() {
                 </div>
               )}
 
-              {/* ============================================================
-                  ACTIVE DATE - NOTIFICATION ONLY
-              ============================================================ */}
+              {/* ACTIVE DATE */}
 
               {activeTab ===
                 "notifications" && (
@@ -1433,9 +1693,7 @@ export default function Admin_News_Notification() {
                 </div>
               )}
 
-              {/* ============================================================
-                  FILE
-              ============================================================ */}
+              {/* FILE */}
 
               <div>
 
@@ -1450,17 +1708,21 @@ export default function Admin_News_Notification() {
                   <div className="flex flex-col items-center justify-center text-center">
 
                     <div className="p-3 rounded-full bg-rose-50 mb-3">
+
                       <Upload className="w-6 h-6 text-rose-700" />
+
                     </div>
 
                     <label className="cursor-pointer">
 
                       <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-700 hover:bg-rose-800 text-white text-sm font-semibold">
+
                         <Upload className="w-4 h-4" />
 
                         {isEditMode
                           ? "Replace File"
                           : "Choose File"}
+
                       </span>
 
                       <input
@@ -1483,7 +1745,7 @@ export default function Admin_News_Notification() {
                       JPEG or PNG
                     </p>
 
-                    {/* Current file */}
+                    {/* CURRENT FILE */}
 
                     {isEditMode &&
                       editingItem?.fileName && (
@@ -1502,7 +1764,7 @@ export default function Admin_News_Notification() {
                         </div>
                       )}
 
-                    {/* New selected file */}
+                    {/* SELECTED FILE */}
 
                     {selectedFile && (
                       <div className="mt-3 w-full bg-emerald-50 border border-emerald-200 rounded-lg p-3">
@@ -1568,6 +1830,7 @@ export default function Admin_News_Notification() {
                       {isEditMode
                         ? "Update"
                         : "Add Item"}
+
                     </>
                   )}
 
@@ -1576,141 +1839,6 @@ export default function Admin_News_Notification() {
               </div>
 
             </form>
-
-          </div>
-
-        </div>
-      )}
-
-      {/* ====================================================================
-          DELETE CONFIRMATION POPUP
-      ==================================================================== */}
-
-      {deleteTarget && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          onClick={closeDeletePopup}
-        >
-
-          <div
-            className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
-
-            {/* Popup top */}
-
-            <div className="p-6">
-
-              <div className="flex items-center gap-4">
-
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-
-                  <TriangleAlert className="w-6 h-6 text-red-600" />
-
-                </div>
-
-                <div>
-
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Delete Item?
-                  </h3>
-
-                  <p className="text-sm text-gray-500 mt-1">
-                    This action cannot be
-                    undone.
-                  </p>
-
-                </div>
-
-              </div>
-
-              {/* Item information */}
-
-              <div className="mt-5 p-4 rounded-xl bg-gray-50 border border-gray-200">
-
-                <p className="text-xs font-bold uppercase text-gray-400 mb-1">
-                  Item
-                </p>
-
-                <p className="font-semibold text-gray-900 break-words">
-                  {deleteTarget.item.title}
-                </p>
-
-                {deleteTarget.item.fileName && (
-                  <p className="text-xs text-gray-500 mt-2 truncate">
-                    File:{" "}
-                    {
-                      deleteTarget
-                        .item
-                        .fileName
-                    }
-                  </p>
-                )}
-
-              </div>
-
-              <p className="text-sm text-gray-600 mt-4 leading-relaxed">
-                Are you sure you want to
-                permanently delete this{" "}
-                {deleteTarget.tab ===
-                "notifications"
-                  ? "notification"
-                  : deleteTarget.tab ===
-                    "information"
-                  ? "information"
-                  : "download"}
-                ?
-              </p>
-
-            </div>
-
-            {/* Popup buttons */}
-
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-
-              <button
-                type="button"
-                onClick={
-                  closeDeletePopup
-                }
-                disabled={
-                  isDeleting
-                }
-                className="px-5 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 font-semibold text-sm disabled:opacity-50"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={
-                  confirmDelete
-                }
-                disabled={
-                  isDeleting
-                }
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm shadow-sm disabled:opacity-50"
-              >
-
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-4 h-4" />
-
-                    Delete
-                  </>
-                )}
-
-              </button>
-
-            </div>
 
           </div>
 

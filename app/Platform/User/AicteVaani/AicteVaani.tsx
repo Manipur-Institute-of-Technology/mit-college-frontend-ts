@@ -23,7 +23,7 @@ import {
   Layers,
 } from "lucide-react";
 
-import Swal from "sweetalert2";
+import { confirmExternalLink } from "~/utils/alert_utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -81,11 +81,9 @@ const handleLinkClick = (url: string) => {
   }
 
   if (isExternalLink(url)) {
-    Swal.fire({
+    confirmExternalLink({
       title: "Leave this site?",
       text: "You are being redirected to an external document / website.",
-      icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Continue",
       cancelButtonText: "Stay here",
       confirmButtonColor: "#0891b2",
@@ -93,8 +91,8 @@ const handleLinkClick = (url: string) => {
       customClass: {
         popup: "rounded-xl",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
+    }).then((confirmed) => {
+      if (confirmed) {
         window.open(
           url,
           "_blank",
@@ -209,11 +207,6 @@ export default function AicteVaani() {
             setSelectedId("");
           }
         } catch (err: any) {
-          console.error(
-            "FETCH AICTE-VAANI ERROR:",
-            err
-          );
-
           if (!mounted) {
             return;
           }

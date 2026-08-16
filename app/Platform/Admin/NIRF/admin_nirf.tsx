@@ -1,13 +1,11 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import apiClient, {
   API_BASE_URL,
 } from "~/utils/apiClient";
+
+import { showAlert } from "~/utils/alert_utils";
 
 import { useAuth } from "~/context/AuthContext";
 
@@ -32,14 +30,12 @@ import {
 // TYPES
 // ============================================================
 
-type ResourceType =
-  | "link"
-  | "file";
+type ResourceType = "link" | "file";
 
 type NirfResource = {
   type: ResourceType;
-  url: string;
-  file: string;
+  url?: string;
+  file?: string;
 };
 
 export type NirfItem = {
@@ -57,143 +53,96 @@ export type NirfItem = {
 // ============================================================
 
 export default function Admin_NIRF() {
-  const {
-    token,
-    role,
-  } = useAuth();
+  const { token, role } = useAuth();
 
   // ============================================================
-  // LIST
+  // LIST STATE
   // ============================================================
 
-  const [
-    nirfList,
-    setNirfList,
-  ] = useState<NirfItem[]>([]);
-
-  const [
-    isLoading,
-    setIsLoading,
-  ] = useState(false);
-
-  // ============================================================
-  // MODAL
-  // ============================================================
-
-  const [
-    showModal,
-    setShowModal,
-  ] = useState(false);
-
-  const [
-    editingId,
-    setEditingId,
-  ] = useState<string | null>(
-    null
+  const [nirfList, setNirfList] = useState<NirfItem[]>(
+    []
   );
 
+  const [isLoading, setIsLoading] =
+    useState(false);
+
   // ============================================================
-  // FORM
+  // MODAL STATE
   // ============================================================
 
-  const [
-    formHeader,
-    setFormHeader,
-  ] = useState("");
+  const [showModal, setShowModal] =
+    useState(false);
 
-  const [
-    formDescription,
-    setFormDescription,
-  ] = useState("");
+  const [editingId, setEditingId] =
+    useState<string | null>(null);
 
-  const [
-    formYear,
-    setFormYear,
-  ] = useState(
-    new Date()
-      .getFullYear()
-      .toString()
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  // ============================================================
+  // FORM STATE
+  // ============================================================
+
+  const [formHeader, setFormHeader] =
+    useState("");
+
+  const [formDescription, setFormDescription] =
+    useState("");
+
+  const [formYear, setFormYear] = useState(
+    new Date().getFullYear().toString()
   );
 
-  const [
-    resourceType,
-    setResourceType,
-  ] = useState<ResourceType>(
-    "link"
-  );
+  const [resourceType, setResourceType] =
+    useState<ResourceType>("link");
 
-  const [
-    resourceUrl,
-    setResourceUrl,
-  ] = useState("");
+  const [resourceUrl, setResourceUrl] =
+    useState("");
 
-  const [
-    resourceFile,
-    setResourceFile,
-  ] = useState("");
+  const [resourceFile, setResourceFile] =
+    useState("");
 
-  const [
-    selectedFile,
-    setSelectedFile,
-  ] = useState<File | null>(
-    null
-  );
-
-  const [
-    submitting,
-    setSubmitting,
-  ] = useState(false);
+  const [selectedFile, setSelectedFile] =
+    useState<File | null>(null);
 
   // ============================================================
-  // FETCH
+  // FETCH NIRF
   // ============================================================
 
-  const fetchNirfData =
-    async () => {
-      setIsLoading(true);
+  const fetchNirfData = async () => {
+    setIsLoading(true);
 
-      try {
-        const response =
-          await apiClient.get(
-            "/nirf"
-          );
+    try {
+      const response =
+        await apiClient.get("/nirf");
 
-        const data =
-          response.data?.data ??
-          [];
+      const data =
+        response.data?.data ??
+        response.data ??
+        [];
 
-        setNirfList(
-          Array.isArray(data)
-            ? data
-            : []
-        );
-      } catch (error: any) {
-        console.error(
-          "FETCH NIRF ERROR:",
-          error
-        );
+      setNirfList(
+        Array.isArray(data) ? data : []
+      );
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to fetch NIRF records.";
 
-        const message =
-          error?.response
-            ?.data?.message ||
-          error?.message ||
-          "Failed to fetch NIRF records.";
-
-        toast.error(message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // ============================================================
   // INITIAL FETCH
   // ============================================================
 
   useEffect(() => {
-    if (
-      token &&
-      role === "admin"
-    ) {
+    if (token && role === "admin") {
       fetchNirfData();
     }
   }, [token, role]);
@@ -208,14 +157,10 @@ export default function Admin_NIRF() {
     setFormDescription("");
 
     setFormYear(
-      new Date()
-        .getFullYear()
-        .toString()
+      new Date().getFullYear().toString()
     );
 
-    setResourceType(
-      "link"
-    );
+    setResourceType("link");
 
     setResourceUrl("");
 
@@ -227,7 +172,7 @@ export default function Admin_NIRF() {
   };
 
   // ============================================================
-  // OPEN ADD
+  // OPEN ADD MODAL
   // ============================================================
 
   const openAddModal = () => {
@@ -237,15 +182,13 @@ export default function Admin_NIRF() {
   };
 
   // ============================================================
-  // OPEN EDIT
+  // OPEN EDIT MODAL
   // ============================================================
 
   const openEditModal = (
     item: NirfItem
   ) => {
-    setEditingId(
-      item._id
-    );
+    setEditingId(item._id);
 
     setFormHeader(
       item.header || ""
@@ -259,22 +202,19 @@ export default function Admin_NIRF() {
       item.year || ""
     );
 
-    const type =
-      item.resource?.type ===
-      "file"
+    const type: ResourceType =
+      item.resource?.type === "file"
         ? "file"
         : "link";
 
     setResourceType(type);
 
     setResourceUrl(
-      item.resource?.url ||
-        ""
+      item.resource?.url || ""
     );
 
     setResourceFile(
-      item.resource?.file ||
-        ""
+      item.resource?.file || ""
     );
 
     setSelectedFile(null);
@@ -297,163 +237,276 @@ export default function Admin_NIRF() {
   };
 
   // ============================================================
+  // RESOURCE URL
+  // ============================================================
+
+  const getResourceUrl = (
+    item: NirfItem
+  ) => {
+    if (!item.resource) {
+      return "";
+    }
+
+    // ----------------------------------------------------------
+    // LINK
+    // ----------------------------------------------------------
+
+    if (
+      item.resource.type === "link"
+    ) {
+      return item.resource.url || "";
+    }
+
+    // ----------------------------------------------------------
+    // FILE
+    // ----------------------------------------------------------
+
+    const file =
+      item.resource.file || "";
+
+    if (!file) {
+      return "";
+    }
+
+    if (
+      file.startsWith("http://") ||
+      file.startsWith("https://")
+    ) {
+      return file;
+    }
+
+    if (file.startsWith("/")) {
+      return `${API_BASE_URL}${file}`;
+    }
+
+    return `${API_BASE_URL}/${file}`;
+  };
+
+  // ============================================================
+  // CHECK EXTERNAL LINK
+  // ============================================================
+
+  const isExternalLink = (
+    value: string
+  ) => {
+    const trimmed =
+      value.trim();
+
+    if (!trimmed) {
+      return false;
+    }
+
+    try {
+      const url =
+        new URL(trimmed);
+
+      const hostname =
+        url.hostname
+          .toLowerCase()
+          .replace(/^www\./, "");
+
+      const currentHostname =
+        window.location.hostname
+          .toLowerCase()
+          .replace(/^www\./, "");
+
+      const internalHosts =
+        new Set([
+          currentHostname,
+          "mitimphal.manipuruniv.ac.in",
+        ]);
+
+      return (
+        (
+          url.protocol ===
+            "http:" ||
+          url.protocol ===
+            "https:"
+        ) &&
+        !internalHosts.has(
+          hostname
+        )
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  // ============================================================
   // BUILD FORMDATA
   // ============================================================
 
-  const buildFormData =
-    () => {
-      const formData =
-        new FormData();
+  const buildFormData = () => {
+    const formData =
+      new FormData();
 
-      formData.append(
-        "header",
-        formHeader.trim()
-      );
+    formData.append(
+      "header",
+      formHeader.trim()
+    );
 
-      formData.append(
-        "description",
-        formDescription.trim()
-      );
+    formData.append(
+      "description",
+      formDescription.trim()
+    );
 
-      formData.append(
-        "year",
-        formYear.trim()
-      );
+    formData.append(
+      "year",
+      formYear.trim()
+    );
 
-      formData.append(
-        "resource[type]",
-        resourceType
-      );
+    formData.append(
+      "resource[type]",
+      resourceType
+    );
 
-      // ========================================================
-      // LINK
-      // ========================================================
+    // ----------------------------------------------------------
+    // LINK RESOURCE
+    // ----------------------------------------------------------
 
-      if (
-        resourceType ===
-        "link"
-      ) {
-        formData.append(
-          "resource[url]",
-          resourceUrl.trim()
-        );
-
-        return formData;
-      }
-
-      // ========================================================
-      // FILE
-      // ========================================================
-
+    if (
+      resourceType === "link"
+    ) {
       formData.append(
         "resource[url]",
+        resourceUrl.trim()
+      );
+
+      formData.append(
+        "resource[file]",
         ""
       );
 
-      if (selectedFile) {
-        formData.append(
-          "file",
-          selectedFile,
-          selectedFile.name
-        );
-      }
-
       return formData;
-    };
-
-  // ============================================================
-  // DEBUG FORMDATA
-  // ============================================================
-
-  const debugFormData = (
-    formData: FormData
-  ) => {
-    console.log(
-      "========== NIRF FORM DATA =========="
-    );
-
-    for (
-      const [
-        key,
-        value,
-      ] of formData.entries()
-    ) {
-      if (
-        value instanceof File
-      ) {
-        console.log(
-          key,
-          {
-            name:
-              value.name,
-            size:
-              value.size,
-            type:
-              value.type,
-          }
-        );
-      } else {
-        console.log(
-          key,
-          value
-        );
-      }
     }
 
-    console.log(
-      "====================================="
+    // ----------------------------------------------------------
+    // FILE RESOURCE
+    // ----------------------------------------------------------
+
+    formData.append(
+      "resource[url]",
+      ""
     );
+
+    if (selectedFile) {
+      formData.append(
+        "file",
+        selectedFile,
+        selectedFile.name
+      );
+    }
+
+    return formData;
+  };
+
+  // ============================================================
+  // VALIDATE FILE
+  // ============================================================
+
+  const validateFile = (
+    file: File
+  ) => {
+    const maxSize =
+      10 * 1024 * 1024;
+
+    if (
+      file.size > maxSize
+    ) {
+      toast.error(
+        "File size cannot exceed 10 MB."
+      );
+
+      return false;
+    }
+
+    const allowedExtensions = [
+      ".pdf",
+      ".doc",
+      ".docx",
+      ".xls",
+      ".xlsx",
+    ];
+
+    const fileName =
+      file.name.toLowerCase();
+
+    const isAllowed =
+      allowedExtensions.some(
+        (extension) =>
+          fileName.endsWith(
+            extension
+          )
+      );
+
+    if (!isAllowed) {
+      toast.error(
+        "Unsupported file type. Please upload PDF, DOC, DOCX, XLS or XLSX."
+      );
+
+      return false;
+    }
+
+    return true;
   };
 
   // ============================================================
   // SUBMIT
   // ============================================================
 
-  const handleSubmit =
-    async (
-      e: React.FormEvent<HTMLFormElement>
-    ) => {
-      e.preventDefault();
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
 
-      // ========================================================
-      // VALIDATION
-      // ========================================================
+    // ==========================================================
+    // VALIDATION
+    // ==========================================================
 
-      if (
-        !formHeader.trim()
-      ) {
-        toast.error(
-          "Please enter the NIRF header."
-        );
+    if (!formHeader.trim()) {
+      toast.error(
+        "Please enter the NIRF header."
+      );
 
-        return;
-      }
+      return;
+    }
 
-      if (
-        !formDescription.trim()
-      ) {
-        toast.error(
-          "Please enter the description."
-        );
+    if (!formDescription.trim()) {
+      toast.error(
+        "Please enter the description."
+      );
 
-        return;
-      }
+      return;
+    }
 
-      if (
-        !formYear.trim()
-      ) {
-        toast.error(
-          "Please enter the year."
-        );
+    if (!formYear.trim()) {
+      toast.error(
+        "Please enter the year."
+      );
 
-        return;
-      }
+      return;
+    }
 
-      if (
-        resourceType ===
-          "link" &&
-        !resourceUrl.trim()
-      ) {
+    if (
+      !/^\d{4}$/.test(
+        formYear.trim()
+      )
+    ) {
+      toast.error(
+        "Please enter a valid 4-digit year."
+      );
+
+      return;
+    }
+
+    // ==========================================================
+    // LINK VALIDATION
+    // ==========================================================
+
+    if (
+      resourceType === "link"
+    ) {
+      if (!resourceUrl.trim()) {
         toast.error(
           "Please enter the resource URL."
         );
@@ -461,343 +514,349 @@ export default function Admin_NIRF() {
         return;
       }
 
-      if (
-        resourceType ===
-          "file" &&
-        !selectedFile &&
-        !resourceFile
-      ) {
+      try {
+        new URL(
+          resourceUrl.trim()
+        );
+      } catch {
         toast.error(
-          "Please select a document."
+          "Please enter a valid URL."
         );
 
         return;
       }
+    }
 
-      setSubmitting(true);
+    // ==========================================================
+    // FILE VALIDATION
+    // ==========================================================
 
-      try {
-        const formData =
-          buildFormData();
+    if (
+      resourceType === "file" &&
+      !selectedFile &&
+      !resourceFile
+    ) {
+      toast.error(
+        "Please select a document."
+      );
 
-        debugFormData(
-          formData
-        );
+      return;
+    }
 
-        let response;
+    if (
+      selectedFile &&
+      !validateFile(selectedFile)
+    ) {
+      return;
+    }
 
-        // ======================================================
-        // EDIT
-        // ======================================================
+    // ==========================================================
+    // CONFIRM ADD
+    // ==========================================================
 
-        if (editingId) {
-          response =
-            await apiClient.put(
-              `/nirf/edit/${editingId}`,
-              formData,
-              {
-                timeout:
-                  120000,
-              }
-            );
+    if (!editingId) {
+      const result =
+        await showAlert({
+          title:
+            "Add NIRF Record?",
 
-          if (
-            !response.data
-              ?.success
-          ) {
-            throw new Error(
-              response.data
-                ?.message ||
-                "Failed to update NIRF."
-            );
-          }
+          text: `Are you sure you want to add "${formHeader.trim()}" for ${formYear.trim()}?`,
 
-          const updatedItem =
-            response.data
-              ?.data;
+          icon: "question",
 
-          if (
-            updatedItem
-          ) {
-            setNirfList(
-              (
-                previous
-              ) =>
-                previous.map(
-                  (
-                    item
-                  ) =>
-                    item._id ===
-                    editingId
-                      ? updatedItem
-                      : item
-                )
-            );
-          } else {
-            await fetchNirfData();
-          }
+          showCancelButton: true,
 
-          toast.success(
-            "NIRF record updated successfully."
+          confirmButtonColor:
+            "#be123c",
+
+          cancelButtonColor:
+            "#6b7280",
+
+          confirmButtonText:
+            "Yes, Add",
+
+          cancelButtonText:
+            "Cancel",
+
+          reverseButtons: true,
+        });
+
+      if (
+        !result.isConfirmed
+      ) {
+        return;
+      }
+    }
+
+    setSubmitting(true);
+
+    try {
+      const formData =
+        buildFormData();
+
+      // ========================================================
+      // EDIT
+      // ========================================================
+
+      if (editingId) {
+        const response =
+          await apiClient.put(
+            `/nirf/edit/${editingId}`,
+            formData,
+            {
+              timeout: 120000,
+            }
+          );
+
+        if (
+          !response.data?.success
+        ) {
+          throw new Error(
+            response.data?.message ||
+              "Failed to update NIRF record."
           );
         }
 
-        // ======================================================
-        // ADD
-        // ======================================================
+        const updatedItem:
+          | NirfItem
+          | undefined =
+          response.data?.data;
 
-        else {
-          response =
-            await apiClient.post(
-              "/nirf/add",
-              formData,
-              {
-                timeout:
-                  120000,
-              }
-            );
-
-          if (
-            !response.data
-              ?.success
-          ) {
-            throw new Error(
-              response.data
-                ?.message ||
-                "Failed to add NIRF."
-            );
-          }
-
-          const createdItem =
-            response.data
-              ?.data;
-
-          if (
-            createdItem
-          ) {
-            setNirfList(
-              (
-                previous
-              ) => [
-                createdItem,
-                ...previous,
-              ]
-            );
-          } else {
-            await fetchNirfData();
-          }
-
-          toast.success(
-            "NIRF record added successfully."
+        if (updatedItem) {
+          setNirfList(
+            (previous) =>
+              previous.map(
+                (item) =>
+                  item._id ===
+                  editingId
+                    ? updatedItem
+                    : item
+              )
           );
+        } else {
+          await fetchNirfData();
         }
 
-        setShowModal(
-          false
-        );
+        setShowModal(false);
 
         resetForm();
-      } catch (error: any) {
-        console.error(
-          "SAVE NIRF ERROR:",
-          error
-        );
 
-        console.error(
-          "STATUS:",
-          error?.response
-            ?.status
-        );
+        await showAlert({
+          title: "Updated!",
 
-        console.error(
-          "RESPONSE:",
-          error?.response
-            ?.data
-        );
+          text:
+            "NIRF record updated successfully.",
 
-        const message =
-          error?.response
-            ?.data?.message ||
-          error?.response
-            ?.data?.error ||
-          error?.message ||
-          "Failed to save NIRF record.";
+          icon: "success",
 
-        toast.error(
-          message
-        );
-      } finally {
-        setSubmitting(
-          false
-        );
+          confirmButtonColor:
+            "#be123c",
+
+          timer: 1800,
+
+          showConfirmButton: false,
+        });
       }
-    };
+
+      // ========================================================
+      // ADD
+      // ========================================================
+
+      else {
+        const response =
+          await apiClient.post(
+            "/nirf/add",
+            formData,
+            {
+              timeout: 120000,
+            }
+          );
+
+        if (
+          !response.data?.success
+        ) {
+          throw new Error(
+            response.data?.message ||
+              "Failed to add NIRF record."
+          );
+        }
+
+        const createdItem:
+          | NirfItem
+          | undefined =
+          response.data?.data;
+
+        if (createdItem) {
+          setNirfList(
+            (previous) => [
+              createdItem,
+              ...previous,
+            ]
+          );
+        } else {
+          await fetchNirfData();
+        }
+
+        setShowModal(false);
+
+        resetForm();
+
+        await showAlert({
+          title: "Added!",
+
+          text:
+            "NIRF record added successfully.",
+
+          icon: "success",
+
+          confirmButtonColor:
+            "#be123c",
+
+          timer: 1800,
+
+          showConfirmButton: false,
+        });
+      }
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to save NIRF record.";
+
+      await showAlert({
+        title: editingId
+          ? "Update Failed"
+          : "Add Failed",
+
+        text: message,
+
+        icon: "error",
+
+        confirmButtonColor:
+          "#be123c",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // ============================================================
   // DELETE
   // ============================================================
 
-// ============================================================
-// DELETE
-// ============================================================
+  const handleDelete = async (
+    id: string,
+    header: string
+  ) => {
+    // ==========================================================
+    // SWEETALERT CONFIRMATION
+    // ==========================================================
 
-const handleDelete = async (
-  id: string,
-  header: string
-) => {
-  const result = await Swal.fire({
-    title: "Delete NIRF Record?",
-    text: `"${header}" will be permanently deleted.`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, Delete",
-    cancelButtonText: "Cancel",
-    reverseButtons: true,
-    focusCancel: true,
-  });
+    const result =
+      await showAlert({
+        title:
+          "Delete NIRF Record?",
 
-  if (!result.isConfirmed) {
-    return;
-  }
+        text: `Are you sure you want to delete "${header}"? This action cannot be undone.`,
 
-  try {
-    // Show loading popup
-    Swal.fire({
-      title: "Deleting...",
-      text: "Please wait while the NIRF record is being deleted.",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+        icon: "warning",
 
-    const response = await apiClient.delete(
-      `/nirf/delete/${id}`,
-      {
-        timeout: 30000,
-      }
-    );
+        showCancelButton: true,
 
-    console.log(
-      "DELETE RESPONSE:",
-      response.status,
-      response.data
-    );
+        confirmButtonColor:
+          "#be123c",
 
-    if (!response.data?.success) {
-      throw new Error(
-        response.data?.message ||
-          "Failed to delete NIRF."
-      );
+        cancelButtonColor:
+          "#6b7280",
+
+        confirmButtonText:
+          "Yes, Delete",
+
+        cancelButtonText:
+          "Cancel",
+
+        reverseButtons: true,
+      });
+
+    if (
+      !result.isConfirmed
+    ) {
+      return;
     }
 
-    // Remove from UI
-    setNirfList((previous) =>
-      previous.filter(
-        (item) => item._id !== id
-      )
-    );
+    try {
+      setIsLoading(true);
 
-    // Success popup
-    await Swal.fire({
-      title: "Deleted!",
-      text: "NIRF record deleted successfully.",
-      icon: "success",
-      confirmButtonText: "OK",
-      timer: 2000,
-      timerProgressBar: true,
-    });
-  } catch (error: any) {
-    console.error(
-      "DELETE NIRF ERROR:",
-      error
-    );
-
-    console.error(
-      "STATUS:",
-      error?.response?.status
-    );
-
-    console.error(
-      "RESPONSE:",
-      error?.response?.data
-    );
-
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.message ||
-      "Failed to delete NIRF record.";
-
-    await Swal.fire({
-      title: "Delete Failed",
-      text: message,
-      icon: "error",
-      confirmButtonText: "OK",
-    });
-  }
-};
-
-  // ============================================================
-  // RESOURCE URL
-  // ============================================================
-
-  const getResourceUrl =
-    (
-      item: NirfItem
-    ) => {
-      if (
-        !item.resource
-      ) {
-        return "";
-      }
-
-      // LINK
+      const response =
+        await apiClient.delete(
+          `/nirf/delete/${id}`,
+          {
+            timeout: 30000,
+          }
+        );
 
       if (
-        item.resource
-          .type === "link"
+        !response.data?.success
       ) {
-        return (
-          item.resource
-            .url || ""
+        throw new Error(
+          response.data?.message ||
+            "Failed to delete NIRF record."
         );
       }
 
-      // FILE
+      setNirfList(
+        (previous) =>
+          previous.filter(
+            (item) =>
+              item._id !== id
+          )
+      );
 
-      const file =
-        item.resource
-          .file || "";
+      // ========================================================
+      // DELETE SUCCESS
+      // ========================================================
 
-      if (!file) {
-        return "";
-      }
+      await showAlert({
+        title: "Deleted!",
 
-      if (
-        file.startsWith(
-          "http://"
-        ) ||
-        file.startsWith(
-          "https://"
-        )
-      ) {
-        return file;
-      }
+        text:
+          "NIRF record deleted successfully.",
 
-      if (
-        file.startsWith("/")
-      ) {
-        return `${API_BASE_URL}${file}`;
-      }
+        icon: "success",
 
-      return `${API_BASE_URL}/${file}`;
-    };
+        confirmButtonColor:
+          "#be123c",
+
+        timer: 1800,
+
+        showConfirmButton: false,
+      });
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to delete NIRF record.";
+
+      await showAlert({
+        title:
+          "Delete Failed",
+
+        text: message,
+
+        icon: "error",
+
+        confirmButtonColor:
+          "#be123c",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // ============================================================
-  // AUTH
+  // AUTH GUARD
   // ============================================================
 
   if (
@@ -835,7 +894,9 @@ const handleDelete = async (
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
 
                 <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-rose-100">
+
                   <Award className="w-6 h-6 text-rose-700" />
+
                 </span>
 
                 NIRF Data Management
@@ -843,7 +904,8 @@ const handleDelete = async (
               </h1>
 
               <p className="text-sm text-gray-500 mt-2">
-                Add, edit and delete NIRF submissions and resources.
+                Add, edit and delete NIRF
+                submissions and resources.
               </p>
 
             </div>
@@ -905,8 +967,8 @@ const handleDelete = async (
 
             <p className="mt-1">
               Each record contains a header,
-              description, year and either
-              a link or uploaded document.
+              description, year and either a
+              website link or uploaded document.
             </p>
 
           </div>
@@ -934,13 +996,21 @@ const handleDelete = async (
             </div>
 
             <span className="text-xs font-semibold bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full">
+
               {nirfList.length}{" "}
-              {nirfList.length === 1
+
+              {nirfList.length ===
+              1
                 ? "Entry"
                 : "Entries"}
+
             </span>
 
           </div>
+
+          {/* ===================================================
+              LOADING
+          =================================================== */}
 
           {isLoading ? (
 
@@ -954,7 +1024,12 @@ const handleDelete = async (
 
             </div>
 
-          ) : nirfList.length === 0 ? (
+          ) : nirfList.length ===
+            0 ? (
+
+            /* =================================================
+               EMPTY
+            ================================================= */
 
             <div className="py-16 text-center">
 
@@ -965,8 +1040,8 @@ const handleDelete = async (
               </h3>
 
               <p className="text-sm text-gray-400 mt-1">
-                Click "Add NIRF" to create
-                the first record.
+                Click "Add NIRF" to create the
+                first record.
               </p>
 
               <button
@@ -987,9 +1062,13 @@ const handleDelete = async (
 
           ) : (
 
+            /* =================================================
+               TABLE
+            ================================================= */
+
             <div className="overflow-x-auto">
 
-              <table className="w-full min-w-[900px]">
+              <table className="w-full min-w-[950px]">
 
                 <thead>
 
@@ -1030,13 +1109,14 @@ const handleDelete = async (
                         );
 
                       return (
-
                         <tr
                           key={
                             item._id
                           }
-                          className="hover:bg-gray-50"
+                          className="hover:bg-gray-50 transition-colors"
                         >
+
+                          {/* YEAR */}
 
                           <td className="px-5 py-4 align-top">
 
@@ -1051,27 +1131,39 @@ const handleDelete = async (
 
                           </td>
 
+                          {/* HEADER */}
+
                           <td className="px-5 py-4 align-top">
 
                             <div className="flex gap-2">
 
                               <Award className="w-4 h-4 text-rose-600 mt-0.5 flex-shrink-0" />
 
-                              <p className="font-semibold text-gray-900 max-w-[280px]">
-                                {item.header}
+                              <p className="font-semibold text-gray-900 max-w-[280px] line-clamp-3">
+
+                                {item.header ||
+                                  "-"}
+
                               </p>
 
                             </div>
 
                           </td>
 
+                          {/* DESCRIPTION */}
+
                           <td className="px-5 py-4 align-top">
 
-                            <p className="text-sm text-gray-600 max-w-[300px] line-clamp-3">
-                              {item.description}
+                            <p className="text-sm text-gray-600 max-w-[320px] line-clamp-3">
+
+                              {item.description ||
+                                "-"}
+
                             </p>
 
                           </td>
+
+                          {/* RESOURCE */}
 
                           <td className="px-5 py-4 align-top">
 
@@ -1084,9 +1176,13 @@ const handleDelete = async (
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 max-w-[220px] text-rose-700 hover:text-rose-900 text-sm font-semibold"
+                                title={
+                                  resourceUrl
+                                }
                               >
 
-                                {item.resource
+                                {item
+                                  .resource
                                   ?.type ===
                                 "file" ? (
                                   <FileText className="w-4 h-4 flex-shrink-0" />
@@ -1096,7 +1192,8 @@ const handleDelete = async (
 
                                 <span className="truncate">
 
-                                  {item.resource
+                                  {item
+                                    .resource
                                     ?.type ===
                                   "file"
                                     ? "Open File"
@@ -1118,6 +1215,8 @@ const handleDelete = async (
 
                           </td>
 
+                          {/* ACTIONS */}
+
                           <td className="px-5 py-4 align-top">
 
                             <div className="flex justify-end items-center gap-2">
@@ -1129,7 +1228,7 @@ const handleDelete = async (
                                     item
                                   )
                                 }
-                                className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200"
+                                className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
                                 title="Edit NIRF"
                               >
 
@@ -1145,7 +1244,7 @@ const handleDelete = async (
                                     item.header
                                   )
                                 }
-                                className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
+                                className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
                                 title="Delete NIRF"
                               >
 
@@ -1158,7 +1257,6 @@ const handleDelete = async (
                           </td>
 
                         </tr>
-
                       );
                     }
                   )}
@@ -1176,24 +1274,35 @@ const handleDelete = async (
       </div>
 
       {/* =======================================================
-          MODAL
+          ADD / EDIT MODAL
       ======================================================= */}
 
       {showModal && (
 
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onMouseDown={closeModal}
+          onMouseDown={(event) => {
+
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
+              closeModal();
+            }
+
+          }}
         >
 
           <div
             className="bg-white w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl"
-            onMouseDown={(e) =>
-              e.stopPropagation()
+            onMouseDown={(event) =>
+              event.stopPropagation()
             }
           >
 
-            {/* HEADER */}
+            {/* =================================================
+                MODAL HEADER
+            ================================================= */}
 
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
 
@@ -1215,9 +1324,14 @@ const handleDelete = async (
 
               <button
                 type="button"
-                onClick={closeModal}
-                disabled={submitting}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"
+                onClick={
+                  closeModal
+                }
+                disabled={
+                  submitting
+                }
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 disabled:opacity-50"
+                title="Close"
               >
 
                 <X className="w-5 h-5" />
@@ -1226,7 +1340,9 @@ const handleDelete = async (
 
             </div>
 
-            {/* FORM */}
+            {/* =================================================
+                FORM
+            ================================================= */}
 
             <form
               onSubmit={
@@ -1254,13 +1370,20 @@ const handleDelete = async (
                   value={
                     formHeader
                   }
-                  onChange={(e) =>
+                  onChange={(
+                    event
+                  ) =>
                     setFormHeader(
-                      e.target.value
+                      event.target
+                        .value
                     )
                   }
                   placeholder="e.g. NIRF 2026 Engineering"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  disabled={
+                    submitting
+                  }
+                  required
                 />
 
               </div>
@@ -1283,14 +1406,21 @@ const handleDelete = async (
                   value={
                     formDescription
                   }
-                  onChange={(e) =>
+                  onChange={(
+                    event
+                  ) =>
                     setFormDescription(
-                      e.target.value
+                      event.target
+                        .value
                     )
                   }
                   placeholder="Enter a description for this NIRF submission..."
                   rows={4}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  disabled={
+                    submitting
+                  }
+                  required
                 />
 
               </div>
@@ -1311,16 +1441,27 @@ const handleDelete = async (
 
                 <input
                   type="text"
+                  inputMode="numeric"
+                  maxLength={4}
                   value={
                     formYear
                   }
-                  onChange={(e) =>
+                  onChange={(
+                    event
+                  ) =>
                     setFormYear(
-                      e.target.value
+                      event.target.value.replace(
+                        /\D/g,
+                        ""
+                      )
                     )
                   }
                   placeholder="2026"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  disabled={
+                    submitting
+                  }
+                  required
                 />
 
               </div>
@@ -1339,6 +1480,9 @@ const handleDelete = async (
 
                   <button
                     type="button"
+                    disabled={
+                      submitting
+                    }
                     onClick={() => {
 
                       setResourceType(
@@ -1354,7 +1498,7 @@ const handleDelete = async (
                       );
 
                     }}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold ${
+                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold transition-colors disabled:opacity-50 ${
                       resourceType ===
                       "link"
                         ? "border-rose-500 bg-rose-50 text-rose-700"
@@ -1372,6 +1516,9 @@ const handleDelete = async (
 
                   <button
                     type="button"
+                    disabled={
+                      submitting
+                    }
                     onClick={() => {
 
                       setResourceType(
@@ -1383,7 +1530,7 @@ const handleDelete = async (
                       );
 
                     }}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold ${
+                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold transition-colors disabled:opacity-50 ${
                       resourceType ===
                       "file"
                         ? "border-rose-500 bg-rose-50 text-rose-700"
@@ -1401,7 +1548,9 @@ const handleDelete = async (
 
               </div>
 
-              {/* LINK */}
+              {/* =================================================
+                  LINK RESOURCE
+              ================================================= */}
 
               {resourceType ===
               "link" ? (
@@ -1427,22 +1576,48 @@ const handleDelete = async (
                       value={
                         resourceUrl
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        event
+                      ) =>
                         setResourceUrl(
-                          e.target.value
+                          event.target
+                            .value
                         )
                       }
                       placeholder="https://example.com/nirf"
                       className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      disabled={
+                        submitting
+                      }
+                      required
                     />
 
                   </div>
+
+                  {isExternalLink(
+                    resourceUrl
+                  ) && (
+
+                    <div className="mt-2 flex items-start gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5">
+
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+
+                      <span>
+                        This link points to an external
+                        website.
+                      </span>
+
+                    </div>
+
+                  )}
 
                 </div>
 
               ) : (
 
-                /* FILE */
+                /* =================================================
+                   FILE RESOURCE
+                ================================================= */
 
                 <div>
 
@@ -1463,23 +1638,51 @@ const handleDelete = async (
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx,.xls,.xlsx"
-                      onChange={(e) => {
+                      disabled={
+                        submitting
+                      }
+                      onChange={(
+                        event
+                      ) => {
 
                         const file =
-                          e.target.files?.[0] ||
+                          event
+                            .target
+                            .files?.[0] ||
                           null;
+
+                        if (!file) {
+
+                          setSelectedFile(
+                            null
+                          );
+
+                          return;
+                        }
+
+                        if (
+                          !validateFile(
+                            file
+                          )
+                        ) {
+
+                          event.target.value =
+                            "";
+
+                          setSelectedFile(
+                            null
+                          );
+
+                          return;
+                        }
 
                         setSelectedFile(
                           file
                         );
 
-                        if (
-                          file
-                        ) {
-                          setResourceFile(
-                            ""
-                          );
-                        }
+                        setResourceFile(
+                          ""
+                        );
 
                       }}
                       className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-rose-500"
@@ -1502,11 +1705,9 @@ const handleDelete = async (
                       <FileText className="w-4 h-4 text-rose-600 flex-shrink-0" />
 
                       <span className="truncate flex-1">
-
                         {
                           selectedFile.name
                         }
-
                       </span>
 
                       <span className="text-xs text-gray-400 whitespace-nowrap">
@@ -1515,9 +1716,7 @@ const handleDelete = async (
                           selectedFile.size /
                           1024 /
                           1024
-                        ).toFixed(2)}
-
-                        {" "}
+                        ).toFixed(2)}{" "}
                         MB
 
                       </span>
@@ -1534,12 +1733,12 @@ const handleDelete = async (
 
                       <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
 
-                        <FileText className="w-4 h-4 text-gray-400" />
+                        <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
 
                         <span className="truncate">
 
-                          Existing document:
-                          {" "}
+                          Existing document:{" "}
+
                           {
                             resourceFile
                           }
@@ -1554,7 +1753,9 @@ const handleDelete = async (
 
               )}
 
-              {/* FOOTER */}
+              {/* =================================================
+                  FOOTER
+              ================================================= */}
 
               <div className="flex justify-end gap-3 pt-5 border-t border-gray-200">
 
@@ -1568,9 +1769,7 @@ const handleDelete = async (
                   }
                   className="px-5 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold disabled:opacity-50"
                 >
-
                   Cancel
-
                 </button>
 
                 <button

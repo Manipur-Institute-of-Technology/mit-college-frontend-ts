@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Link, NavLink } from "react-router";
-import Swal from "sweetalert2";
 import { type NavigationData } from "~/mock/navbar";
+import { confirmExternalLink } from "~/utils/alert_utils";
 
 export default function Navbar({
   navigation = [],
@@ -21,50 +21,63 @@ export default function Navbar({
     setActiveDropdown(null);
   };
 
-  // 🔹 Detect external link
-  const isExternalLink = (url: string) => {
+  /**
+   * Determines whether a URL points outside the current website.
+   */
+  const isExternalLink = (href: string) => {
     try {
-      const linkUrl = new URL(url, window.location.origin);
-      return linkUrl.origin !== window.location.origin;
+      const url = new URL(href, window.location.origin);
+
+      return url.origin !== window.location.origin;
     } catch {
       return false;
     }
   };
 
-  // 🔹 Handle navigation click
-  const handleNavClick = (
-      e: React.MouseEvent,
-      href: string,
-      target?: string
-    ) => {
-      if (!isExternalLink(href)) {
-        closeMobileMenu();
-        return;
-      }
+  /**
+   * Handles navigation for both desktop and mobile menus.
+   *
+   * Internal links:
+   * - Navigate normally.
+   *
+   * External links:
+   * - Show SweetAlert confirmation.
+   * - Cancel = stay on current page.
+   * - Confirm = navigate to external URL.
+   */
+  const handleNavClick = async (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+    target?: string,
+  ) => {
+    // Internal link — allow React Router/browser navigation.
+    if (!isExternalLink(href)) {
+      closeMobileMenu();
+      return;
+    }
 
+    // External link — prevent navigation until confirmation.
     e.preventDefault();
 
-    Swal.fire({
-      title: "Leave this site?",
-      text: "You are being redirected to an external website.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Continue",
-      cancelButtonText: "Stay here",
+    const confirmed = await confirmExternalLink({
       confirmButtonColor: "#22c55e",
       cancelButtonColor: "#ef4444",
       customClass: {
         popup: "rounded-xl",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        closeMobileMenu();
-
-        target === "_blank"
-          ? window.open(href, "_blank")
-          : (window.location.href = href);
-      }
     });
+
+    if (!confirmed) {
+      return;
+    }
+
+    closeMobileMenu();
+
+    if (target === "_blank") {
+      window.open(href, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.href = href;
+    }
   };
 
   return (
@@ -94,8 +107,12 @@ export default function Navbar({
               >
                 {item.childrens?.length ? (
                   <>
-                    <button className="py-4 px-2 text-gray-100 font-bold hover:bg-rose-500 flex items-center gap-1">
+                    <button
+                      type="button"
+                      className="py-4 px-2 text-gray-100 font-bold hover:bg-rose-500 flex items-center gap-1"
+                    >
                       {item.name}
+
                       <ChevronDown
                         size={18}
                         className={`transition-transform ${
@@ -104,20 +121,22 @@ export default function Navbar({
                       />
                     </button>
 
-                    {activeDropdown === index && (() => {
-                    const children = item.childrens ?? [];
-                    return (
+                    {activeDropdown === index && (
                       <div className="absolute right-0 w-48 bg-rose-600 rounded shadow-md z-[999]">
-                        {children.map((child, indx) => (
+                        {item.childrens.map((child, childIndex) => (
                           <NavLink
                             key={child.name}
                             to={child.href}
                             target={child.target}
                             onClick={(e) =>
-                              handleNavClick(e, child.href, child.target)
+                              handleNavClick(
+                                e,
+                                child.href,
+                                child.target,
+                              )
                             }
                             className={`block px-4 py-2 text-sm text-gray-100 hover:bg-rose-500 ${
-                              indx !== children.length - 1
+                              childIndex !== item.childrens!.length - 1
                                 ? "border-b border-rose-400"
                                 : ""
                             }`}
@@ -126,8 +145,7 @@ export default function Navbar({
                           </NavLink>
                         ))}
                       </div>
-                    );
-                  })()}
+                    )}
                   </>
                 ) : (
                   <NavLink
@@ -147,8 +165,11 @@ export default function Navbar({
 
           {/* Mobile Button */}
           <button
+            type="button"
             className="lg:hidden"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
           >
             {isOpen ? (
               <X size={32} className="text-white" />
@@ -166,10 +187,13 @@ export default function Navbar({
                 {item.childrens?.length ? (
                   <>
                     <button
+                      type="button"
                       onClick={() => toggleDropdown(index)}
                       className="w-full py-2 px-4 text-gray-100 font-bold bg-rose-600 flex justify-between items-center"
+                      aria-expanded={activeDropdown === index}
                     >
                       {item.name}
+
                       <ChevronDown
                         size={18}
                         className={`transition-transform ${
@@ -177,13 +201,19 @@ export default function Navbar({
                         }`}
                       />
                     </button>
+
                     {activeDropdown === index &&
                       item.childrens.map((child) => (
                         <NavLink
                           key={child.name}
                           to={child.href}
+                          target={child.target}
                           onClick={(e) =>
-                            handleNavClick(e, child.href, child.target)
+                            handleNavClick(
+                              e,
+                              child.href,
+                              child.target,
+                            )
                           }
                           className="block py-2 px-8 text-sm text-gray-100 bg-rose-500 hover:bg-rose-400"
                         >
@@ -194,6 +224,7 @@ export default function Navbar({
                 ) : (
                   <NavLink
                     to={item.href}
+                    target={item.target}
                     onClick={(e) =>
                       handleNavClick(e, item.href, item.target)
                     }
@@ -209,8 +240,9 @@ export default function Navbar({
       </div>
 
       {/* Decorative bars */}
-      <div className="h-2 bg-yellow-500"></div>
-      <div className="h-2 bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 animate-gradient-bg"></div>
+      <div className="h-2 bg-yellow-500" />
+
+      <div className="h-2 bg-gradient-to-r from-rose-500 via-yellow-500 to-orange-500 animate-gradient-bg" />
     </nav>
   );
 }

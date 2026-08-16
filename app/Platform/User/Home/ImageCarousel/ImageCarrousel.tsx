@@ -85,7 +85,6 @@ export default function ImageCarousel({
       // Reset index after fetching
       setCurrentIndex(0);
     } catch (error) {
-      console.error("Failed to load carousel:", error);
       setSlides([]);
     } finally {
       setIsLoading(false);

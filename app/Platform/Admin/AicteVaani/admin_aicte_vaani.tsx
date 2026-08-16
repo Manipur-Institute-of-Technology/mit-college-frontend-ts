@@ -1,145 +1,116 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
 
 import {
-  Sparkles,
+  showAlert,
+  showLoadingAlert,
+} from "~/utils/alert_utils";
+
+import {
+  Award,
   Plus,
   Trash2,
   RefreshCw,
   Calendar,
-  Clock,
-  MapPin,
-  Edit2,
-  X,
-  User,
-  Building,
-  Globe,
-  Mail,
-  Phone,
-  Paperclip,
   Link as LinkIcon,
+  FileText,
   ExternalLink,
+  Edit2,
   AlertTriangle,
+  X,
+  Save,
 } from "lucide-react";
 
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
-import apiClient from "~/utils/apiClient";
+
+import apiClient, {
+  API_BASE_URL,
+} from "~/utils/apiClient";
 
 // ============================================================
 // TYPES
 // ============================================================
 
-export type AttachmentOrLink = {
-  id?: number;
-  title: string;
+export type ResourceType = "link" | "file";
+
+export type NirfResource = {
+  type: ResourceType;
   url: string;
+  file: string;
 };
 
-export type AicteVaaniContact = {
-  coordinator?: string;
-  coCoordinator?: string;
-  department?: string;
-  website?: string;
-  email?: string;
-  phone?: string;
-};
-
-export type AicteVaaniItem = {
+export type NirfItem = {
   _id: string;
   header: string;
-  topic: string;
-  dates: string;
-  time: string;
-  venue: string;
-  information: string;
-  contact: AicteVaaniContact;
-  attachments: AttachmentOrLink[];
-  extraLinks: AttachmentOrLink[];
-  status: "Active" | "Inactive";
+  description: string;
+  resource: NirfResource;
+  year: string;
   createdAt?: string;
+  updatedAt?: string;
 };
 
 // ============================================================
 // COMPONENT
 // ============================================================
 
-export default function Admin_AICTE_VAANI() {
+export default function Admin_NIRF() {
   const { token, role } = useAuth();
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // DATA
-  // ----------------------------------------------------------
+  // ==========================================================
 
-  const [items, setItems] = useState<AicteVaaniItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [items, setItems] = useState<NirfItem[]>([]);
 
-  // ----------------------------------------------------------
+  const [isLoading, setIsLoading] =
+    useState(false);
+
+  // ==========================================================
   // MODAL
-  // ----------------------------------------------------------
+  // ==========================================================
 
-  const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showModal, setShowModal] =
+    useState(false);
 
-  // ----------------------------------------------------------
-  // EVENT FIELDS
-  // ----------------------------------------------------------
+  const [editingId, setEditingId] =
+    useState<string | null>(null);
 
-  const [header, setHeader] = useState(
-    "AICTE-VAANI WORKSHOP (2 Days)"
-  );
+  // ==========================================================
+  // FORM
+  // ==========================================================
 
-  const [topic, setTopic] = useState("");
-  const [dates, setDates] = useState("");
-  const [time, setTime] = useState("9:00 AM – 5:00 PM");
-  const [venue, setVenue] = useState("MIT, MU Campus");
-  const [information, setInformation] = useState("");
+  const [header, setHeader] =
+    useState("");
 
-  // ----------------------------------------------------------
-  // CONTACT
-  // ----------------------------------------------------------
+  const [description, setDescription] =
+    useState("");
 
-  const [coordinator, setCoordinator] = useState("");
-  const [coCoordinator, setCoCoordinator] = useState("");
-  const [department, setDepartment] = useState("");
+  const [year, setYear] =
+    useState(
+      new Date()
+        .getFullYear()
+        .toString()
+    );
 
-  const [website, setWebsite] = useState(
-    "https://mitimphal.manipuruniv.ac.in/"
-  );
+  const [resourceType, setResourceType] =
+    useState<ResourceType>("link");
 
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [resourceUrl, setResourceUrl] =
+    useState("");
 
-  // ----------------------------------------------------------
-  // ATTACHMENTS
-  // ----------------------------------------------------------
+  const [resourceFile, setResourceFile] =
+    useState("");
 
-  const [attachments, setAttachments] = useState<
-    AttachmentOrLink[]
-  >([]);
+  const [selectedFile, setSelectedFile] =
+    useState<File | null>(null);
 
-  // ----------------------------------------------------------
-  // EXTRA LINKS
-  // ----------------------------------------------------------
-
-  const [extraLinks, setExtraLinks] = useState<
-    AttachmentOrLink[]
-  >([]);
-
-  // ----------------------------------------------------------
-  // STATUS
-  // ----------------------------------------------------------
-
-  const [status, setStatus] = useState<
-    "Active" | "Inactive"
-  >("Active");
-
-  // ----------------------------------------------------------
+  // ==========================================================
   // SUBMIT
-  // ----------------------------------------------------------
+  // ==========================================================
 
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] =
+    useState(false);
 
   // ==========================================================
   // FETCH
@@ -149,24 +120,26 @@ export default function Admin_AICTE_VAANI() {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.get("/aicte-vaani");
+      const response =
+        await apiClient.get("/nirf");
 
-      const data: AicteVaaniItem[] =
+      const data: NirfItem[] =
         response.data?.data ??
         (Array.isArray(response.data)
           ? response.data
           : []);
 
-      setItems(data);
-    } catch (error: any) {
-      console.error(
-        "Fetch AICTE-VAANI error:",
-        error
+      setItems(
+        Array.isArray(data)
+          ? data
+          : []
       );
-
+    } catch (error: any) {
       toast.error(
-        error?.response?.data?.error ||
-          "Failed to load AICTE-VAANI events."
+        error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
+          "Failed to load NIRF records."
       );
 
       setItems([]);
@@ -192,28 +165,23 @@ export default function Admin_AICTE_VAANI() {
   const resetForm = () => {
     setEditingId(null);
 
-    setHeader("AICTE-VAANI WORKSHOP (2 Days)");
-    setTopic("");
-    setDates("");
-    setTime("9:00 AM – 5:00 PM");
-    setVenue("MIT, MU Campus");
-    setInformation("");
+    setHeader("");
 
-    setCoordinator("");
-    setCoCoordinator("");
-    setDepartment("");
+    setDescription("");
 
-    setWebsite(
-      "https://mitimphal.manipuruniv.ac.in/"
+    setYear(
+      new Date()
+        .getFullYear()
+        .toString()
     );
 
-    setEmail("");
-    setPhone("");
+    setResourceType("link");
 
-    setAttachments([]);
-    setExtraLinks([]);
+    setResourceUrl("");
 
-    setStatus("Active");
+    setResourceFile("");
+
+    setSelectedFile(null);
   };
 
   // ==========================================================
@@ -222,6 +190,7 @@ export default function Admin_AICTE_VAANI() {
 
   const openAddModal = () => {
     resetForm();
+
     setShowModal(true);
   };
 
@@ -230,69 +199,38 @@ export default function Admin_AICTE_VAANI() {
   // ==========================================================
 
   const openEditModal = (
-    item: AicteVaaniItem
+    item: NirfItem
   ) => {
     setEditingId(item._id);
 
     setHeader(
-      item.header ||
-        "AICTE-VAANI WORKSHOP (2 Days)"
+      item.header || ""
     );
 
-    setTopic(item.topic || "");
-    setDates(item.dates || "");
-    setTime(
-      item.time || "9:00 AM – 5:00 PM"
+    setDescription(
+      item.description || ""
     );
 
-    setVenue(
-      item.venue || "MIT, MU Campus"
+    setYear(
+      item.year || ""
     );
 
-    setInformation(
-      item.information || ""
+    const type: ResourceType =
+      item.resource?.type === "file"
+        ? "file"
+        : "link";
+
+    setResourceType(type);
+
+    setResourceUrl(
+      item.resource?.url || ""
     );
 
-    setCoordinator(
-      item.contact?.coordinator || ""
+    setResourceFile(
+      item.resource?.file || ""
     );
 
-    setCoCoordinator(
-      item.contact?.coCoordinator || ""
-    );
-
-    setDepartment(
-      item.contact?.department || ""
-    );
-
-    setWebsite(
-      item.contact?.website ||
-        "https://mitimphal.manipuruniv.ac.in/"
-    );
-
-    setEmail(
-      item.contact?.email || ""
-    );
-
-    setPhone(
-      item.contact?.phone || ""
-    );
-
-    setAttachments(
-      Array.isArray(item.attachments)
-        ? item.attachments
-        : []
-    );
-
-    setExtraLinks(
-      Array.isArray(item.extraLinks)
-        ? item.extraLinks
-        : []
-    );
-
-    setStatus(
-      item.status || "Active"
-    );
+    setSelectedFile(null);
 
     setShowModal(true);
   };
@@ -302,206 +240,223 @@ export default function Admin_AICTE_VAANI() {
   // ==========================================================
 
   const closeModal = () => {
-    if (submitting) return;
+    if (submitting) {
+      return;
+    }
 
     setShowModal(false);
+
     resetForm();
   };
 
   // ==========================================================
-  // ATTACHMENT FUNCTIONS
+  // BUILD FORMDATA
   // ==========================================================
 
-  const addAttachment = () => {
-    setAttachments((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        title: "",
-        url: "",
-      },
-    ]);
-  };
+  const buildFormData = () => {
+    const formData =
+      new FormData();
 
-  const updateAttachment = (
-    index: number,
-    field: "title" | "url",
-    value: string
-  ) => {
-    setAttachments((prev) =>
-      prev.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              [field]: value,
-            }
-          : item
-      )
+    formData.append(
+      "header",
+      header.trim()
     );
-  };
 
-  const removeAttachment = (
-    index: number
-  ) => {
-    setAttachments((prev) =>
-      prev.filter((_, i) => i !== index)
+    formData.append(
+      "description",
+      description.trim()
     );
-  };
 
-  // ==========================================================
-  // EXTRA LINK FUNCTIONS
-  // ==========================================================
-
-  const addExtraLink = () => {
-    setExtraLinks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        title: "",
-        url: "",
-      },
-    ]);
-  };
-
-  const updateExtraLink = (
-    index: number,
-    field: "title" | "url",
-    value: string
-  ) => {
-    setExtraLinks((prev) =>
-      prev.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              [field]: value,
-            }
-          : item
-      )
+    formData.append(
+      "year",
+      year.trim()
     );
-  };
 
-  const removeExtraLink = (
-    index: number
-  ) => {
-    setExtraLinks((prev) =>
-      prev.filter((_, i) => i !== index)
+    formData.append(
+      "resource[type]",
+      resourceType
     );
+
+    // ========================================================
+    // LINK
+    // ========================================================
+
+    if (resourceType === "link") {
+      formData.append(
+        "resource[url]",
+        resourceUrl.trim()
+      );
+
+      formData.append(
+        "resource[file]",
+        ""
+      );
+
+      return formData;
+    }
+
+    // ========================================================
+    // FILE
+    // ========================================================
+
+    formData.append(
+      "resource[url]",
+      ""
+    );
+
+    if (selectedFile) {
+      formData.append(
+        "file",
+        selectedFile,
+        selectedFile.name
+      );
+    }
+
+    return formData;
   };
 
   // ==========================================================
-  // SUBMIT
+  // HANDLE SUBMIT
   // ==========================================================
 
   const handleSubmit = async (
-    e: React.FormEvent
+    e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
 
-    if (!topic.trim()) {
+    // ========================================================
+    // VALIDATION
+    // ========================================================
+
+    if (!header.trim()) {
       toast.error(
-        "Please enter the workshop topic."
+        "Please enter the NIRF header."
       );
+
       return;
     }
 
-    if (!dates.trim()) {
+    if (!description.trim()) {
       toast.error(
-        "Please enter the event dates."
+        "Please enter the description."
       );
+
       return;
+    }
+
+    if (!year.trim()) {
+      toast.error(
+        "Please enter the NIRF year."
+      );
+
+      return;
+    }
+
+    if (
+      resourceType === "link" &&
+      !resourceUrl.trim()
+    ) {
+      toast.error(
+        "Please enter the resource URL."
+      );
+
+      return;
+    }
+
+    if (
+      resourceType === "file" &&
+      !selectedFile &&
+      !resourceFile
+    ) {
+      toast.error(
+        "Please select a document."
+      );
+
+      return;
+    }
+
+    // ========================================================
+    // FILE SIZE VALIDATION
+    // ========================================================
+
+    if (selectedFile) {
+      const maxSize =
+        10 * 1024 * 1024;
+
+      if (
+        selectedFile.size >
+        maxSize
+      ) {
+        toast.error(
+          "File size must not exceed 10 MB."
+        );
+
+        return;
+      }
     }
 
     setSubmitting(true);
 
-    const payload = {
-      header:
-        header.trim() ||
-        "AICTE-VAANI WORKSHOP (2 Days)",
-
-      topic: topic.trim(),
-
-      dates: dates.trim(),
-
-      time:
-        time.trim() ||
-        "9:00 AM – 5:00 PM",
-
-      venue:
-        venue.trim() ||
-        "MIT, MU Campus",
-
-      information:
-        information.trim(),
-
-      contact: {
-        coordinator:
-          coordinator.trim(),
-
-        coCoordinator:
-          coCoordinator.trim(),
-
-        department:
-          department.trim(),
-
-        website:
-          website.trim(),
-
-        email:
-          email.trim(),
-
-        phone:
-          phone.trim(),
-      },
-
-      attachments:
-        attachments.filter(
-          (item) =>
-            item.title.trim() ||
-            item.url.trim()
-        ),
-
-      extraLinks:
-        extraLinks.filter(
-          (item) =>
-            item.title.trim() ||
-            item.url.trim()
-        ),
-
-      status,
-    };
-
     try {
+      const formData =
+        buildFormData();
+
       // ======================================================
       // EDIT
       // ======================================================
 
       if (editingId) {
+        showLoadingAlert({
+          title: "Updating NIRF...",
+          text:
+            "Please wait while the NIRF record is being updated.",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+        });
+
         const response =
           await apiClient.put(
-            `/aicte-vaani/edit/${editingId}`,
-            payload
+            `/nirf/edit/${editingId}`,
+            formData,
+            {
+              timeout: 120000,
+            }
           );
+
+        if (
+          !response.data?.success
+        ) {
+          throw new Error(
+            response.data?.message ||
+              "Failed to update NIRF record."
+          );
+        }
 
         const updatedItem =
           response.data?.data;
 
-        if (!updatedItem) {
-          throw new Error(
-            "Invalid update response from server."
+        if (updatedItem) {
+          setItems((prev) =>
+            prev.map((item) =>
+              item._id === editingId
+                ? updatedItem
+                : item
+            )
           );
+        } else {
+          await fetchData();
         }
 
-        setItems((prev) =>
-          prev.map((item) =>
-            item._id === editingId
-              ? updatedItem
-              : item
-          )
-        );
-
-        toast.success(
-          "AICTE-VAANI event updated successfully."
-        );
+        await showAlert({
+          title: "Updated!",
+          text:
+            "NIRF record updated successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 1800,
+          timerProgressBar: true,
+        });
       }
 
       // ======================================================
@@ -509,117 +464,247 @@ export default function Admin_AICTE_VAANI() {
       // ======================================================
 
       else {
+        showLoadingAlert({
+          title: "Adding NIRF...",
+          text:
+            "Please wait while the NIRF record is being added.",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+        });
+
         const response =
           await apiClient.post(
-            "/aicte-vaani/add",
-            payload
+            "/nirf/add",
+            formData,
+            {
+              timeout: 120000,
+            }
           );
+
+        if (
+          !response.data?.success
+        ) {
+          throw new Error(
+            response.data?.message ||
+              "Failed to add NIRF record."
+          );
+        }
 
         const createdItem =
           response.data?.data;
 
-        if (!createdItem) {
-          throw new Error(
-            "Invalid create response from server."
-          );
+        if (createdItem) {
+          setItems((prev) => [
+            createdItem,
+            ...prev,
+          ]);
+        } else {
+          await fetchData();
         }
 
-        setItems((prev) => [
-          createdItem,
-          ...prev,
-        ]);
-
-        toast.success(
-          "AICTE-VAANI event created successfully."
-        );
+        await showAlert({
+          title: "Added!",
+          text:
+            "NIRF record added successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 1800,
+          timerProgressBar: true,
+        });
       }
 
       setShowModal(false);
+
       resetForm();
     } catch (error: any) {
-      console.error(
-        "Save AICTE-VAANI error:",
-        error
-      );
-
-      toast.error(
+      const message =
+        error?.response?.data?.message ||
         error?.response?.data?.error ||
-          error?.response?.data?.details ||
-          "Failed to save AICTE-VAANI event."
-      );
+        error?.message ||
+        "Failed to save NIRF record.";
+
+      await showAlert({
+        title: editingId
+          ? "Update Failed"
+          : "Add Failed",
+        text: message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
   // ==========================================================
-  // DELETE WITH SWEETALERT
+  // DELETE
   // ==========================================================
 
   const handleDelete = async (
     id: string,
-    topicName: string
+    headerName: string
   ) => {
-    const result = await Swal.fire({
-      title: "Delete AICTE-VAANI Event?",
-      text: `Are you sure you want to delete "${topicName}"?`,
-      icon: "warning",
+    // ========================================================
+    // CONFIRMATION
+    // ========================================================
 
-      showCancelButton: true,
+    const result =
+      await showAlert({
+        title: "Delete NIRF Record?",
+        text: `"${headerName}" will be permanently deleted.`,
+        icon: "warning",
 
-      confirmButtonColor: "#be123c",
-      cancelButtonColor: "#6b7280",
+        showCancelButton: true,
 
-      confirmButtonText: "Yes, Delete",
-      cancelButtonText: "Cancel",
+        confirmButtonColor:
+          "#be123c",
 
-      reverseButtons: true,
-    });
+        cancelButtonColor:
+          "#6b7280",
+
+        confirmButtonText:
+          "Yes, Delete",
+
+        cancelButtonText:
+          "Cancel",
+
+        reverseButtons: true,
+
+        focusCancel: true,
+      });
 
     if (!result.isConfirmed) {
       return;
     }
 
+    // ========================================================
+    // DELETE
+    // ========================================================
+
     try {
-      await apiClient.delete(
-        `/aicte-vaani/delete/${id}`
-      );
+      showLoadingAlert({
+        title: "Deleting...",
+        text:
+          "Please wait while the NIRF record is being deleted.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+      });
+
+      const response =
+        await apiClient.delete(
+          `/nirf/delete/${id}`,
+          {
+            timeout: 30000,
+          }
+        );
+
+      if (
+        !response.data?.success
+      ) {
+        throw new Error(
+          response.data?.message ||
+            "Failed to delete NIRF record."
+        );
+      }
+
+      // ======================================================
+      // REMOVE FROM UI
+      // ======================================================
 
       setItems((prev) =>
         prev.filter(
-          (item) => item._id !== id
+          (item) =>
+            item._id !== id
         )
       );
 
-      await Swal.fire({
+      // ======================================================
+      // SUCCESS
+      // ======================================================
+
+      await showAlert({
         title: "Deleted!",
         text:
-          "AICTE-VAANI event deleted successfully.",
+          "NIRF record deleted successfully.",
         icon: "success",
 
-        confirmButtonColor: "#be123c",
+        confirmButtonColor:
+          "#be123c",
 
         timer: 1800,
         showConfirmButton: false,
       });
     } catch (error: any) {
-      console.error(
-        "Delete AICTE-VAANI error:",
-        error
-      );
-
-      await Swal.fire({
+      await showAlert({
         title: "Delete Failed",
 
         text:
+          error?.response?.data?.message ||
           error?.response?.data?.error ||
-          "Failed to delete AICTE-VAANI event.",
+          error?.message ||
+          "Failed to delete NIRF record.",
 
         icon: "error",
 
-        confirmButtonColor: "#be123c",
+        confirmButtonColor:
+          "#be123c",
       });
     }
+  };
+
+  // ==========================================================
+  // RESOURCE URL
+  // ==========================================================
+
+  const getResourceUrl = (
+    item: NirfItem
+  ) => {
+    if (!item.resource) {
+      return "";
+    }
+
+    // ========================================================
+    // LINK
+    // ========================================================
+
+    if (
+      item.resource.type ===
+      "link"
+    ) {
+      return (
+        item.resource.url || ""
+      );
+    }
+
+    // ========================================================
+    // FILE
+    // ========================================================
+
+    const file =
+      item.resource.file || "";
+
+    if (!file) {
+      return "";
+    }
+
+    if (
+      file.startsWith(
+        "http://"
+      ) ||
+      file.startsWith(
+        "https://"
+      )
+    ) {
+      return file;
+    }
+
+    if (file.startsWith("/")) {
+      return `${API_BASE_URL}${file}`;
+    }
+
+    return `${API_BASE_URL}/${file}`;
   };
 
   // ==========================================================
@@ -629,7 +714,9 @@ export default function Admin_AICTE_VAANI() {
   if (!token || role !== "admin") {
     return (
       <div className="p-4">
-        <SignIn_SignUP role="admin" />
+        <SignIn_SignUP
+          role="admin"
+        />
       </div>
     );
   }
@@ -649,20 +736,23 @@ export default function Admin_AICTE_VAANI() {
 
         <div>
           <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <Sparkles className="w-8 h-8 text-rose-700" />
 
-            AICTE-VAANI Management
+            <Award className="w-8 h-8 text-rose-700" />
+
+            NIRF Management
+
           </h1>
 
           <p className="text-gray-500 text-sm mt-1">
-            Create, edit and manage AICTE-VAANI
-            workshops, contacts, attachments and links.
+            Create, edit and manage NIRF
+            submissions and resources.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
 
           <button
+            type="button"
             onClick={fetchData}
             disabled={isLoading}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 text-gray-700 text-sm font-semibold rounded-lg border border-gray-300 transition"
@@ -679,12 +769,13 @@ export default function Admin_AICTE_VAANI() {
           </button>
 
           <button
+            type="button"
             onClick={openAddModal}
             className="flex items-center gap-2 px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white text-sm font-semibold rounded-lg shadow-md transition"
           >
             <Plus className="w-4 h-4" />
 
-            Add Event
+            Add NIRF
           </button>
 
         </div>
@@ -699,337 +790,283 @@ export default function Admin_AICTE_VAANI() {
         <AlertTriangle className="w-5 h-5 mt-0.5 text-amber-500 flex-shrink-0" />
 
         <div>
+
           <strong>
-            AICTE-VAANI Management:
+            NIRF Management:
           </strong>{" "}
-          Only events stored in the backend
-          are shown. Add, edit and delete
-          operations are saved directly to MongoDB.
+
+          Each NIRF record contains a
+          header, description, year and
+          either a web link or uploaded
+          document.
+
         </div>
 
       </div>
 
       {/* ====================================================
-          EVENT LIST
+          LIST
       ==================================================== */}
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
         <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
 
-          <h2 className="font-bold text-gray-800 text-lg">
-            AICTE-VAANI Events
-          </h2>
+          <div>
+
+            <h2 className="font-bold text-gray-800 text-lg">
+              NIRF Records
+            </h2>
+
+            <p className="text-xs text-gray-500 mt-0.5">
+              Manage NIRF submissions
+            </p>
+
+          </div>
 
           <span className="text-xs text-gray-500 font-medium">
-            {items.length} total
+            {items.length}{" "}
+            {items.length === 1
+              ? "entry"
+              : "entries"}
           </span>
 
         </div>
 
-        {/* LOADING */}
+        {/* ==================================================
+            LOADING
+        ================================================== */}
 
         {isLoading ? (
+
           <div className="p-16 flex flex-col items-center justify-center text-gray-500">
 
             <RefreshCw className="w-8 h-8 animate-spin mb-3" />
 
             <p className="font-medium">
-              Loading AICTE-VAANI events...
+              Loading NIRF records...
             </p>
 
           </div>
+
         ) : items.length === 0 ? (
 
-          /* EMPTY */
+          /* ==================================================
+             EMPTY
+          ================================================== */
 
           <div className="p-16 text-center">
 
-            <Sparkles className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+            <Award className="w-12 h-12 mx-auto text-gray-300 mb-4" />
 
             <p className="font-semibold text-gray-600">
-              No AICTE-VAANI events found.
+              No NIRF records found.
             </p>
 
             <p className="text-sm text-gray-400 mt-1">
-              Click "Add Event" to create the first
-              workshop.
+              Click "Add NIRF" to create
+              the first record.
             </p>
 
+            <button
+              type="button"
+              onClick={openAddModal}
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white text-sm font-semibold rounded-lg"
+            >
+              <Plus className="w-4 h-4" />
+
+              Add NIRF
+            </button>
+
           </div>
+
         ) : (
 
-          /* LIST */
+          /* ==================================================
+             TABLE
+          ================================================== */
 
-          <div className="divide-y divide-gray-200">
+          <div className="overflow-x-auto">
 
-            {items.map((event) => (
+            <table className="w-full min-w-[900px]">
 
-              <div
-                key={event._id}
-                className="p-6 hover:bg-gray-50 transition"
-              >
+              <thead>
 
-                <div className="flex flex-col md:flex-row justify-between gap-5">
+                <tr className="bg-gray-100 text-xs uppercase text-gray-600">
 
-                  <div className="flex-1 min-w-0">
+                  <th className="px-5 py-3 text-left font-semibold">
+                    Year
+                  </th>
 
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <th className="px-5 py-3 text-left font-semibold">
+                    Header
+                  </th>
 
-                      <span className="px-2.5 py-1 bg-cyan-100 text-cyan-800 text-xs font-bold rounded-full">
-                        {event.header}
-                      </span>
+                  <th className="px-5 py-3 text-left font-semibold">
+                    Description
+                  </th>
 
-                      <span
-                        className={`px-2.5 py-1 text-xs font-bold rounded-full border ${
-                          event.status ===
-                          "Active"
-                            ? "bg-green-100 text-green-800 border-green-200"
-                            : "bg-gray-100 text-gray-500 border-gray-200"
-                        }`}
-                      >
-                        {event.status}
-                      </span>
+                  <th className="px-5 py-3 text-left font-semibold">
+                    Resource
+                  </th>
 
-                    </div>
+                  <th className="px-5 py-3 text-right font-semibold">
+                    Actions
+                  </th>
 
-                    <h3 className="text-xl font-bold text-gray-900 break-words">
-                      {event.topic}
-                    </h3>
+                </tr>
 
-                    <div className="flex flex-wrap gap-x-5 gap-y-2 mt-3 text-xs text-gray-600">
+              </thead>
 
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-cyan-600" />
-                        {event.dates}
-                      </span>
+              <tbody className="divide-y divide-gray-200">
 
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-cyan-600" />
-                        {event.time}
-                      </span>
+                {items.map((item) => {
 
-                      <span className="flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-cyan-600" />
-                        {event.venue}
-                      </span>
+                  const resourceUrl =
+                    getResourceUrl(
+                      item
+                    );
 
-                    </div>
-
-                  </div>
-
-                  {/* ACTIONS */}
-
-                  <div className="flex items-start gap-2">
-
-                    <button
-                      onClick={() =>
-                        openEditModal(event)
-                      }
-                      className="p-2 bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-700 rounded-lg border border-gray-200 transition"
-                      title="Edit"
+                  return (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-gray-50 transition"
                     >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
 
-                    <button
-                      onClick={() =>
-                        handleDelete(
-                          event._id,
-                          event.topic
-                        )
-                      }
-                      className="p-2 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 rounded-lg border border-gray-200 transition"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      {/* YEAR */}
 
-                  </div>
+                      <td className="px-5 py-4 align-top">
 
-                </div>
+                        <span className="inline-flex items-center gap-1.5 bg-cyan-100 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-full text-xs font-bold">
 
-                {/* DETAILS */}
+                          <Calendar className="w-3.5 h-3.5" />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                          {item.year ||
+                            "-"}
 
-                  {/* CONTACT */}
+                        </span>
 
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                      </td>
 
-                    <h4 className="font-bold text-sm text-gray-700 mb-3">
-                      Contact Details
-                    </h4>
+                      {/* HEADER */}
 
-                    <div className="space-y-2 text-xs text-gray-600">
+                      <td className="px-5 py-4 align-top">
 
-                      {event.contact?.coordinator && (
                         <div className="flex gap-2">
-                          <User className="w-4 h-4 text-cyan-600 flex-shrink-0" />
 
-                          <span>
-                            {event.contact.coordinator}
-                          </span>
+                          <Award className="w-4 h-4 text-rose-600 mt-0.5 flex-shrink-0" />
+
+                          <p className="font-semibold text-gray-900 max-w-[280px] break-words">
+                            {item.header ||
+                              "-"}
+                          </p>
+
                         </div>
-                      )}
 
-                      {event.contact?.department && (
-                        <div className="flex gap-2">
-                          <Building className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+                      </td>
 
-                          <span>
-                            {event.contact.department}
-                          </span>
-                        </div>
-                      )}
+                      {/* DESCRIPTION */}
 
-                      {event.contact?.email && (
-                        <div className="flex gap-2">
-                          <Mail className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+                      <td className="px-5 py-4 align-top">
 
-                          <span>
-                            {event.contact.email}
-                          </span>
-                        </div>
-                      )}
+                        <p className="text-sm text-gray-600 max-w-[320px] line-clamp-3">
+                          {item.description ||
+                            "-"}
+                        </p>
 
-                      {event.contact?.phone && (
-                        <div className="flex gap-2">
-                          <Phone className="w-4 h-4 text-cyan-600 flex-shrink-0" />
+                      </td>
 
-                          <span>
-                            {event.contact.phone}
-                          </span>
-                        </div>
-                      )}
+                      {/* RESOURCE */}
 
-                      {event.contact?.website && (
-                        <a
-                          href={
-                            event.contact.website
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex gap-2 text-cyan-700 hover:underline"
-                        >
-                          <Globe className="w-4 h-4 flex-shrink-0" />
+                      <td className="px-5 py-4 align-top">
 
-                          <span className="truncate">
-                            {
-                              event.contact.website
+                        {resourceUrl ? (
+
+                          <a
+                            href={
+                              resourceUrl
                             }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 max-w-[220px] text-rose-700 hover:text-rose-900 text-sm font-semibold"
+                          >
+
+                            {item.resource
+                              ?.type ===
+                            "file" ? (
+                              <FileText className="w-4 h-4 flex-shrink-0" />
+                            ) : (
+                              <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                            )}
+
+                            <span className="truncate">
+
+                              {item.resource
+                                ?.type ===
+                              "file"
+                                ? "Open File"
+                                : "Open Link"}
+
+                            </span>
+
+                            <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+
+                          </a>
+
+                        ) : (
+
+                          <span className="text-xs text-gray-400">
+                            No resource
                           </span>
 
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-
-                    </div>
-
-                  </div>
-
-                  {/* ATTACHMENTS */}
-
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-
-                    <h4 className="font-bold text-sm text-gray-700 mb-3">
-                      Resources
-                    </h4>
-
-                    <div className="space-y-2">
-
-                      {event.attachments
-                        ?.length > 0 && (
-                        <div>
-
-                          <p className="text-xs font-semibold text-gray-500 mb-1">
-                            Attachments
-                          </p>
-
-                          {event.attachments.map(
-                            (
-                              attachment,
-                              index
-                            ) => (
-                              <a
-                                key={
-                                  attachment.id ??
-                                  index
-                                }
-                                href={
-                                  attachment.url
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-xs text-cyan-700 hover:underline mb-1"
-                              >
-                                <Paperclip className="w-3.5 h-3.5 flex-shrink-0" />
-
-                                <span className="truncate">
-                                  {attachment.title ||
-                                    attachment.url}
-                                </span>
-                              </a>
-                            )
-                          )}
-
-                        </div>
-                      )}
-
-                      {event.extraLinks
-                        ?.length > 0 && (
-                        <div>
-
-                          <p className="text-xs font-semibold text-gray-500 mb-1">
-                            Extra Links
-                          </p>
-
-                          {event.extraLinks.map(
-                            (
-                              link,
-                              index
-                            ) => (
-                              <a
-                                key={
-                                  link.id ??
-                                  index
-                                }
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-xs text-cyan-700 hover:underline mb-1"
-                              >
-                                <LinkIcon className="w-3.5 h-3.5 flex-shrink-0" />
-
-                                <span className="truncate">
-                                  {link.title ||
-                                    link.url}
-                                </span>
-                              </a>
-                            )
-                          )}
-
-                        </div>
-                      )}
-
-                      {!event.attachments
-                        ?.length &&
-                        !event.extraLinks
-                          ?.length && (
-                          <p className="text-xs text-gray-400">
-                            No resources added.
-                          </p>
                         )}
 
-                    </div>
+                      </td>
 
-                  </div>
+                      {/* ACTIONS */}
 
-                </div>
+                      <td className="px-5 py-4 align-top">
 
-              </div>
+                        <div className="flex justify-end items-center gap-2">
 
-            ))}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openEditModal(
+                                item
+                              )
+                            }
+                            className="p-2 bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-700 rounded-lg border border-gray-200 transition"
+                            title="Edit NIRF"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDelete(
+                                item._id,
+                                item.header
+                              )
+                            }
+                            className="p-2 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 rounded-lg border border-gray-200 transition"
+                            title="Delete NIRF"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  );
+                })}
+
+              </tbody>
+
+            </table>
 
           </div>
         )}
@@ -1044,36 +1081,41 @@ export default function Admin_AICTE_VAANI() {
 
         <div
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={closeModal}
+          onMouseDown={closeModal}
         >
 
           <div
-            className="bg-white w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl"
-            onClick={(e) =>
+            className="bg-white w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl"
+            onMouseDown={(e) =>
               e.stopPropagation()
             }
           >
 
-            {/* MODAL HEADER */}
+            {/* ==================================================
+                MODAL HEADER
+            ================================================== */}
 
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
 
               <div>
 
                 <h3 className="text-xl font-bold text-gray-800">
+
                   {editingId
-                    ? "Edit AICTE-VAANI Event"
-                    : "Add AICTE-VAANI Event"}
+                    ? "Edit NIRF Record"
+                    : "Add NIRF Record"}
+
                 </h3>
 
                 <p className="text-xs text-gray-500 mt-1">
-                  Enter the workshop information
+                  Enter the NIRF information
                   below.
                 </p>
 
               </div>
 
               <button
+                type="button"
                 onClick={closeModal}
                 disabled={submitting}
                 className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
@@ -1083,29 +1125,37 @@ export default function Admin_AICTE_VAANI() {
 
             </div>
 
-            {/* FORM */}
+            {/* ==================================================
+                FORM
+            ================================================== */}
 
             <form
               onSubmit={handleSubmit}
               className="p-6 space-y-7"
             >
 
-              {/* EVENT OVERVIEW */}
+              {/* =================================================
+                  BASIC INFORMATION
+              ================================================= */}
 
               <section>
 
                 <h4 className="font-bold text-gray-800 border-b pb-2 mb-4">
-                  1. Event Overview
+                  1. NIRF Information
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+                  {/* HEADER */}
+
                   <div>
+
                     <label className="label">
-                      Header / Tagline
+                      Header *
                     </label>
 
                     <input
+                      type="text"
                       value={header}
                       onChange={(e) =>
                         setHeader(
@@ -1113,443 +1163,334 @@ export default function Admin_AICTE_VAANI() {
                         )
                       }
                       className="input"
-                      placeholder="AICTE-VAANI WORKSHOP (2 Days)"
+                      placeholder="NIRF 2026 Engineering"
+                      required
                     />
+
                   </div>
 
+                  {/* YEAR */}
+
                   <div>
+
                     <label className="label">
-                      Topic / Title *
+                      Year *
                     </label>
 
                     <input
-                      value={topic}
+                      type="text"
+                      value={year}
                       onChange={(e) =>
-                        setTopic(
+                        setYear(
                           e.target.value
                         )
                       }
                       className="input"
-                      placeholder="Emerging Trends in Semiconductor Technology"
+                      placeholder="2026"
                       required
                     />
+
                   </div>
 
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-
-                  <div>
-                    <label className="label">
-                      Dates *
-                    </label>
-
-                    <input
-                      value={dates}
-                      onChange={(e) =>
-                        setDates(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="09 October 2025 – 10 October 2025"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">
-                      Time
-                    </label>
-
-                    <input
-                      value={time}
-                      onChange={(e) =>
-                        setTime(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="9:00 AM – 5:00 PM"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">
-                      Venue
-                    </label>
-
-                    <input
-                      value={venue}
-                      onChange={(e) =>
-                        setVenue(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="MIT, MU Campus"
-                    />
-                  </div>
-
-                </div>
+                {/* DESCRIPTION */}
 
                 <div className="mt-4">
 
                   <label className="label">
-                    Event Information
+                    Description *
                   </label>
 
                   <textarea
-                    value={information}
+                    value={description}
                     onChange={(e) =>
-                      setInformation(
+                      setDescription(
                         e.target.value
                       )
                     }
                     className="input min-h-[140px] resize-y"
-                    placeholder="Enter detailed information about the workshop..."
+                    placeholder="Enter description for the NIRF submission..."
+                    required
                   />
 
                 </div>
 
               </section>
 
-              {/* CONTACT */}
+              {/* =================================================
+                  RESOURCE
+              ================================================= */}
 
               <section>
 
                 <h4 className="font-bold text-gray-800 border-b pb-2 mb-4">
-                  2. Contact Details
+                  2. Resource
                 </h4>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* RESOURCE TYPE */}
 
-                  <div>
-                    <label className="label">
-                      Coordinator
-                    </label>
+                <div>
 
-                    <input
-                      value={coordinator}
-                      onChange={(e) =>
-                        setCoordinator(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="Coordinator name"
-                    />
-                  </div>
+                  <label className="label">
+                    Resource Type
+                  </label>
 
-                  <div>
-                    <label className="label">
-                      Co-Coordinator
-                    </label>
+                  <div className="grid grid-cols-2 gap-3">
 
-                    <input
-                      value={coCoordinator}
-                      onChange={(e) =>
-                        setCoCoordinator(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="Co-coordinator name"
-                    />
-                  </div>
+                    {/* LINK */}
 
-                  <div>
-                    <label className="label">
-                      Department
-                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
 
-                    <input
-                      value={department}
-                      onChange={(e) =>
-                        setDepartment(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="Department name"
-                    />
-                  </div>
+                        setResourceType(
+                          "link"
+                        );
 
-                  <div>
-                    <label className="label">
-                      Website
-                    </label>
+                        setSelectedFile(
+                          null
+                        );
 
-                    <input
-                      value={website}
-                      onChange={(e) =>
-                        setWebsite(
-                          e.target.value
-                        )
-                      }
-                      className="input font-mono"
-                      placeholder="https://..."
-                    />
-                  </div>
+                        setResourceFile(
+                          ""
+                        );
 
-                  <div>
-                    <label className="label">
-                      Email
-                    </label>
+                      }}
+                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold transition ${
+                        resourceType ===
+                        "link"
+                          ? "border-rose-500 bg-rose-50 text-rose-700"
+                          : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
 
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) =>
-                        setEmail(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="example@example.com"
-                    />
-                  </div>
+                      <LinkIcon className="w-4 h-4" />
 
-                  <div>
-                    <label className="label">
-                      Phone
-                    </label>
+                      Link
 
-                    <input
-                      value={phone}
-                      onChange={(e) =>
-                        setPhone(
-                          e.target.value
-                        )
-                      }
-                      className="input"
-                      placeholder="+91..."
-                    />
+                    </button>
+
+                    {/* FILE */}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+
+                        setResourceType(
+                          "file"
+                        );
+
+                        setResourceUrl(
+                          ""
+                        );
+
+                      }}
+                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold transition ${
+                        resourceType ===
+                        "file"
+                          ? "border-rose-500 bg-rose-50 text-rose-700"
+                          : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+
+                      <FileText className="w-4 h-4" />
+
+                      File
+
+                    </button>
+
                   </div>
 
                 </div>
 
-              </section>
+                {/* =================================================
+                    LINK RESOURCE
+                ================================================= */}
 
-              {/* ATTACHMENTS */}
+                {resourceType ===
+                "link" ? (
 
-              <section>
+                  <div className="mt-4">
 
-                <div className="flex justify-between items-center border-b pb-2 mb-4">
+                    <label className="label">
+                      Resource URL *
+                    </label>
 
-                  <h4 className="font-bold text-gray-800">
-                    3. Attachments
-                  </h4>
+                    <div className="relative">
 
-                  <button
-                    type="button"
-                    onClick={addAttachment}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 rounded-lg"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
+                      <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 
-                    Add Attachment
-                  </button>
-
-                </div>
-
-                <div className="space-y-3">
-
-                  {attachments.map(
-                    (
-                      attachment,
-                      index
-                    ) => (
-
-                      <div
-                        key={
-                          attachment.id ??
-                          index
+                      <input
+                        type="url"
+                        value={
+                          resourceUrl
                         }
-                        className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr_auto] gap-2 bg-gray-50 border border-gray-200 p-3 rounded-lg"
-                      >
+                        onChange={(e) =>
+                          setResourceUrl(
+                            e.target.value
+                          )
+                        }
+                        className="input pl-9"
+                        placeholder="https://example.com/nirf"
+                        required
+                      />
 
-                        <input
-                          value={
-                            attachment.title
-                          }
-                          onChange={(e) =>
-                            updateAttachment(
-                              index,
-                              "title",
-                              e.target.value
-                            )
-                          }
-                          className="input"
-                          placeholder="Attachment title"
-                        />
+                    </div>
 
-                        <input
-                          value={
-                            attachment.url
-                          }
-                          onChange={(e) =>
-                            updateAttachment(
-                              index,
-                              "url",
-                              e.target.value
-                            )
-                          }
-                          className="input font-mono"
-                          placeholder="https://..."
-                        />
+                  </div>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeAttachment(
-                              index
-                            )
+                ) : (
+
+                  /* =================================================
+                     FILE RESOURCE
+                  ================================================= */
+
+                  <div className="mt-4">
+
+                    <label className="label">
+                      Upload Document *
+                    </label>
+
+                    <div className="relative">
+
+                      <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx"
+                        onChange={(e) => {
+
+                          const file =
+                            e.target.files?.[0] ||
+                            null;
+
+                          setSelectedFile(
+                            file
+                          );
+
+                          if (file) {
+                            setResourceFile(
+                              ""
+                            );
                           }
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+
+                        }}
+                        className="input pl-9"
+                      />
+
+                    </div>
+
+                    <p className="text-xs text-gray-400 mt-1.5">
+                      Maximum file size:
+                      10 MB. Supported:
+                      PDF, DOC, DOCX,
+                      XLS and XLSX.
+                    </p>
+
+                    {/* NEW FILE */}
+
+                    {selectedFile && (
+
+                      <div className="mt-3 flex items-center gap-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+
+                        <FileText className="w-4 h-4 text-rose-600 flex-shrink-0" />
+
+                        <span className="truncate flex-1">
+                          {
+                            selectedFile.name
+                          }
+                        </span>
+
+                        <span className="text-xs text-gray-400 whitespace-nowrap">
+
+                          {(
+                            selectedFile.size /
+                            1024 /
+                            1024
+                          ).toFixed(2)}
+
+                          {" "}
+                          MB
+
+                        </span>
 
                       </div>
 
-                    )
-                  )}
+                    )}
 
-                  {attachments.length ===
-                    0 && (
-                    <p className="text-xs text-gray-400 text-center py-3">
-                      No attachments added.
-                    </p>
-                  )}
+                    {/* EXISTING FILE */}
 
-                </div>
+                    {editingId &&
+                      resourceFile &&
+                      !selectedFile && (
 
-              </section>
+                        <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
 
-              {/* EXTRA LINKS */}
+                          <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
 
-              <section>
+                          <span className="truncate flex-1">
+                            Existing document:
+                            {" "}
+                            {
+                              resourceFile
+                            }
+                          </span>
 
-                <div className="flex justify-between items-center border-b pb-2 mb-4">
+                          {getResourceUrl(
+                            {
+                              _id:
+                                editingId,
+                              header,
+                              description,
+                              year,
+                              resource: {
+                                type: "file",
+                                url: "",
+                                file:
+                                  resourceFile,
+                              },
+                            }
+                          ) && (
 
-                  <h4 className="font-bold text-gray-800">
-                    4. Extra Links
-                  </h4>
+                            <a
+                              href={getResourceUrl(
+                                {
+                                  _id:
+                                    editingId,
+                                  header,
+                                  description,
+                                  year,
+                                  resource: {
+                                    type: "file",
+                                    url: "",
+                                    file:
+                                      resourceFile,
+                                  },
+                                }
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-rose-700 hover:text-rose-900 font-semibold"
+                            >
+                              Open
+                            </a>
 
-                  <button
-                    type="button"
-                    onClick={addExtraLink}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 rounded-lg"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
+                          )}
 
-                    Add Link
-                  </button>
+                        </div>
 
-                </div>
+                      )}
 
-                <div className="space-y-3">
+                  </div>
 
-                  {extraLinks.map(
-                    (
-                      link,
-                      index
-                    ) => (
-
-                      <div
-                        key={
-                          link.id ??
-                          index
-                        }
-                        className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr_auto] gap-2 bg-gray-50 border border-gray-200 p-3 rounded-lg"
-                      >
-
-                        <input
-                          value={link.title}
-                          onChange={(e) =>
-                            updateExtraLink(
-                              index,
-                              "title",
-                              e.target.value
-                            )
-                          }
-                          className="input"
-                          placeholder="Link title"
-                        />
-
-                        <input
-                          value={link.url}
-                          onChange={(e) =>
-                            updateExtraLink(
-                              index,
-                              "url",
-                              e.target.value
-                            )
-                          }
-                          className="input font-mono"
-                          placeholder="https://..."
-                        />
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeExtraLink(
-                              index
-                            )
-                          }
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-
-                      </div>
-
-                    )
-                  )}
-
-                  {extraLinks.length ===
-                    0 && (
-                    <p className="text-xs text-gray-400 text-center py-3">
-                      No extra links added.
-                    </p>
-                  )}
-
-                </div>
+                )}
 
               </section>
 
-              {/* STATUS */}
-
-              <section>
-
-                <h4 className="font-bold text-gray-800 border-b pb-2 mb-4">
-                  5. Status
-                </h4>
-
-                <select
-                  value={status}
-                  onChange={(e) =>
-                    setStatus(
-                      e.target.value as
-                        | "Active"
-                        | "Inactive"
-                    )
-                  }
-                  className="input"
-                >
-                  <option value="Active">
-                    Active — Visible on public page
-                  </option>
-
-                  <option value="Inactive">
-                    Inactive — Hidden from public page
-                  </option>
-                </select>
-
-              </section>
-
-              {/* BUTTONS */}
+              {/* =================================================
+                  ACTIONS
+              ================================================= */}
 
               <div className="flex justify-end gap-3 border-t pt-5">
 
@@ -1557,7 +1498,7 @@ export default function Admin_AICTE_VAANI() {
                   type="button"
                   onClick={closeModal}
                   disabled={submitting}
-                  className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold"
+                  className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 text-gray-700 rounded-lg text-sm font-semibold"
                 >
                   Cancel
                 </button>
@@ -1565,13 +1506,29 @@ export default function Admin_AICTE_VAANI() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 bg-rose-700 hover:bg-rose-800 disabled:opacity-60 text-white rounded-lg text-sm font-semibold shadow"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-rose-700 hover:bg-rose-800 disabled:opacity-60 text-white rounded-lg text-sm font-semibold shadow"
                 >
-                  {submitting
-                    ? "Saving..."
-                    : editingId
-                    ? "Save Changes"
-                    : "Create Event"}
+
+                  {submitting ? (
+
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+
+                      Saving...
+                    </>
+
+                  ) : (
+
+                    <>
+                      <Save className="w-4 h-4" />
+
+                      {editingId
+                        ? "Save Changes"
+                        : "Add NIRF"}
+                    </>
+
+                  )}
+
                 </button>
 
               </div>
@@ -1581,7 +1538,6 @@ export default function Admin_AICTE_VAANI() {
           </div>
 
         </div>
-
       )}
 
       {/* ====================================================

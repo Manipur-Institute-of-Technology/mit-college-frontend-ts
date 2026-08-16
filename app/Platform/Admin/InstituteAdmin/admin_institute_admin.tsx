@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { showAlert } from "~/utils/alert_utils";
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient from "~/utils/apiClient";
@@ -169,12 +169,7 @@ export default function Admin_InstituteAdmin() {
         fetched?.documents || []
       );
     } catch (error: any) {
-      console.error(
-        "FETCH ADMINISTRATION ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -238,7 +233,7 @@ export default function Admin_InstituteAdmin() {
     e.preventDefault();
 
     if (!structureForm.position.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Position Required",
         text: "Please enter the position.",
@@ -247,7 +242,7 @@ export default function Admin_InstituteAdmin() {
     }
 
     if (!structureForm.role.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Role Required",
         text: "Please enter the role.",
@@ -276,7 +271,7 @@ export default function Admin_InstituteAdmin() {
             []
         );
 
-        await Swal.fire({
+        await showAlert({
           icon: "success",
           title: "Updated",
           text:
@@ -302,7 +297,7 @@ export default function Admin_InstituteAdmin() {
             []
         );
 
-        await Swal.fire({
+        await showAlert({
           icon: "success",
           title: "Added",
           text:
@@ -320,12 +315,7 @@ export default function Admin_InstituteAdmin() {
         role: "",
       });
     } catch (error: any) {
-      console.error(
-        "STRUCTURE SAVE ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -346,7 +336,7 @@ export default function Admin_InstituteAdmin() {
   ) => {
     if (!structureId) return;
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       icon: "warning",
       title: "Delete Structure?",
       text:
@@ -373,7 +363,7 @@ export default function Admin_InstituteAdmin() {
           []
       );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text: "Structure deleted successfully.",
@@ -381,12 +371,7 @@ export default function Admin_InstituteAdmin() {
         showConfirmButton: false,
       });
     } catch (error: any) {
-      console.error(
-        "DELETE STRUCTURE ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -440,7 +425,7 @@ export default function Admin_InstituteAdmin() {
     e.preventDefault();
 
     if (!memberForm.name.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Name Required",
         text: "Please enter member name.",
@@ -449,7 +434,7 @@ export default function Admin_InstituteAdmin() {
     }
 
     if (!memberForm.role.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Role Required",
         text: "Please enter member role.",
@@ -478,7 +463,7 @@ export default function Admin_InstituteAdmin() {
             []
         );
 
-        await Swal.fire({
+        await showAlert({
           icon: "success",
           title: "Updated",
           text: "Member updated successfully.",
@@ -503,7 +488,7 @@ export default function Admin_InstituteAdmin() {
             []
         );
 
-        await Swal.fire({
+        await showAlert({
           icon: "success",
           title: "Added",
           text: "Member added successfully.",
@@ -521,12 +506,7 @@ export default function Admin_InstituteAdmin() {
         role: "Member",
       });
     } catch (error: any) {
-      console.error(
-        "MEMBER SAVE ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -547,7 +527,7 @@ export default function Admin_InstituteAdmin() {
   ) => {
     if (!memberId) return;
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       icon: "warning",
       title: "Delete Member?",
       text:
@@ -574,7 +554,7 @@ export default function Admin_InstituteAdmin() {
           []
       );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text: "Member deleted successfully.",
@@ -582,12 +562,7 @@ export default function Admin_InstituteAdmin() {
         showConfirmButton: false,
       });
     } catch (error: any) {
-      console.error(
-        "DELETE MEMBER ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -645,7 +620,7 @@ export default function Admin_InstituteAdmin() {
     e.preventDefault();
 
     if (!documentForm.title.trim()) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Title Required",
         text: "Please enter document title.",
@@ -658,7 +633,7 @@ export default function Admin_InstituteAdmin() {
       !editingDocument &&
       !documentFile
     ) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "File Required",
         text: "Please select a document file.",
@@ -670,7 +645,7 @@ export default function Admin_InstituteAdmin() {
       documentForm.type === "link" &&
       !documentForm.url.trim()
     ) {
-      Swal.fire({
+      showAlert({
         icon: "warning",
         title: "Link Required",
         text: "Please enter document URL.",
@@ -763,7 +738,7 @@ export default function Admin_InstituteAdmin() {
         );
       }
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: editingDocument
           ? "Updated"
@@ -787,12 +762,7 @@ export default function Admin_InstituteAdmin() {
 
       setDocumentFile(null);
     } catch (error: any) {
-      console.error(
-        "DOCUMENT SAVE ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:
@@ -813,7 +783,7 @@ export default function Admin_InstituteAdmin() {
   ) => {
     if (!documentId) return;
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       icon: "warning",
       title: "Delete Document?",
       text:
@@ -839,7 +809,7 @@ export default function Admin_InstituteAdmin() {
         res.data?.data?.documents || []
       );
 
-      await Swal.fire({
+      await showAlert({
         icon: "success",
         title: "Deleted",
         text: "Document deleted successfully.",
@@ -847,12 +817,7 @@ export default function Admin_InstituteAdmin() {
         showConfirmButton: false,
       });
     } catch (error: any) {
-      console.error(
-        "DELETE DOCUMENT ERROR:",
-        error
-      );
-
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Failed",
         text:

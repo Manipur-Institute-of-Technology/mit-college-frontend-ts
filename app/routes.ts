@@ -40,7 +40,8 @@ export default [
     route("aicte-vaani", "./routes/aicte_vaani.tsx"),
     route("Aicte-Vaani", "./routes/aicte_vaani.tsx", { id: "aicteVaaniCaps" }),
     route("student-list", "./routes/student_list.tsx"),
-    route("all-notifications", "./routes/all_notification.tsx")
+    route("all-notifications", "./routes/all_notification.tsx"),
+    route("faculty/:facultyName", "./routes/teacher_view_profile.tsx"),
   ]),
   // CMS Route
   ...prefix("cms", [

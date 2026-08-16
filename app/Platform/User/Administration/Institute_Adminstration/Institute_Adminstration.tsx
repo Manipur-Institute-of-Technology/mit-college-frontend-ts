@@ -7,7 +7,7 @@ import {
   FileText,
   ExternalLink,
 } from "lucide-react";
-import Swal from "sweetalert2";
+import { confirmExternalLink } from "~/utils/alert_utils";
 import apiClient, { API_BASE_URL } from "~/utils/apiClient";
 
 export type GoverningBodyStructure = {
@@ -56,11 +56,9 @@ const handleDocumentClick = (url: string) => {
   if (!url || url === "#") return;
 
   if (isExternalLink(url)) {
-    Swal.fire({
+    confirmExternalLink({
       title: "Leave this site?",
       text: "You are being redirected to an external document / website.",
-      icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Continue",
       cancelButtonText: "Stay here",
       confirmButtonColor: "#0891b2",
@@ -68,8 +66,8 @@ const handleDocumentClick = (url: string) => {
       customClass: {
         popup: "rounded-xl",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
+    }).then((confirmed) => {
+      if (confirmed) {
         window.open(url, "_blank", "noopener,noreferrer");
       }
     });

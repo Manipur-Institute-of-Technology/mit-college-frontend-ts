@@ -32,7 +32,6 @@ export default function Library_Facility() {
           setLibrary(null);
         }
       } catch (error) {
-        console.error("LIBRARY SIDE ADMIN FETCH ERROR:", error);
         setLibrary(null);
       } finally {
         setLoading(false);
