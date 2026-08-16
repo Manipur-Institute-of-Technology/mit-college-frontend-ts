@@ -34,7 +34,9 @@ export type TeacherDataType = {
 
   highestDegree?: string;
 
-  expertFields?: string;
+  // DB format:
+  // ['["AI, Machine Learning"]']
+  expertFields?: string[];
 
   photoId?: string;
   photo?: string;
@@ -56,6 +58,7 @@ const Teacher_Profile_View: React.FC<
   // ======================================================
   // SAFE ROLE CONVERTER
   // ======================================================
+
   const getRolesText = (
     roles: any
   ): string => {
@@ -65,13 +68,11 @@ const Teacher_Profile_View: React.FC<
     }
 
     // STRING
-
     if (typeof roles === "string") {
       return roles;
     }
 
     // ARRAY
-
     if (Array.isArray(roles)) {
 
       return roles
@@ -103,7 +104,6 @@ const Teacher_Profile_View: React.FC<
     }
 
     // OBJECT
-
     if (
       typeof roles === "object"
     ) {
@@ -116,6 +116,79 @@ const Teacher_Profile_View: React.FC<
     }
 
     return String(roles);
+  };
+
+  // ======================================================
+  // EXPERTISE
+  // ======================================================
+  //
+  // DB FORMAT:
+  //
+  // expertFields: ['["AI, Machine Learning"]']
+  //
+  // FRONTEND:
+  //
+  // AI, Machine Learning
+  //
+  // ======================================================
+
+  const getExpertFieldsText = (
+    expertFields: string[] | undefined
+  ): string => {
+
+    if (
+      !expertFields ||
+      expertFields.length === 0
+    ) {
+      return "";
+    }
+
+    try {
+
+      // Get first item
+      //
+      // '["AI, Machine Learning"]'
+
+      const firstValue =
+        expertFields[0];
+
+      if (!firstValue) {
+        return "";
+      }
+
+      // Parse JSON
+      //
+      // ["AI, Machine Learning"]
+
+      const parsed =
+        JSON.parse(firstValue);
+
+      // If parsed result is an array
+      if (
+        Array.isArray(parsed)
+      ) {
+
+        // ["AI, Machine Learning"]
+        //
+        // becomes:
+        //
+        // AI, Machine Learning
+
+        return parsed.join(", ");
+      }
+
+      return String(parsed);
+
+    } catch (error) {
+
+      console.error(
+        "Error parsing expertFields:",
+        error
+      );
+
+      return "";
+
+    }
   };
 
   // ======================================================
@@ -190,6 +263,7 @@ const Teacher_Profile_View: React.FC<
   ): boolean => {
 
     try {
+
       const url = new URL(
         href,
         window.location.origin
@@ -201,7 +275,9 @@ const Teacher_Profile_View: React.FC<
       );
 
     } catch {
+
       return false;
+
     }
   };
 
@@ -214,7 +290,10 @@ const Teacher_Profile_View: React.FC<
     href: string
   ) => {
 
-    if (!href || href === "#") {
+    if (
+      !href ||
+      href === "#"
+    ) {
       return;
     }
 
@@ -223,31 +302,53 @@ const Teacher_Profile_View: React.FC<
 
     // INTERNAL LINK
 
-    if (!isExternalLink(href)) {
-      window.location.href = href;
+    if (
+      !isExternalLink(href)
+    ) {
+
+      window.location.href =
+        href;
+
       return;
     }
 
     // EXTERNAL LINK
 
     confirmExternalLink({
-      title: "Leave this site?",
-      text: "You are being redirected to an external website.",
-      confirmButtonText: "Continue",
-      cancelButtonText: "Stay here",
-      confirmButtonColor: "#22c55e",
-      cancelButtonColor: "#ef4444",
+
+      title:
+        "Leave this site?",
+
+      text:
+        "You are being redirected to an external website.",
+
+      confirmButtonText:
+        "Continue",
+
+      cancelButtonText:
+        "Stay here",
+
+      confirmButtonColor:
+        "#22c55e",
+
+      cancelButtonColor:
+        "#ef4444",
+
       customClass: {
-        popup: "rounded-xl",
+        popup:
+          "rounded-xl",
       },
+
     }).then((confirmed) => {
 
       if (confirmed) {
+
         window.open(
           href,
           "_blank",
           "noopener,noreferrer"
         );
+
       }
 
     });
@@ -313,7 +414,8 @@ const Teacher_Profile_View: React.FC<
           // EMAIL
           // =================================================
 
-          const email = teacher?.email || "";
+          const email =
+            teacher.email || "";
 
           // =================================================
           // PHONE
@@ -354,6 +456,19 @@ const Teacher_Profile_View: React.FC<
             )
               ? teacher.papers
               : [];
+
+          // =================================================
+          // EXPERTISE
+          // =================================================
+
+          const expertFields =
+            getExpertFieldsText(
+              teacher.expertFields
+            );
+
+          // =================================================
+          // RETURN
+          // =================================================
 
           return (
             <div
@@ -428,6 +543,7 @@ const Teacher_Profile_View: React.FC<
                   {/* HOD */}
 
                   {isHOD && (
+
                     <div
                       className="
                         absolute
@@ -444,6 +560,7 @@ const Teacher_Profile_View: React.FC<
                     >
                       HOD
                     </div>
+
                   )}
 
                   {/* PHOTO */}
@@ -463,9 +580,7 @@ const Teacher_Profile_View: React.FC<
                         shadow-sm
                         bg-gray-100
                       "
-                      onError={(
-                        e
-                      ) => {
+                      onError={(e) => {
 
                         e.currentTarget.style.display =
                           "none";
@@ -507,7 +622,9 @@ const Teacher_Profile_View: React.FC<
                           parent.appendChild(
                             placeholder
                           );
+
                         }
+
                       }}
                     />
 
@@ -526,6 +643,7 @@ const Teacher_Profile_View: React.FC<
                         justify-center
                       "
                     >
+
                       <FaUserCircle
                         className="
                           w-20
@@ -533,6 +651,7 @@ const Teacher_Profile_View: React.FC<
                           text-gray-300
                         "
                       />
+
                     </div>
 
                   )}
@@ -759,7 +878,7 @@ const Teacher_Profile_View: React.FC<
                           leading-relaxed
                         "
                       >
-                        {teacher.expertFields ||
+                        {expertFields ||
                           "N/A"}
                       </p>
 
@@ -811,6 +930,7 @@ const Teacher_Profile_View: React.FC<
                   </h3>
 
                   {papers.length > 0 && (
+
                     <span
                       className="
                         text-xs
@@ -827,6 +947,7 @@ const Teacher_Profile_View: React.FC<
                         ? "Paper"
                         : "Papers"}
                     </span>
+
                   )}
 
                 </div>
@@ -861,18 +982,25 @@ const Teacher_Profile_View: React.FC<
                           );
 
                         return (
+
                           <div
                             key={
                               paper._id ||
                               paperIndex
                             }
                             onClick={(e) => {
-                              if (paperLink) {
+
+                              if (
+                                paperLink
+                              ) {
+
                                 handlePaperClick(
                                   e,
                                   paperLink
                                 );
+
                               }
+
                             }}
                             role={
                               paperLink
@@ -885,18 +1013,26 @@ const Teacher_Profile_View: React.FC<
                                 : undefined
                             }
                             onKeyDown={(e) => {
+
                               if (
                                 paperLink &&
-                                (e.key === "Enter" ||
-                                  e.key === " ")
+                                (
+                                  e.key ===
+                                    "Enter" ||
+                                  e.key ===
+                                    " "
+                                )
                               ) {
+
                                 e.preventDefault();
 
                                 handlePaperClick(
                                   e as any,
                                   paperLink
                                 );
+
                               }
+
                             }}
                             className={`
                               border
@@ -944,7 +1080,11 @@ const Teacher_Profile_View: React.FC<
 
                               {/* DESCRIPTION */}
 
-                              <div className="flex-1">
+                              <div
+                                className="
+                                  flex-1
+                                "
+                              >
 
                                 <p
                                   className="
@@ -961,6 +1101,7 @@ const Teacher_Profile_View: React.FC<
 
                                 {paperLink &&
                                   paperLink !== "#" && (
+
                                     <p
                                       className="
                                         mt-2
@@ -971,6 +1112,7 @@ const Teacher_Profile_View: React.FC<
                                     >
                                       Click to view publication →
                                     </p>
+
                                   )}
 
                               </div>
@@ -978,7 +1120,9 @@ const Teacher_Profile_View: React.FC<
                             </div>
 
                           </div>
+
                         );
+
                       }
                     )}
 
@@ -1011,3 +1155,4 @@ const Teacher_Profile_View: React.FC<
 };
 
 export default Teacher_Profile_View;
+

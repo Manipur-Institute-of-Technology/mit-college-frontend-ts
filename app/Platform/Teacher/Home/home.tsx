@@ -1,6 +1,9 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { confirmExternalLink, showAlert } from "~/utils/alert_utils";
+import {
+  confirmExternalLink,
+  showAlert,
+} from "~/utils/alert_utils";
 
 import {
   FaUserCircle,
@@ -18,7 +21,9 @@ import {
 } from "react-icons/fa";
 
 import { useAuth } from "~/context/AuthContext";
-import apiClient, { API_BASE_URL } from "~/utils/apiClient";
+import apiClient, {
+  API_BASE_URL,
+} from "~/utils/apiClient";
 
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 
@@ -62,6 +67,19 @@ type Faculty = {
 
   highestDegree?: string;
 
+  /*
+   * Can come from DB in formats such as:
+   *
+   * ['["AI, Machine Learning, Deep Learning"]']
+   *
+   * or:
+   *
+   * ["AI", "Machine Learning", "Deep Learning"]
+   *
+   * or:
+   *
+   * ["AI, Machine Learning"]
+   */
   expertFields?: string[];
 
   roles?: string | string[];
@@ -137,7 +155,7 @@ const getApiErrorMessage = (
 
 const formatRole = (
   role?: string | string[]
-) => {
+): string => {
   if (!role) {
     return "Faculty";
   }
@@ -145,6 +163,10 @@ const formatRole = (
   const value = Array.isArray(role)
     ? role[0]
     : role;
+
+  if (!value) {
+    return "Faculty";
+  }
 
   return value
     .split(" ")
@@ -162,7 +184,7 @@ const formatRole = (
 
 const formatDate = (
   date?: string
-) => {
+): string => {
   if (!date) {
     return "Not available";
   }
@@ -189,9 +211,19 @@ const formatDate = (
 
 const formatDateForInput = (
   date?: string
-) => {
+): string => {
   if (!date) {
     return "";
+  }
+
+  /*
+   * If already in YYYY-MM-DD format,
+   * return it directly.
+   */
+  if (
+    /^\d{4}-\d{2}-\d{2}$/.test(date)
+  ) {
+    return date;
   }
 
   const parsed = new Date(date);
@@ -222,7 +254,7 @@ const formatDateForInput = (
 
 const getDepartmentName = (
   department?: string | Department
-) => {
+): string => {
   if (!department) {
     return "Department not assigned";
   }
@@ -272,6 +304,113 @@ const getDepartmentId = (
 };
 
 // =========================================================
+// EXPERT FIELDS NORMALIZER
+// =========================================================
+//
+// Supports:
+//
+// ['["AI, Machine Learning, Deep Learning"]']
+//
+// ["AI", "Machine Learning", "Deep Learning"]
+//
+// ["AI, Machine Learning"]
+//
+// ["AI, Machine Learning, Deep Learning"]
+//
+// =========================================================
+
+const normalizeExpertFields = (
+  expertFields?: string[]
+): string[] => {
+  if (
+    !expertFields ||
+    expertFields.length === 0
+  ) {
+    return [];
+  }
+
+  try {
+    let values: any[] = expertFields;
+
+    /*
+     * Handle:
+     *
+     * [
+     *   '["AI, Machine Learning, Deep Learning"]'
+     * ]
+     */
+    if (
+      values.length === 1 &&
+      typeof values[0] === "string"
+    ) {
+      const firstValue =
+        values[0].trim();
+
+      try {
+        const parsed =
+          JSON.parse(firstValue);
+
+        if (Array.isArray(parsed)) {
+          values = parsed;
+        } else {
+          values = [parsed];
+        }
+      } catch {
+        /*
+         * It was not JSON.
+         * Keep original value.
+         */
+        values = [firstValue];
+      }
+    }
+
+    /*
+     * Flatten nested arrays.
+     */
+    values = values.flat(Infinity);
+
+    /*
+     * Convert everything to strings.
+     */
+    return values
+      .map((item) =>
+        String(item).trim()
+      )
+      .filter(Boolean);
+
+  } catch (error) {
+    console.error(
+      "Error normalizing expertFields:",
+      error
+    );
+
+    return [];
+  }
+};
+
+// =========================================================
+// EXPERT FIELDS TEXT
+// =========================================================
+//
+// Converts:
+//
+// ['["AI, Machine Learning, Deep Learning"]']
+//
+// into:
+//
+// AI, Machine Learning, Deep Learning
+//
+// =========================================================
+
+const getExpertFieldsText = (
+  expertFields?: string[]
+): string => {
+  return normalizeExpertFields(
+    expertFields
+  ).join(", ");
+};
+
+// =========================================================
 // TEACHER HOME PAGE
 // =========================================================
 
@@ -313,8 +452,10 @@ export default function TeacherHomePage() {
   const [departments, setDepartments] =
     useState<Department[]>([]);
 
-  const [departmentsLoading, setDepartmentsLoading] =
-    useState(false);
+  const [
+    departmentsLoading,
+    setDepartmentsLoading,
+  ] = useState(false);
 
   // =======================================================
   // EDIT FACULTY
@@ -416,7 +557,7 @@ export default function TeacherHomePage() {
 
   const isExternalLink = (
     url: string
-  ) => {
+  ): boolean => {
     try {
       const linkUrl =
         new URL(
@@ -507,7 +648,6 @@ export default function TeacherHomePage() {
           } else {
             setDepartments([]);
           }
-
         } catch (err) {
           setDepartments([]);
         } finally {
@@ -516,7 +656,6 @@ export default function TeacherHomePage() {
       };
 
     fetchDepartments();
-
   }, [isAuthenticated]);
 
   // =======================================================
@@ -563,21 +702,40 @@ export default function TeacherHomePage() {
           const loadedFaculty =
             facultyData as Faculty;
 
+          /*
+           * Normalize expertFields immediately
+           * after receiving data from backend.
+           */
+          const normalizedExpertFields =
+            normalizeExpertFields(
+              loadedFaculty.expertFields
+            );
+
+          const normalizedFaculty: Faculty =
+            {
+              ...loadedFaculty,
+
+              expertFields:
+                normalizedExpertFields,
+
+              dob:
+                formatDateForInput(
+                  loadedFaculty.dob
+                ),
+
+              departmentId:
+                getDepartmentId(
+                  loadedFaculty
+                ),
+            };
+
           setFaculty(
-            loadedFaculty
+            normalizedFaculty
           );
 
-          setFacultyForm({
-            ...loadedFaculty,
-            departmentId:
-              getDepartmentId(
-                loadedFaculty
-              ),
-            dob:
-              formatDateForInput(
-                loadedFaculty.dob
-              ),
-          });
+          setFacultyForm(
+            normalizedFaculty
+          );
 
         } catch (err: any) {
           setError(
@@ -586,7 +744,6 @@ export default function TeacherHomePage() {
               "Unable to load your faculty profile."
             )
           );
-
         } finally {
           setLoading(false);
         }
@@ -641,7 +798,6 @@ export default function TeacherHomePage() {
               "Unable to load papers."
             )
           );
-
         } finally {
           setPapersLoading(false);
         }
@@ -666,6 +822,15 @@ export default function TeacherHomePage() {
   ]
     .filter(Boolean)
     .join(" ");
+
+  // =======================================================
+  // EXPERTISE
+  // =======================================================
+
+  const expertFieldsText =
+    getExpertFieldsText(
+      faculty?.expertFields
+    );
 
   // =======================================================
   // PHOTO URL
@@ -712,6 +877,23 @@ export default function TeacherHomePage() {
             facultyForm
           );
 
+        /*
+         * Always send expertFields
+         * as a clean string array.
+         *
+         * Example:
+         *
+         * [
+         *   "AI",
+         *   "Machine Learning",
+         *   "Deep Learning"
+         * ]
+         */
+        const normalizedExpertFields =
+          normalizeExpertFields(
+            facultyForm.expertFields
+          );
+
         const response =
           await apiClient.put(
             `/faculty-update/me`,
@@ -747,7 +929,7 @@ export default function TeacherHomePage() {
                 facultyForm.highestDegree,
 
               expertFields:
-                facultyForm.expertFields,
+                normalizedExpertFields,
 
               bios:
                 facultyForm.bios,
@@ -761,13 +943,20 @@ export default function TeacherHomePage() {
 
         if (updatedFaculty) {
 
-          const normalizedFaculty =
+          const normalizedFaculty: Faculty =
             {
               ...updatedFaculty,
+
+              expertFields:
+                normalizeExpertFields(
+                  updatedFaculty.expertFields
+                ),
+
               dob:
                 formatDateForInput(
                   updatedFaculty.dob
                 ),
+
               departmentId:
                 getDepartmentId(
                   updatedFaculty
@@ -775,7 +964,7 @@ export default function TeacherHomePage() {
             };
 
           setFaculty(
-            updatedFaculty
+            normalizedFaculty
           );
 
           setFacultyForm(
@@ -784,10 +973,29 @@ export default function TeacherHomePage() {
 
         } else {
 
+          const fallbackFaculty: Faculty =
+            {
+              ...facultyForm,
+
+              expertFields:
+                normalizedExpertFields,
+
+              departmentId:
+                departmentId,
+
+              dob:
+                formatDateForInput(
+                  facultyForm.dob
+                ),
+            };
+
           setFaculty(
-            facultyForm
+            fallbackFaculty
           );
 
+          setFacultyForm(
+            fallbackFaculty
+          );
         }
 
         setEditingFaculty(false);
@@ -824,17 +1032,29 @@ export default function TeacherHomePage() {
   const cancelFacultyEdit =
     () => {
 
-      setFacultyForm({
-        ...(faculty || {}),
-        departmentId:
-          getDepartmentId(
-            faculty || undefined
-          ),
-        dob:
-          formatDateForInput(
-            faculty?.dob
-          ),
-      });
+      const normalizedFaculty: Faculty =
+        {
+          ...(faculty || {}),
+
+          expertFields:
+            normalizeExpertFields(
+              faculty?.expertFields
+            ),
+
+          departmentId:
+            getDepartmentId(
+              faculty || undefined
+            ),
+
+          dob:
+            formatDateForInput(
+              faculty?.dob
+            ),
+        };
+
+      setFacultyForm(
+        normalizedFaculty
+      );
 
       setEditingFaculty(false);
     };
@@ -2263,9 +2483,7 @@ export default function TeacherHomePage() {
 
                 <tbody>
 
-                  {/* =================================================
-                      NAME
-                  ================================================= */}
+                  {/* NAME */}
 
                   <tr
                     className="
@@ -2308,8 +2526,6 @@ export default function TeacherHomePage() {
                             gap-2
                           "
                         >
-
-                          {/* PREFIX DROPDOWN */}
 
                           <select
                             value={
@@ -2355,8 +2571,6 @@ export default function TeacherHomePage() {
 
                           </select>
 
-                          {/* FIRST NAME */}
-
                           <input
                             value={
                               facultyForm.firstName ||
@@ -2382,8 +2596,6 @@ export default function TeacherHomePage() {
                             "
                           />
 
-                          {/* MIDDLE NAME */}
-
                           <input
                             value={
                               facultyForm.middleName ||
@@ -2408,8 +2620,6 @@ export default function TeacherHomePage() {
                               focus:ring-cyan-500
                             "
                           />
-
-                          {/* LAST NAME */}
 
                           <input
                             value={
@@ -2450,9 +2660,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      EMAIL
-                  ================================================= */}
+                  {/* EMAIL */}
 
                   <tr
                     className="
@@ -2483,18 +2691,14 @@ export default function TeacherHomePage() {
                         text-gray-800
                       "
                     >
-
                       {faculty?.email ||
                         user?.email ||
                         "Not available"}
-
                     </td>
 
                   </tr>
 
-                  {/* =================================================
-                      PHONE
-                  ================================================= */}
+                  {/* PHONE */}
 
                   <tr
                     className="
@@ -2565,9 +2769,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      DEPARTMENT - DROPDOWN
-                  ================================================= */}
+                  {/* DEPARTMENT */}
 
                   <tr
                     className="
@@ -2672,9 +2874,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      FACULTY ROLE - DROPDOWN
-                  ================================================= */}
+                  {/* FACULTY ROLE */}
 
                   <tr
                     className="
@@ -2777,9 +2977,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      HIGHEST DEGREE
-                  ================================================= */}
+                  {/* HIGHEST DEGREE */}
 
                   <tr
                     className="
@@ -2850,9 +3048,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      GENDER
-                  ================================================= */}
+                  {/* GENDER */}
 
                   <tr
                     className="
@@ -2947,9 +3143,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      DATE OF BIRTH - DATE PICKER
-                  ================================================= */}
+                  {/* DATE OF BIRTH */}
 
                   <tr
                     className="
@@ -3026,9 +3220,7 @@ export default function TeacherHomePage() {
 
                   </tr>
 
-                  {/* =================================================
-                      HOD
-                  ================================================= */}
+                  {/* HOD */}
 
                   <tr
                     className="
@@ -3059,18 +3251,14 @@ export default function TeacherHomePage() {
                         text-gray-800
                       "
                     >
-
                       {faculty?.hod
                         ? "Head of Department"
                         : "Faculty Member"}
-
                     </td>
 
                   </tr>
 
-                  {/* =================================================
-                      BIOGRAPHY
-                  ================================================= */}
+                  {/* BIOGRAPHY */}
 
                   <tr
                     className="
@@ -3170,9 +3358,9 @@ export default function TeacherHomePage() {
 
                         <input
                           value={
-                            facultyForm.expertFields?.join(
-                              ", "
-                            ) || ""
+                            getExpertFieldsText(
+                              facultyForm.expertFields
+                            )
                           }
                           onChange={(e) =>
                             handleFacultyChange(
@@ -3205,58 +3393,30 @@ export default function TeacherHomePage() {
 
                       ) : (
 
-                        <div
-                          className="
-                            flex
-                            flex-wrap
-                            gap-2
-                          "
-                        >
+                        expertFieldsText ? (
 
-                          {faculty?.expertFields &&
-                          faculty.expertFields.length >
-                            0 ? (
+                          <span
+                            className="
+                              text-sm
+                              font-semibold
+                              text-gray-800
+                            "
+                          >
+                            {expertFieldsText}
+                          </span>
 
-                            faculty.expertFields.map(
-                              (
-                                field,
-                                index
-                              ) => (
+                        ) : (
 
-                                <span
-                                  key={
-                                    `${field}-${index}`
-                                  }
-                                  className="
-                                    px-3
-                                    py-1.5
-                                    rounded-lg
-                                    bg-cyan-50
-                                    text-cyan-800
-                                    text-xs
-                                    font-bold
-                                  "
-                                >
-                                  {field}
-                                </span>
+                          <span
+                            className="
+                              text-sm
+                              text-gray-400
+                            "
+                          >
+                            No expertise information.
+                          </span>
 
-                              )
-                            )
-
-                          ) : (
-
-                            <span
-                              className="
-                                text-sm
-                                text-gray-400
-                              "
-                            >
-                              No expertise information.
-                            </span>
-
-                          )}
-
-                        </div>
+                        )
 
                       )}
 
@@ -3287,8 +3447,6 @@ export default function TeacherHomePage() {
               mb-8
             "
           >
-
-            {/* Papers Header */}
 
             <div
               className="
@@ -3357,8 +3515,6 @@ export default function TeacherHomePage() {
 
             </div>
 
-            {/* Paper Error */}
-
             {paperError &&
               !showPaperForm && (
                 <div
@@ -3378,8 +3534,6 @@ export default function TeacherHomePage() {
                   {paperError}
                 </div>
               )}
-
-            {/* Loading */}
 
             {papersLoading ? (
 

@@ -38,7 +38,9 @@ type FacultyMember = {
 
   highestDegree?: string;
 
-  expertFields?: string;
+  // DB format:
+  // ['["AI, Machine Learning"]']
+  expertFields?: string[];
 
   photoId?: string;
   photo?: string;
@@ -51,9 +53,12 @@ export default function DepartmentData({
 }: DepartmentDataProps) {
   const navigate = useNavigate();
 
-  const [faculty, setFaculty] = useState<FacultyMember[]>([]);
+  const [faculty, setFaculty] = useState<
+    FacultyMember[]
+  >([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
   // ======================================================
   // FACULTY URL SLUG
@@ -74,47 +79,63 @@ export default function DepartmentData({
   // ======================================================
 
   useEffect(() => {
+
     let mounted = true;
 
-    const fetchDepartmentFaculty = async () => {
-      if (!name?.trim()) {
-        if (mounted) {
-          setFaculty([]);
-          setLoading(false);
+    const fetchDepartmentFaculty =
+      async () => {
+
+        if (!name?.trim()) {
+
+          if (mounted) {
+            setFaculty([]);
+            setLoading(false);
+          }
+
+          return;
         }
 
-        return;
-      }
+        try {
 
-      try {
-        setLoading(true);
+          setLoading(true);
 
-        const response = await apiClient.get(
-          `/faculty/department/${encodeURIComponent(
-            name.trim()
-          )}`
-        );
+          const response =
+            await apiClient.get(
+              `/faculty/department/${encodeURIComponent(
+                name.trim()
+              )}`
+            );
 
-        const facultyData =
-          response.data?.data?.faculty || [];
+          const facultyData =
+            response.data?.data?.faculty ||
+            [];
 
-        if (mounted) {
-          setFaculty(
-            Array.isArray(facultyData)
-              ? facultyData
-              : []
-          );
+          if (mounted) {
+
+            setFaculty(
+              Array.isArray(
+                facultyData
+              )
+                ? facultyData
+                : []
+            );
+
+          }
+
+        } catch (error: any) {
+
+          if (mounted) {
+            setFaculty([]);
+          }
+
+        } finally {
+
+          if (mounted) {
+            setLoading(false);
+          }
+
         }
-      } catch (error: any) {
-        if (mounted) {
-          setFaculty([]);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
+      };
 
     fetchDepartmentFaculty();
 
@@ -127,21 +148,34 @@ export default function DepartmentData({
   // SAFE ROLE CONVERTER
   // ======================================================
 
-  const getRolesText = (roles: any): string => {
+  const getRolesText = (
+    roles: any
+  ): string => {
+
     if (!roles) {
       return "";
     }
 
-    // String
-    if (typeof roles === "string") {
+    // STRING
+
+    if (
+      typeof roles === "string"
+    ) {
       return roles;
     }
 
-    // Array
-    if (Array.isArray(roles)) {
+    // ARRAY
+
+    if (
+      Array.isArray(roles)
+    ) {
+
       return roles
         .map((role) => {
-          if (typeof role === "string") {
+
+          if (
+            typeof role === "string"
+          ) {
             return role;
           }
 
@@ -163,7 +197,8 @@ export default function DepartmentData({
         .join(", ");
     }
 
-    // Object
+    // OBJECT
+
     if (
       typeof roles === "object"
     ) {
@@ -179,13 +214,98 @@ export default function DepartmentData({
   };
 
   // ======================================================
+  // EXPERTISE CONVERTER
+  // ======================================================
+  //
+  // DB:
+  //
+  // ['["AI, Machine Learning"]']
+  //
+  // FRONTEND:
+  //
+  // AI, Machine Learning
+  //
+  // ======================================================
+
+  const getExpertFieldsText = (
+    expertFields:
+      | string[]
+      | undefined
+  ): string => {
+
+    if (
+      !expertFields ||
+      expertFields.length === 0
+    ) {
+      return "";
+    }
+
+    try {
+
+      // Get first value
+      //
+      // '["AI, Machine Learning"]'
+
+      const firstValue =
+        expertFields[0];
+
+      if (!firstValue) {
+        return "";
+      }
+
+      // Parse JSON
+      //
+      // ["AI, Machine Learning"]
+
+      const parsed =
+        JSON.parse(firstValue);
+
+      // If JSON is an array
+
+      if (
+        Array.isArray(parsed)
+      ) {
+
+        return parsed.join(", ");
+
+      }
+
+      return String(parsed);
+
+    } catch (error) {
+
+      console.error(
+        "Error parsing expertFields:",
+        error
+      );
+
+      return "";
+
+    }
+  };
+
+  // ======================================================
   // LOADING
   // ======================================================
 
   if (loading) {
     return (
-      <div className="p-6 max-w-6xl mx-auto">
-        <div className="text-center py-12 text-gray-500 font-semibold">
+      <div
+        className="
+          p-6
+          max-w-6xl
+          mx-auto
+        "
+      >
+
+        <div
+          className="
+            text-center
+            py-12
+            text-gray-500
+            font-semibold
+          "
+        >
           Loading faculty list...
         </div>
       </div>
@@ -196,9 +316,19 @@ export default function DepartmentData({
   // EMPTY
   // ======================================================
 
-  if (faculty.length === 0) {
+  if (
+    faculty.length === 0
+  ) {
+
     return (
-      <div className="p-6 max-w-6xl mx-auto">
+      <div
+        className="
+          p-6
+          max-w-6xl
+          mx-auto
+        "
+      >
+
         <div
           className="
             text-center
@@ -213,7 +343,9 @@ export default function DepartmentData({
         >
           No faculty members listed under{" "}
 
-          <span className="font-bold">
+          <span
+            className="font-bold"
+          >
             {name}
           </span>
 
@@ -228,19 +360,46 @@ export default function DepartmentData({
   // ======================================================
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div
+      className="
+        p-6
+        max-w-6xl
+        mx-auto
+        space-y-6
+      "
+    >
 
       {/* ==================================================
           HEADER
       ================================================== */}
 
-      <div className="border-b border-gray-200 pb-3">
+      <div
+        className="
+          border-b
+          border-gray-200
+          pb-3
+        "
+      >
 
-        <h2 className="text-2xl font-bold text-gray-900">
-          Faculty Members ({name.toUpperCase()})
+        <h2
+          className="
+            text-2xl
+            font-bold
+            text-gray-900
+          "
+        >
+          Faculty Members (
+          {name.toUpperCase()}
+          )
         </h2>
 
-        <p className="text-sm text-gray-500 mt-1">
+        <p
+          className="
+            text-sm
+            text-gray-500
+            mt-1
+          "
+        >
           {faculty.length} faculty member
           {faculty.length !== 1
             ? "s"
@@ -253,311 +412,331 @@ export default function DepartmentData({
           FACULTY GRID
       ================================================== */}
 
-      <div className="
-        grid
-        grid-cols-1
-        sm:grid-cols-2
-        gap-6
-      ">
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          gap-6
+        "
+      >
 
-        {faculty.map((teacher) => {
+        {faculty.map(
+          (teacher) => {
 
-          // =================================================
-          // NAME
-          // =================================================
+            // =============================================
+            // NAME
+            // =============================================
 
-          const fullName =
-            `${teacher.namePrefix || ""} ${
-              teacher.firstName || ""
-            } ${
-              teacher.lastName || ""
-            }`
-              .replace(/\s+/g, " ")
-              .trim() ||
-            "Faculty Member";
+            const fullName =
+              `${teacher.namePrefix || ""} ${
+                teacher.firstName || ""
+              } ${
+                teacher.lastName || ""
+              }`
+                .replace(/\s+/g, " ")
+                .trim() ||
+              "Faculty Member";
 
-          // =================================================
-          // ROLE
-          // =================================================
+            // =============================================
+            // ROLE
+            // =============================================
 
-          const rolesText =
-            getRolesText(
-              teacher.roles
-            );
+            const rolesText =
+              getRolesText(
+                teacher.roles
+              );
 
-          // =================================================
-          // PHOTO
-          // =================================================
+            // =============================================
+            // PHOTO
+            // =============================================
 
-          const photoSrc =
-            teacher.photoId
-              ? `${API_BASE_URL}/uploads/faculty/${teacher.photoId}`
-              : teacher.photo ||
-                "/Images/Faculty/placeholder.jpg";
+            const photoSrc =
+              teacher.photoId
+                ? `${API_BASE_URL}/uploads/faculty/${teacher.photoId}`
+                : teacher.photo 
 
-          // =================================================
-          // EMAIL
-          // =================================================
+            // =============================================
+            // EMAIL
+            // =============================================
 
-          const email =
-            teacher.contactInfo?.email ||
-            "";
+            const email =
+              teacher.contactInfo?.email ||
+              "";
 
-          // =================================================
-          // PHONE
-          // =================================================
+            // =============================================
+            // PHONE
+            // =============================================
 
-          const phone =
-            teacher.contactInfo?.phone ||
-            teacher.phoneNumber ||
-            "";
+            const phone =
+              teacher.contactInfo?.phone ||
+              teacher.phoneNumber ||
+              "";
 
-          // =================================================
-          // PAPERS
-          // =================================================
+            // =============================================
+            // PAPERS
+            // =============================================
 
-          const paperCount =
-            Array.isArray(
-              teacher.papers
-            )
-              ? teacher.papers.length
-              : 0;
+            const paperCount =
+              Array.isArray(
+                teacher.papers
+              )
+                ? teacher.papers.length
+                : 0;
 
-          // =================================================
-          // FACULTY URL
-          // =================================================
+            // =============================================
+            // FACULTY URL
+            // =============================================
 
-          const facultySlug =
-            getFacultySlug(
-              teacher
-            );
+            const facultySlug =
+              getFacultySlug(
+                teacher
+              );
 
-          return (
-            <button
-              type="button"
-              key={teacher._id}
-              onClick={() =>
-                navigate(`/faculty/${facultySlug}`, {
-                  state: {
-                    teacher,
-                  },
-                })
-              }
-              className="
-                relative
-                flex
-                w-full
-                text-left
-                bg-white
-                rounded-2xl
-                shadow-sm
-                hover:shadow-md
-                transition-all
-                duration-200
-                p-5
-                items-start
-                gap-4
-                border
-                border-gray-200
-                hover:border-rose-200
-                cursor-pointer
-                overflow-hidden
-              "
-            >
+            // =============================================
+            // EXPERTISE
+            // =============================================
 
-              {/* =========================================
-                  HOD BADGE
-              ========================================== */}
+            const expertFields =
+              getExpertFieldsText(
+                teacher.expertFields
+              );
 
-              {teacher.hod === true && (
-                <div
-                  className="
-                    absolute
-                    top-5
-                    right-[-34px]
-                    z-20
-                    w-32
-                    py-1.5
-                    bg-rose-700
-                    text-white
-                    text-xs
-                    font-extrabold
-                    text-center
-                    tracking-widest
-                    shadow-md
-                    rotate-45
-                    pointer-events-none
-                  "
-                >
-                  HOD
-                </div>
-              )}
+            return (
 
-              {/* =========================================
-                  PHOTO
-              ========================================== */}
-
-              <img
-                src={photoSrc}
-                alt={fullName}
+              <button
+                type="button"
+                key={teacher._id}
+                onClick={() =>
+                  navigate(
+                    `/faculty/${facultySlug}`,
+                    {
+                      state: {
+                        teacher,
+                      },
+                    }
+                  )
+                }
                 className="
-                  w-24
-                  h-28
-                  object-cover
-                  rounded-xl
+                  relative
+                  flex
+                  w-full
+                  text-left
+                  bg-white
+                  rounded-2xl
+                  shadow-sm
+                  hover:shadow-md
+                  transition-all
+                  duration-200
+                  p-5
+                  items-start
+                  gap-4
                   border
                   border-gray-200
-                  bg-gray-100
-                  flex-shrink-0
-                "
-                onError={(e) => {
-                  if (
-                    e.currentTarget.src.includes(
-                      "placeholder.jpg"
-                    )
-                  ) {
-                    return;
-                  }
-
-                  e.currentTarget.src =
-                    "/Images/Faculty/placeholder.jpg";
-                }}
-              />
-
-              {/* =========================================
-                  INFORMATION
-              ========================================== */}
-
-              <div
-                className="
-                  flex-1
-                  min-w-0
-                  text-sm
-                  space-y-1.5
+                  hover:border-rose-200
+                  cursor-pointer
+                  overflow-hidden
                 "
               >
 
-                {/* NAME */}
+                {/* ======================================
+                    HOD BADGE
+                ======================================= */}
 
-                <h3
+                {teacher.hod === true && (
+
+                  <div
+                    className="
+                      absolute
+                      top-5
+                      right-[-34px]
+                      z-20
+                      w-32
+                      py-1.5
+                      bg-rose-700
+                      text-white
+                      text-xs
+                      font-extrabold
+                      text-center
+                      tracking-widest
+                      shadow-md
+                      rotate-45
+                      pointer-events-none
+                    "
+                  >
+                    HOD
+                  </div>
+
+                )}
+
+                {/* ======================================
+                    PHOTO
+                ======================================= */}
+
+                <img
+                  src={photoSrc}
+                  alt={fullName}
                   className="
-                    font-bold
-                    text-base
-                    text-gray-900
-                    pr-10
+                    w-24
+                    h-28
+                    object-cover
+                    rounded-xl
+                    border
+                    border-gray-200
+                    bg-gray-100
+                    flex-shrink-0
+                  "
+                  onError={(e) => {                     
+                  }}
+                />
+
+                {/* ======================================
+                    INFORMATION
+                ======================================= */}
+
+                <div
+                  className="
+                    flex-1
+                    min-w-0
+                    text-sm
+                    space-y-1.5
                   "
                 >
-                  {fullName}
-                </h3>
 
-                {/* ROLE */}
+                  {/* NAME */}
 
-                {rolesText && (
-                  <p
+                  <h3
                     className="
-                      text-cyan-800
-                      font-medium
-                      text-xs
+                      font-bold
+                      text-base
+                      text-gray-900
+                      pr-10
                     "
                   >
-                    {rolesText}
-                  </p>
-                )}
+                    {fullName}
+                  </h3>
 
-                {/* EMAIL */}
+                  {/* ROLE */}
 
-                {email && (
+                  {rolesText && (
+
+                    <p
+                      className="
+                        text-cyan-800
+                        font-medium
+                        text-xs
+                      "
+                    >
+                      {rolesText}
+                    </p>
+
+                  )}
+
+                  {/* EMAIL */}
+
+                  {email && (
+
+                    <p
+                      className="
+                        text-gray-500
+                        text-xs
+                        font-mono
+                        break-all
+                      "
+                    >
+                      {email}
+                    </p>
+
+                  )}
+
+                  {/* PHONE */}
+
+                  {phone && (
+
+                    <p
+                      className="
+                        text-gray-500
+                        text-xs
+                      "
+                    >
+                      {phone}
+                    </p>
+
+                  )}
+
+                  {/* DEGREE */}
+
+                  {teacher.highestDegree && (
+
+                    <p
+                      className="
+                        text-gray-700
+                        text-xs
+                        font-medium
+                      "
+                    >
+                      Degree:{" "}
+                      {teacher.highestDegree}
+                    </p>
+
+                  )}
+
+                  {/* EXPERTISE */}
+
+                  {expertFields && (
+
+                    <p
+                      className="
+                        text-gray-600
+                        text-xs
+                        line-clamp-2
+                      "
+                    >
+                      Expertise:{" "}
+                      {expertFields}
+                    </p>
+
+                  )}
+
+                  {/* PAPER COUNT */}
+
+                  {paperCount > 0 && (
+
+                    <p
+                      className="
+                        text-xs
+                        text-rose-700
+                        font-semibold
+                        pt-1
+                      "
+                    >
+                      {paperCount} research paper
+                      {paperCount !== 1
+                        ? "s"
+                        : ""}
+                    </p>
+
+                  )}
+
+                  {/* VIEW PROFILE */}
+
                   <p
                     className="
-                      text-gray-500
                       text-xs
-                      font-mono
-                      break-all
-                    "
-                  >
-                    {email}
-                  </p>
-                )}
-
-                {/* PHONE */}
-
-                {phone && (
-                  <p
-                    className="
-                      text-gray-500
-                      text-xs
-                    "
-                  >
-                    {phone}
-                  </p>
-                )}
-
-                {/* DEGREE */}
-
-                {teacher.highestDegree && (
-                  <p
-                    className="
-                      text-gray-700
-                      text-xs
-                      font-medium
-                    "
-                  >
-                    Degree:{" "}
-                    {teacher.highestDegree}
-                  </p>
-                )}
-
-                {/* EXPERTISE */}
-
-                {teacher.expertFields && (
-                  <p
-                    className="
-                      text-gray-600
-                      text-xs
-                      line-clamp-2
-                    "
-                  >
-                    Expertise:{" "}
-                    {teacher.expertFields}
-                  </p>
-                )}
-
-                {/* PAPER COUNT */}
-
-                {paperCount > 0 && (
-                  <p
-                    className="
-                      text-xs
-                      text-rose-700
+                      text-cyan-700
                       font-semibold
-                      pt-1
+                      pt-2
                     "
                   >
-                    {paperCount} research paper
-                    {paperCount !== 1
-                      ? "s"
-                      : ""}
+                    Click to view full profile →
                   </p>
-                )}
 
-                {/* VIEW PROFILE */}
+                </div>
 
-                <p
-                  className="
-                    text-xs
-                    text-cyan-700
-                    font-semibold
-                    pt-2
-                  "
-                >
-                  Click to view full profile →
-                </p>
-
-              </div>
-
-            </button>
-          );
-        })}
+              </button>
+            );
+          }
+        )}
 
       </div>
     </div>
