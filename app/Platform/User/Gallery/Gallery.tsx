@@ -368,7 +368,7 @@ function GalleryModal({
           className="
             fixed
             inset-0
-            z-[100]
+            z-[9999]
             flex
             items-center
             justify-center
@@ -392,7 +392,7 @@ function GalleryModal({
               absolute
               top-5
               right-5
-              z-10
+              z-[10000]
               w-10
               h-10
               rounded-full
@@ -413,6 +413,8 @@ function GalleryModal({
             src={lightbox}
             alt="Full view"
             className="
+              relative
+              z-[10000]
               max-h-[90vh]
               max-w-full
               object-contain
