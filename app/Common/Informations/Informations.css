@@ -19,16 +19,20 @@
 .notification-marquee {
   position: absolute;
 
+  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
 
   display: flex;
   flex-direction: column;
 
+  justify-content: flex-start;
+
   gap: 18px;
 
   /*
-   * Start below the notification box
+   * Start below the full notification viewport
    */
   transform: translateY(100%);
 
@@ -124,7 +128,7 @@
   }
 
   100% {
-    transform: translateY(-110%);
+    transform: translateY(-100%);
   }
 }
 

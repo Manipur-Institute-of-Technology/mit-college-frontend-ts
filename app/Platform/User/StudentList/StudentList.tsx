@@ -46,13 +46,9 @@ export type StudentListData = {
 
 const BRANCHES = {
   CE: "Civil Engineering",
-
   ME: "Mechanical Engineering",
-
   CSE: "Computer Science & Engineering",
-
   EE: "Electrical Engineering",
-
   ECE: "Electronics & Communication Engineering",
 };
 
@@ -61,28 +57,23 @@ const BRANCHES = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function StudentList() {
-
-  const [lists, setLists] =
-    useState<StudentListData[]>(
-      []
-    );
+  const [lists, setLists] = useState<StudentListData[]>([]);
 
   const [
     selectedListId,
     setSelectedListId,
-  ] = useState<string | null>(
-    null
-  );
+  ] = useState<string | null>(null);
 
   const [
     searchTerm,
     setSearchTerm,
   ] = useState("");
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // Pagination
+  // ─────────────────────────────────────────────────────────────────────────
+  // STUDENT TABLE PAGINATION
+  // ─────────────────────────────────────────────────────────────────────────
 
   const [
     currentPage,
@@ -94,62 +85,99 @@ export default function StudentList() {
     setRowsPerPage,
   ] = useState(20);
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // STUDENT LIST CARD PAGINATION
+  // Maximum 9 cards per page
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const LISTS_PER_PAGE = 9;
+
+  const [
+    listPage,
+    setListPage,
+  ] = useState(1);
+
+  // ─────────────────────────────────────────────────────────────────────────
   // FETCH
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
+    const fetchStudentLists = async () => {
+      try {
+        setLoading(true);
 
-    const fetchStudentLists =
-      async () => {
+        const res = await apiClient.get(
+          "/studentlist"
+        );
 
-        try {
+        const fetched =
+          res.data?.data || [];
 
-          setLoading(true);
+        setLists(fetched);
+      } catch (error) {
+        showAlert({
+          title:
+            "Unable to load student list",
 
-          const res =
-            await apiClient.get(
-              "/studentlist"
-            );
+          text:
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch student lists from the server.",
 
-          const fetched =
-            res.data?.data ||
-            [];
+          icon: "error",
 
-          setLists(fetched);
-
-        } catch (error) {
-
-          showAlert({
-            title:
-              "Unable to load student list",
-
-            text:
-              error instanceof Error
-                ? error.message
-                : "Failed to fetch student lists from the server.",
-
-            icon: "error",
-
-            confirmButtonColor:
-              "#0891b2",
-          });
-
-        } finally {
-
-          setLoading(false);
-
-        }
-
-      };
+          confirmButtonColor:
+            "#0891b2",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchStudentLists();
-
   }, []);
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // STUDENT LIST CARD PAGINATION
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const totalListPages =
+    Math.ceil(
+      lists.length /
+        LISTS_PER_PAGE
+    );
+
+  const safeListPage =
+    Math.min(
+      listPage,
+      Math.max(
+        totalListPages,
+        1
+      )
+    );
+
+  const listStartIndex =
+    (safeListPage - 1) *
+    LISTS_PER_PAGE;
+
+  const listEndIndex =
+    listStartIndex +
+    LISTS_PER_PAGE;
+
+  const paginatedLists =
+    lists.slice(
+      listStartIndex,
+      listEndIndex
+    );
+
+  // Reset card page when the available lists change
+  useEffect(() => {
+    setListPage(1);
+  }, [lists.length]);
+
+  // ─────────────────────────────────────────────────────────────────────────
   // SELECTED LIST
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   const currentListData =
     lists.find(
@@ -162,30 +190,27 @@ export default function StudentList() {
     currentListData?.data ||
     [];
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
   // BRANCH NAME
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   const getBranchName = (
     branch: string
   ) => {
-
     return (
       BRANCHES[
         branch as keyof typeof BRANCHES
       ] ||
       branch
     );
-
   };
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
   // SEARCH
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   const filteredRows =
     useMemo(() => {
-
       if (
         !searchTerm.trim()
       ) {
@@ -210,15 +235,14 @@ export default function StudentList() {
                 .includes(term)
           )
       );
-
     }, [
       studentRows,
       searchTerm,
     ]);
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
   // HEADERS
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   const headers =
     studentRows.length > 0
@@ -230,9 +254,9 @@ export default function StudentList() {
         )
       : [];
 
-  // ───────────────────────────────────────────────────────────────────────────
-  // PAGINATION
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // STUDENT TABLE PAGINATION
+  // ─────────────────────────────────────────────────────────────────────────
 
   const totalRows =
     filteredRows.length;
@@ -268,33 +292,29 @@ export default function StudentList() {
       endIndex
     );
 
-  // ───────────────────────────────────────────────────────────────────────────
-  // RESET PAGE
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // RESET STUDENT TABLE PAGE
+  // ─────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
-
     setCurrentPage(1);
-
   }, [
     searchTerm,
     selectedListId,
     rowsPerPage,
   ]);
 
-  // ───────────────────────────────────────────────────────────────────────────
-  // PAGE NUMBERS
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // STUDENT TABLE PAGE NUMBERS
+  // ─────────────────────────────────────────────────────────────────────────
 
   const getPageNumbers = () => {
-
     const pages: (
       | number
       | string
     )[] = [];
 
     if (totalPages <= 7) {
-
       for (
         let i = 1;
         i <= totalPages;
@@ -344,16 +364,14 @@ export default function StudentList() {
     return pages;
   };
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
   // DOWNLOAD
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   const handleDownloadFile = (
     filepath?: string
   ) => {
-
     if (!filepath) {
-
       showAlert({
         title: "Notice",
 
@@ -377,7 +395,6 @@ export default function StudentList() {
         : `/${filepath}`;
 
     showAlert({
-
       title:
         "Download Student List?",
 
@@ -396,30 +413,24 @@ export default function StudentList() {
 
       confirmButtonColor:
         "#0891b2",
-
     }).then(
       (result) => {
-
         if (
           result.isConfirmed
         ) {
-
           window.open(
             fileUrl,
             "_blank",
             "noopener,noreferrer"
           );
-
         }
-
       }
     );
-
   };
 
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
   // RENDER
-  // ───────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
     <>
@@ -447,8 +458,7 @@ export default function StudentList() {
 
             </div>
 
-          ) : lists.length ===
-            0 ? (
+          ) : lists.length === 0 ? (
 
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-16 text-center">
 
@@ -486,9 +496,11 @@ export default function StudentList() {
 
               </div>
 
+              {/* STUDENT LIST CARDS */}
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-                {lists.map(
+                {paginatedLists.map(
                   (item) => (
 
                     <button
@@ -499,7 +511,7 @@ export default function StudentList() {
                       onClick={() =>
                         setSelectedListId(
                           item._id ||
-                            null
+                          null
                         )
                       }
                       className="text-left bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-cyan-400 transition-all p-5"
@@ -566,6 +578,105 @@ export default function StudentList() {
 
               </div>
 
+              {/* ────────────────────────────────────────────────────────────
+                  CARD PAGINATION
+
+                  IMPORTANT:
+                  This is ONLY rendered when there are MORE than 9 cards.
+              ──────────────────────────────────────────────────────────── */}
+
+              {lists.length > LISTS_PER_PAGE && (
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-sm px-4 py-4">
+
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+
+                    <div className="text-xs font-semibold text-gray-500">
+
+                      Page{" "}
+
+                      <span className="font-bold text-gray-900">
+                        {safeListPage}
+                      </span>
+
+                      {" "}of{" "}
+
+                      <span className="font-bold text-gray-900">
+                        {totalListPages}
+                      </span>
+
+                    </div>
+
+                    <div className="flex items-center gap-2">
+
+                      {/* PREVIOUS */}
+
+                      <button
+                        type="button"
+                        disabled={
+                          safeListPage ===
+                          1
+                        }
+                        onClick={() =>
+                          setListPage(
+                            (prev) =>
+                              Math.max(
+                                prev - 1,
+                                1
+                              )
+                          )
+                        }
+                        className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+
+                        <ChevronLeft className="w-4 h-4" />
+
+                        <span className="hidden sm:inline">
+                          Previous
+                        </span>
+
+                      </button>
+
+                      {/* PAGE NUMBER */}
+
+                      <div className="min-w-10 px-3 py-2 text-xs font-bold rounded-lg bg-cyan-600 text-white border border-cyan-600 text-center">
+                        {safeListPage}
+                      </div>
+
+                      {/* NEXT */}
+
+                      <button
+                        type="button"
+                        disabled={
+                          safeListPage ===
+                          totalListPages
+                        }
+                        onClick={() =>
+                          setListPage(
+                            (prev) =>
+                              Math.min(
+                                prev + 1,
+                                totalListPages
+                              )
+                          )
+                        }
+                        className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+
+                        <span className="hidden sm:inline">
+                          Next
+                        </span>
+
+                        <ChevronRight className="w-4 h-4" />
+
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              )}
+
             </div>
 
           ) : (
@@ -581,13 +692,14 @@ export default function StudentList() {
               <button
                 type="button"
                 onClick={() => {
-
                   setSelectedListId(
                     null
                   );
 
                   setSearchTerm("");
 
+                  // Return to first card page
+                  setListPage(1);
                 }}
                 className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-cyan-700"
               >
@@ -621,6 +733,7 @@ export default function StudentList() {
                           {
                             currentListData.course
                           }{" "}
+
                           {
                             currentListData.year
                           }
@@ -688,9 +801,11 @@ export default function StudentList() {
                             {
                               item.course
                             }{" "}
+
                             {
                               item.year
                             }{" "}
+
                             {
                               item.branch
                             }
@@ -818,6 +933,7 @@ export default function StudentList() {
                           1}
 
                       –
+
                       {
                         endIndex
                       }
@@ -951,7 +1067,6 @@ export default function StudentList() {
                               </tr>
 
                             );
-
                           }
                         )}
 
@@ -996,7 +1111,7 @@ export default function StudentList() {
 
               </div>
 
-              {/* PAGINATION */}
+              {/* STUDENT TABLE PAGINATION */}
 
               {totalRows >
                 0 &&
@@ -1030,6 +1145,7 @@ export default function StudentList() {
                     <div className="flex items-center gap-1">
 
                       <button
+                        type="button"
                         disabled={
                           safeCurrentPage ===
                           1
@@ -1040,7 +1156,7 @@ export default function StudentList() {
                               1
                           )
                         }
-                        className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                        className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
 
                         <ChevronLeft className="w-4 h-4" />
@@ -1074,7 +1190,6 @@ export default function StudentList() {
                                 </span>
 
                               );
-
                             }
 
                             const pageNumber =
@@ -1083,6 +1198,7 @@ export default function StudentList() {
                             return (
 
                               <button
+                                type="button"
                                 key={
                                   pageNumber
                                 }
@@ -1106,13 +1222,13 @@ export default function StudentList() {
                               </button>
 
                             );
-
                           }
                         )}
 
                       </div>
 
                       <button
+                        type="button"
                         disabled={
                           safeCurrentPage ===
                           totalPages
@@ -1123,7 +1239,7 @@ export default function StudentList() {
                               1
                           )
                         }
-                        className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                        className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
 
                         <span className="hidden sm:inline">

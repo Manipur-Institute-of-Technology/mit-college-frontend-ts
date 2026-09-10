@@ -261,7 +261,7 @@ export default function Contact_Us() {
             <br />
             &emsp;(A Constituent College of Manipur University)
             <br />
-            &emsp;Takyelpat, Imphal - 795001, Manipur, India
+            &emsp;Imphal - 795003, Manipur, India
           </p>
 
           <div
@@ -277,7 +277,7 @@ export default function Contact_Us() {
             }}
           >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d771.0319076983468!2d93.90538353858935!3d24.798544329133495!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3749288213100001%3A0x4aab7b12460d98b8!2sMIT%20Main%20Block!5e1!3m2!1sen!2sin!4v1744118204792!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2212.282412255258!2d93.92790714973134!3d24.753665613753267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x374925ce7ee0c749%3A0x4e577411f1653a2d!2sManipur%20Institute%20of%20Technology%2C%20Manipur%20University!5e1!3m2!1sen!2sin!4v1789021225724!5m2!1sen!2sin"
               style={{
                 border: "1px solid gray",
                 borderRadius: "8px",

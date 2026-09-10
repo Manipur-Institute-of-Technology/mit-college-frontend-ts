@@ -1,0 +1,21 @@
+.notification-horizontal-wrapper {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.notification-horizontal-marquee {
+  display: inline-flex;
+  width: max-content;
+  animation: notification-scroll 20s linear infinite;
+}
+
+@keyframes notification-scroll {
+  0% {
+    transform: translateX(100vw);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}

@@ -237,7 +237,7 @@ export default function ImageCarousel({
           MAIN IMAGE
       ======================================================== */}
 
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
         <img
           key={currentSlide._id}
           src={currentSlide.imageUrl}
@@ -246,7 +246,7 @@ export default function ImageCarousel({
             currentSlide.caption ||
             "Manipur Institute of Technology"
           }
-          className="w-full h-full object-cover transition-opacity duration-500"
+          className="w-full h-full object-contain transition-opacity duration-500"
           onError={(event) => {
             event.currentTarget.style.opacity = "0";
           }}
@@ -259,33 +259,35 @@ export default function ImageCarousel({
 
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
 
-      {/* ========================================================
-          TITLE / CAPTION
-      ======================================================== */}
+  {/* ========================================================
+      TITLE / CAPTION
+  ======================================================== */}
 
-      {(currentSlide.title ||
-        currentSlide.caption ||
-        currentSlide.description) && (
-        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 text-white">
-          {currentSlide.title && (
-            <h2 className="text-xl md:text-3xl font-bold text-cyan-300 drop-shadow-lg">
-              {currentSlide.title}
-            </h2>
-          )}
+  {(currentSlide.title ||
+    currentSlide.caption ||
+    currentSlide.description) && (
+    <div className="absolute inset-x-0 bottom-16 md:bottom-20 z-10 flex justify-center px-5">
+      <div className="px-2 py-1 md:px-3 md:py-1 rounded-xl bg-black/50 backdrop-blur-md border border-white/10 shadow-lg text-center text-white">
+        {currentSlide.title && (
+          <h2 className="text-xl md:text-3xl font-bold text-cyan-300 drop-shadow-lg">
+            {currentSlide.title}
+          </h2>
+        )}
 
-          {currentSlide.caption && (
-            <p className="mt-1 text-sm md:text-base text-white/90 drop-shadow">
-              {currentSlide.caption}
-            </p>
-          )}
+        {currentSlide.caption && (
+          <p className="text-sm md:text-base text-white/90 drop-shadow">
+            {currentSlide.caption}
+          </p>
+        )}
 
-          {currentSlide.description && (
-            <p className="mt-1 text-sm md:text-base text-white/80">
-              {currentSlide.description}
-            </p>
-          )}
-        </div>
-      )}
+        {currentSlide.description && (
+          <p className="text-sm md:text-base text-white/80">
+            {currentSlide.description}
+          </p>
+        )}
+      </div>
+    </div>
+  )}
 
       {/* ========================================================
           PREVIOUS BUTTON

@@ -18,6 +18,9 @@ import {
   FaExternalLinkAlt,
   FaTimesCircle,
   FaBookOpen,
+  FaKey,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
 import { useAuth } from "~/context/AuthContext";
@@ -67,19 +70,6 @@ type Faculty = {
 
   highestDegree?: string;
 
-  /*
-   * Can come from DB in formats such as:
-   *
-   * ['["AI, Machine Learning, Deep Learning"]']
-   *
-   * or:
-   *
-   * ["AI", "Machine Learning", "Deep Learning"]
-   *
-   * or:
-   *
-   * ["AI, Machine Learning"]
-   */
   expertFields?: string[];
 
   roles?: string | string[];
@@ -216,10 +206,6 @@ const formatDateForInput = (
     return "";
   }
 
-  /*
-   * If already in YYYY-MM-DD format,
-   * return it directly.
-   */
   if (
     /^\d{4}-\d{2}-\d{2}$/.test(date)
   ) {
@@ -306,18 +292,6 @@ const getDepartmentId = (
 // =========================================================
 // EXPERT FIELDS NORMALIZER
 // =========================================================
-//
-// Supports:
-//
-// ['["AI, Machine Learning, Deep Learning"]']
-//
-// ["AI", "Machine Learning", "Deep Learning"]
-//
-// ["AI, Machine Learning"]
-//
-// ["AI, Machine Learning, Deep Learning"]
-//
-// =========================================================
 
 const normalizeExpertFields = (
   expertFields?: string[]
@@ -332,13 +306,6 @@ const normalizeExpertFields = (
   try {
     let values: any[] = expertFields;
 
-    /*
-     * Handle:
-     *
-     * [
-     *   '["AI, Machine Learning, Deep Learning"]'
-     * ]
-     */
     if (
       values.length === 1 &&
       typeof values[0] === "string"
@@ -356,22 +323,12 @@ const normalizeExpertFields = (
           values = [parsed];
         }
       } catch {
-        /*
-         * It was not JSON.
-         * Keep original value.
-         */
         values = [firstValue];
       }
     }
 
-    /*
-     * Flatten nested arrays.
-     */
     values = values.flat(Infinity);
 
-    /*
-     * Convert everything to strings.
-     */
     return values
       .map((item) =>
         String(item).trim()
@@ -390,16 +347,6 @@ const normalizeExpertFields = (
 
 // =========================================================
 // EXPERT FIELDS TEXT
-// =========================================================
-//
-// Converts:
-//
-// ['["AI, Machine Learning, Deep Learning"]']
-//
-// into:
-//
-// AI, Machine Learning, Deep Learning
-//
 // =========================================================
 
 const getExpertFieldsText = (
@@ -471,6 +418,16 @@ export default function TeacherHomePage() {
     useState<Faculty>({});
 
   // =======================================================
+  // PROFILE PHOTO EDIT
+  // =======================================================
+
+  const [profilePhotoFile, setProfilePhotoFile] =
+    useState<File | null>(null);
+
+  const [profilePhotoPreview, setProfilePhotoPreview] =
+    useState("");
+
+  // =======================================================
   // PAPERS
   // =======================================================
 
@@ -497,6 +454,53 @@ export default function TeacherHomePage() {
       title: "",
       paperUrl: "",
     });
+
+  // =======================================================
+  // CHANGE PASSWORD
+  // =======================================================
+
+  const [
+    showChangePassword,
+    setShowChangePassword,
+  ] = useState(false);
+
+  const [
+    changingPassword,
+    setChangingPassword,
+  ] = useState(false);
+
+  const [
+    passwordError,
+    setPasswordError,
+  ] = useState("");
+
+  const [
+    passwordForm,
+    setPasswordForm,
+  ] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  // =======================================================
+  // PASSWORD VISIBILITY
+  // =======================================================
+
+  const [
+    showOldPassword,
+    setShowOldPassword,
+  ] = useState(false);
+
+  const [
+    showNewPassword,
+    setShowNewPassword,
+  ] = useState(false);
+
+  const [
+    showConfirmPassword,
+    setShowConfirmPassword,
+  ] = useState(false);
 
   // =======================================================
   // ACCOUNT ID
@@ -702,10 +706,6 @@ export default function TeacherHomePage() {
           const loadedFaculty =
             facultyData as Faculty;
 
-          /*
-           * Normalize expertFields immediately
-           * after receiving data from backend.
-           */
           const normalizedExpertFields =
             normalizeExpertFields(
               loadedFaculty.expertFields
@@ -841,6 +841,61 @@ export default function TeacherHomePage() {
       ? `${API_BASE_URL}/uploads/faculty/${faculty.photoId}`
       : "";
 
+  const displayPhotoUrl =
+    profilePhotoPreview || photoUrl;
+
+  // =======================================================
+  // PROFILE PHOTO CHANGE
+  // =======================================================
+
+  const handleProfilePhotoChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setError(
+        "Please select a JPG, PNG, or WEBP image."
+      );
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError(
+        "Profile photo must be 5 MB or smaller."
+      );
+      event.target.value = "";
+      return;
+    }
+
+    setError("");
+    setProfilePhotoFile(file);
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setProfilePhotoPreview(
+        typeof reader.result === "string"
+          ? reader.result
+          : ""
+      );
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   // =======================================================
   // FACULTY FORM CHANGE
   // =======================================================
@@ -877,18 +932,6 @@ export default function TeacherHomePage() {
             facultyForm
           );
 
-        /*
-         * Always send expertFields
-         * as a clean string array.
-         *
-         * Example:
-         *
-         * [
-         *   "AI",
-         *   "Machine Learning",
-         *   "Deep Learning"
-         * ]
-         */
         const normalizedExpertFields =
           normalizeExpertFields(
             facultyForm.expertFields
@@ -998,6 +1041,64 @@ export default function TeacherHomePage() {
           );
         }
 
+        // Upload a new profile photo only when one was selected.
+        if (profilePhotoFile) {
+          const formData = new FormData();
+
+          formData.append(
+            "photo",
+            profilePhotoFile
+          );
+
+          await apiClient.put(
+            `/faculty-update/me/photo`,
+            formData
+          );
+
+          // Refresh the faculty profile so the new
+          // photoId/photo URL is loaded from the backend.
+          const photoResponse =
+            await apiClient.get(
+              `/faculty/${accountId}`
+            );
+
+          const photoResponseData =
+            photoResponse.data as FacultyResponse;
+
+          const photoFaculty =
+            photoResponseData?.data?.faculty ||
+            photoResponseData?.faculty ||
+            photoResponseData?.data;
+
+          if (photoFaculty) {
+            const refreshedFaculty: Faculty =
+              {
+                ...photoFaculty,
+
+                expertFields:
+                  normalizeExpertFields(
+                    photoFaculty.expertFields
+                  ),
+
+                dob:
+                  formatDateForInput(
+                    photoFaculty.dob
+                  ),
+
+                departmentId:
+                  getDepartmentId(
+                    photoFaculty
+                  ),
+              };
+
+            setFaculty(refreshedFaculty);
+            setFacultyForm(refreshedFaculty);
+          }
+        }
+
+        setProfilePhotoFile(null);
+        setProfilePhotoPreview("");
+
         setEditingFaculty(false);
 
         await showAlert({
@@ -1055,6 +1156,10 @@ export default function TeacherHomePage() {
       setFacultyForm(
         normalizedFaculty
       );
+
+      setProfilePhotoFile(null);
+      setProfilePhotoPreview("");
+      setError("");
 
       setEditingFaculty(false);
     };
@@ -1174,10 +1279,6 @@ export default function TeacherHomePage() {
             undefined,
         };
 
-        // =================================================
-        // EDIT
-        // =================================================
-
         if (editingPaperId) {
 
           const response =
@@ -1203,13 +1304,7 @@ export default function TeacherHomePage() {
             );
           }
 
-        }
-
-        // =================================================
-        // ADD
-        // =================================================
-
-        else {
+        } else {
 
           const response =
             await apiClient.post(
@@ -1411,6 +1506,199 @@ export default function TeacherHomePage() {
               "rounded-xl",
           },
         });
+      }
+    };
+
+  // =======================================================
+  // CHANGE PASSWORD
+  // =======================================================
+
+  const handlePasswordChange =
+    (
+      field:
+        | "oldPassword"
+        | "newPassword"
+        | "confirmPassword",
+      value: string
+    ) => {
+
+      setPasswordForm(
+        (previous) => ({
+          ...previous,
+          [field]: value,
+        })
+      );
+
+      setPasswordError("");
+    };
+
+  // =======================================================
+  // RESET PASSWORD FORM
+  // =======================================================
+
+  const resetPasswordForm =
+    () => {
+
+      setPasswordForm({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+
+      setPasswordError("");
+
+      setShowOldPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
+    };
+
+  // =======================================================
+  // CLOSE CHANGE PASSWORD MODAL
+  // =======================================================
+
+  const closeChangePassword =
+    () => {
+
+      if (changingPassword) {
+        return;
+      }
+
+      setShowChangePassword(false);
+
+      resetPasswordForm();
+    };
+
+  // =======================================================
+  // SUBMIT CHANGE PASSWORD
+  // =======================================================
+
+  const handleChangePassword =
+    async () => {
+
+      const {
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      } = passwordForm;
+
+      // Current password validation
+      if (!oldPassword.trim()) {
+
+        setPasswordError(
+          "Please enter your current password."
+        );
+
+        return;
+      }
+
+      // New password validation
+      if (!newPassword.trim()) {
+
+        setPasswordError(
+          "Please enter your new password."
+        );
+
+        return;
+      }
+
+      // Password length validation
+      if (newPassword.length < 6) {
+
+        setPasswordError(
+          "New password must be at least 6 characters long."
+        );
+
+        return;
+      }
+
+      // Confirm password validation
+      if (!confirmPassword.trim()) {
+
+        setPasswordError(
+          "Please confirm your new password."
+        );
+
+        return;
+      }
+
+      // Password match validation
+      if (
+        newPassword !==
+        confirmPassword
+      ) {
+
+        setPasswordError(
+          "New password and confirm password do not match."
+        );
+
+        return;
+      }
+
+      // Prevent using the same password
+      if (
+        oldPassword ===
+        newPassword
+      ) {
+
+        setPasswordError(
+          "New password must be different from your current password."
+        );
+
+        return;
+      }
+
+      try {
+
+        setChangingPassword(true);
+        setPasswordError("");
+
+        await apiClient.post(
+          "/account/changepassword",
+          {
+            oldPassword,
+            newPassword,
+          }
+        );
+
+        setShowChangePassword(false);
+
+        resetPasswordForm();
+
+        await showAlert({
+          title:
+            "Password Changed!",
+
+          text:
+            "Your password has been changed successfully.",
+
+          icon:
+            "success",
+
+          confirmButtonText:
+            "OK",
+
+          confirmButtonColor:
+            "#22c55e",
+
+          customClass: {
+            popup:
+              "rounded-xl",
+          },
+        });
+
+      } catch (err: any) {
+
+        const message =
+          getApiErrorMessage(
+            err,
+            "Unable to change your password."
+          );
+
+        setPasswordError(message);
+
+      } finally {
+
+        setChangingPassword(false);
       }
     };
 
@@ -1750,10 +2038,10 @@ export default function TeacherHomePage() {
           "
         >
 
-          {photoUrl ? (
+          {displayPhotoUrl ? (
 
             <img
-              src={photoUrl}
+              src={displayPhotoUrl}
               alt={fullName}
               className="
                 w-full
@@ -1914,10 +2202,10 @@ export default function TeacherHomePage() {
               "
             >
 
-              {photoUrl ? (
+              {displayPhotoUrl ? (
 
                 <img
-                  src={photoUrl}
+                  src={displayPhotoUrl}
                   alt={fullName}
                   className="
                     w-full
@@ -2005,7 +2293,9 @@ export default function TeacherHomePage() {
 
         </nav>
 
-        {/* Logout */}
+        {/* =================================================
+            CHANGE PASSWORD + LOGOUT
+        ================================================= */}
 
         <div
           className="
@@ -2018,6 +2308,46 @@ export default function TeacherHomePage() {
             border-gray-100
           "
         >
+
+          {/* Change Password */}
+
+          <button
+            type="button"
+            onClick={() => {
+
+              resetPasswordForm();
+
+              setShowChangePassword(true);
+
+              setSidebarOpen(false);
+
+            }}
+            className="
+              w-full
+              flex
+              items-center
+              gap-3
+              px-4
+              py-3
+              rounded-xl
+              text-sm
+              font-semibold
+              text-cyan-700
+              hover:bg-cyan-50
+              transition
+              mb-1
+            "
+          >
+
+            <FaKey />
+
+            <span>
+              Change Password
+            </span>
+
+          </button>
+
+          {/* Logout */}
 
           <button
             type="button"
@@ -2126,10 +2456,10 @@ export default function TeacherHomePage() {
               "
             >
 
-              {photoUrl ? (
+              {displayPhotoUrl ? (
 
                 <img
-                  src={photoUrl}
+                  src={displayPhotoUrl}
                   alt={fullName}
                   className="
                     w-full
@@ -2280,10 +2610,10 @@ export default function TeacherHomePage() {
                 "
               >
 
-                {photoUrl ? (
+                {displayPhotoUrl ? (
 
                   <img
-                    src={photoUrl}
+                    src={displayPhotoUrl}
                     alt={fullName}
                     className="
                       w-full
@@ -2324,8 +2654,6 @@ export default function TeacherHomePage() {
               mt-6
             "
           >
-
-            {/* Header */}
 
             <div
               className="
@@ -2482,6 +2810,134 @@ export default function TeacherHomePage() {
               >
 
                 <tbody>
+
+                  {/* PROFILE PHOTO */}
+
+                  {editingFaculty && (
+                    <tr
+                      className="
+                        border-b
+                        border-gray-100
+                      "
+                    >
+                      <td
+                        className="
+                          px-6
+                          py-4
+                          text-xs
+                          font-bold
+                          text-gray-400
+                          uppercase
+                          align-top
+                        "
+                      >
+                        Profile Photo
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div
+                          className="
+                            flex
+                            flex-col
+                            sm:flex-row
+                            sm:items-center
+                            gap-4
+                          "
+                        >
+                          <div
+                            className="
+                              w-24
+                              h-24
+                              rounded-full
+                              overflow-hidden
+                              bg-cyan-100
+                              border-2
+                              border-cyan-100
+                              flex-shrink-0
+                              flex
+                              items-center
+                              justify-center
+                            "
+                          >
+                            {displayPhotoUrl ? (
+                              <img
+                                src={displayPhotoUrl}
+                                alt={fullName}
+                                className="
+                                  w-full
+                                  h-full
+                                  object-cover
+                                "
+                              />
+                            ) : (
+                              <FaUserCircle
+                                className="
+                                  text-cyan-700
+                                  text-6xl
+                                "
+                              />
+                            )}
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <label
+                              htmlFor="faculty-profile-photo"
+                              className="
+                                inline-flex
+                                w-fit
+                                items-center
+                                justify-center
+                                gap-2
+                                px-4
+                                py-2.5
+                                rounded-xl
+                                bg-cyan-700
+                                hover:bg-cyan-800
+                                text-white
+                                text-sm
+                                font-bold
+                                cursor-pointer
+                              "
+                            >
+                              <FaEdit />
+                              Change Photo
+                            </label>
+
+                            <input
+                              id="faculty-profile-photo"
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              onChange={
+                                handleProfilePhotoChange
+                              }
+                              className="hidden"
+                            />
+
+                            <p
+                              className="
+                                text-xs
+                                text-gray-400
+                              "
+                            >
+                              JPG, PNG or WEBP · Max 5 MB
+                            </p>
+
+                            {profilePhotoFile && (
+                              <p
+                                className="
+                                  text-xs
+                                  text-green-600
+                                  font-semibold
+                                "
+                              >
+                                {profilePhotoFile.name}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
 
                   {/* NAME */}
 
@@ -4169,6 +4625,598 @@ export default function TeacherHomePage() {
                     : editingPaperId
                       ? "Update Paper"
                       : "Add Paper"}
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* =====================================================
+          CHANGE PASSWORD MODAL
+      ===================================================== */}
+
+      {showChangePassword && (
+
+        <div
+          className="
+            fixed
+            inset-0
+            z-[110]
+            bg-black/50
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+          onMouseDown={(e) => {
+
+            if (
+              e.target === e.currentTarget &&
+              !changingPassword
+            ) {
+
+              closeChangePassword();
+
+            }
+
+          }}
+        >
+
+          <div
+            className="
+              w-full
+              max-w-md
+              bg-white
+              rounded-2xl
+              shadow-2xl
+              overflow-hidden
+            "
+          >
+
+            {/* Modal Header */}
+
+            <div
+              className="
+                px-6
+                py-5
+                border-b
+                border-gray-100
+                flex
+                items-center
+                justify-between
+              "
+            >
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+
+                <div
+                  className="
+                    w-10
+                    h-10
+                    rounded-xl
+                    bg-cyan-50
+                    text-cyan-700
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+                  <FaKey />
+                </div>
+
+                <div>
+
+                  <h2
+                    className="
+                      text-lg
+                      font-extrabold
+                      text-gray-900
+                    "
+                  >
+                    Change Password
+                  </h2>
+
+                  <p
+                    className="
+                      text-xs
+                      text-gray-400
+                      mt-1
+                    "
+                  >
+                    Update your account password.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={closeChangePassword}
+                disabled={changingPassword}
+                className="
+                  w-9
+                  h-9
+                  rounded-lg
+                  bg-gray-100
+                  text-gray-600
+                  hover:bg-gray-200
+                  flex
+                  items-center
+                  justify-center
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                "
+              >
+
+                <FaTimes />
+
+              </button>
+
+            </div>
+
+            {/* Modal Body */}
+
+            <div className="p-6 space-y-5">
+
+              {/* =================================================
+                  CURRENT PASSWORD
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    block
+                    text-xs
+                    font-bold
+                    text-gray-600
+                    mb-2
+                  "
+                >
+                  Current Password
+
+                  <span className="text-red-500 ml-1">
+                    *
+                  </span>
+
+                </label>
+
+                <div className="relative">
+
+                  <input
+                    type={
+                      showOldPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={
+                      passwordForm.oldPassword
+                    }
+                    onChange={(e) =>
+                      handlePasswordChange(
+                        "oldPassword",
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter current password"
+                    autoComplete="current-password"
+                    disabled={
+                      changingPassword
+                    }
+                    className="
+                      w-full
+                      border
+                      border-gray-200
+                      rounded-xl
+                      px-4
+                      py-3
+                      pr-12
+                      text-sm
+                      outline-none
+                      focus:ring-2
+                      focus:ring-cyan-500
+                      disabled:bg-gray-50
+                      disabled:cursor-not-allowed
+                    "
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowOldPassword(
+                        (previous) =>
+                          !previous
+                      )
+                    }
+                    disabled={
+                      changingPassword
+                    }
+                    className="
+                      absolute
+                      right-3
+                      top-1/2
+                      -translate-y-1/2
+                      w-8
+                      h-8
+                      rounded-lg
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-400
+                      hover:text-cyan-700
+                      hover:bg-cyan-50
+                      transition
+                      disabled:opacity-50
+                      disabled:cursor-not-allowed
+                    "
+                    title={
+                      showOldPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    aria-label={
+                      showOldPassword
+                        ? "Hide current password"
+                        : "Show current password"
+                    }
+                  >
+
+                    {showOldPassword ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+
+                  </button>
+
+                </div>
+
+              </div>
+
+              {/* =================================================
+                  NEW PASSWORD
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    block
+                    text-xs
+                    font-bold
+                    text-gray-600
+                    mb-2
+                  "
+                >
+                  New Password
+
+                  <span className="text-red-500 ml-1">
+                    *
+                  </span>
+
+                </label>
+
+                <div className="relative">
+
+                  <input
+                    type={
+                      showNewPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={
+                      passwordForm.newPassword
+                    }
+                    onChange={(e) =>
+                      handlePasswordChange(
+                        "newPassword",
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter new password"
+                    autoComplete="new-password"
+                    disabled={
+                      changingPassword
+                    }
+                    className="
+                      w-full
+                      border
+                      border-gray-200
+                      rounded-xl
+                      px-4
+                      py-3
+                      pr-12
+                      text-sm
+                      outline-none
+                      focus:ring-2
+                      focus:ring-cyan-500
+                      disabled:bg-gray-50
+                      disabled:cursor-not-allowed
+                    "
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowNewPassword(
+                        (previous) =>
+                          !previous
+                      )
+                    }
+                    disabled={
+                      changingPassword
+                    }
+                    className="
+                      absolute
+                      right-3
+                      top-1/2
+                      -translate-y-1/2
+                      w-8
+                      h-8
+                      rounded-lg
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-400
+                      hover:text-cyan-700
+                      hover:bg-cyan-50
+                      transition
+                      disabled:opacity-50
+                      disabled:cursor-not-allowed
+                    "
+                    title={
+                      showNewPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    aria-label={
+                      showNewPassword
+                        ? "Hide new password"
+                        : "Show new password"
+                    }
+                  >
+
+                    {showNewPassword ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+
+                  </button>
+
+                </div>
+
+                <p
+                  className="
+                    mt-2
+                    text-[11px]
+                    text-gray-400
+                  "
+                >
+                  Password must be at least 6 characters.
+                </p>
+
+              </div>
+
+              {/* =================================================
+                  CONFIRM PASSWORD
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    block
+                    text-xs
+                    font-bold
+                    text-gray-600
+                    mb-2
+                  "
+                >
+                  Confirm New Password
+
+                  <span className="text-red-500 ml-1">
+                    *
+                  </span>
+
+                </label>
+
+                <div className="relative">
+
+                  <input
+                    type={
+                      showConfirmPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={
+                      passwordForm.confirmPassword
+                    }
+                    onChange={(e) =>
+                      handlePasswordChange(
+                        "confirmPassword",
+                        e.target.value
+                      )
+                    }
+                    placeholder="Confirm new password"
+                    autoComplete="new-password"
+                    disabled={
+                      changingPassword
+                    }
+                    className="
+                      w-full
+                      border
+                      border-gray-200
+                      rounded-xl
+                      px-4
+                      py-3
+                      pr-12
+                      text-sm
+                      outline-none
+                      focus:ring-2
+                      focus:ring-cyan-500
+                      disabled:bg-gray-50
+                      disabled:cursor-not-allowed
+                    "
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword(
+                        (previous) =>
+                          !previous
+                      )
+                    }
+                    disabled={
+                      changingPassword
+                    }
+                    className="
+                      absolute
+                      right-3
+                      top-1/2
+                      -translate-y-1/2
+                      w-8
+                      h-8
+                      rounded-lg
+                      flex
+                      items-center
+                      justify-center
+                      text-gray-400
+                      hover:text-cyan-700
+                      hover:bg-cyan-50
+                      transition
+                      disabled:opacity-50
+                      disabled:cursor-not-allowed
+                    "
+                    title={
+                      showConfirmPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide confirm password"
+                        : "Show confirm password"
+                    }
+                  >
+
+                    {showConfirmPassword ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+
+                  </button>
+
+                </div>
+
+              </div>
+
+              {/* =================================================
+                  PASSWORD ERROR
+              ================================================= */}
+
+              {passwordError && (
+
+                <div
+                  className="
+                    p-3
+                    rounded-xl
+                    bg-red-50
+                    border
+                    border-red-100
+                    text-red-600
+                    text-xs
+                    font-semibold
+                  "
+                >
+                  {passwordError}
+                </div>
+
+              )}
+
+              {/* =================================================
+                  BUTTONS
+              ================================================= */}
+
+              <div
+                className="
+                  flex
+                  gap-3
+                  pt-2
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={
+                    closeChangePassword
+                  }
+                  disabled={
+                    changingPassword
+                  }
+                  className="
+                    flex-1
+                    py-3
+                    rounded-xl
+                    bg-gray-100
+                    hover:bg-gray-200
+                    text-gray-700
+                    text-sm
+                    font-bold
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    handleChangePassword
+                  }
+                  disabled={
+                    changingPassword
+                  }
+                  className="
+                    flex-1
+                    py-3
+                    rounded-xl
+                    bg-cyan-700
+                    hover:bg-cyan-800
+                    text-white
+                    text-sm
+                    font-bold
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    disabled:opacity-60
+                    disabled:cursor-not-allowed
+                  "
+                >
+
+                  <FaKey />
+
+                  {changingPassword
+                    ? "Changing..."
+                    : "Change Password"}
 
                 </button>
 

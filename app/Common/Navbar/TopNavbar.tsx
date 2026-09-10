@@ -93,7 +93,7 @@ export default function TopNavbar() {
               A Constituent College of Manipur University
             </div>
             <div className="font-bold text-rose-800 select-none text-nowrap">
-              Takyelpat, Imphal-795004, Manipur
+              Imphal-795003, Manipur
             </div>
           </div>
         </div>
