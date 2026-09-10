@@ -98,9 +98,17 @@ export const navigationData: NavigationData[] = [
     ],
   },
   {
-    name: "Form Fillup",
-    href: "https://www.manipuruniv.ac.in/examform2021/",
-    target: "_blank",
+    name: "Exams",
+    href: "#",
+    childrens: [
+      {
+        name: "Form Fillup",
+        href: "https://www.manipuruniv.ac.in/examform2021/",
+        target: "_blank",
+      },
+      { name: "GATE", href: "https://gate.iisc.ac.in/" },
+      { name: "NET", href: "https://ugcnet.nta.nic.in/" },
+    ]
   },
   {
     name: "Extras",

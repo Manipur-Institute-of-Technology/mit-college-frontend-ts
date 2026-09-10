@@ -1020,9 +1020,9 @@ export default function Admin_Home() {
                       {msg.name}
                     </span>
 
-                    <span className="text-xs text-gray-500 font-mono">
+                    {/* <span className="text-xs text-gray-500 font-mono">
                       ({msg.email})
-                    </span>
+                    </span> */}
 
                   </div>
 
