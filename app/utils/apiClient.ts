@@ -4,9 +4,9 @@ import axios from "axios";
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string) 
   // || "https://mit-college-backend.onrender.com" 
-  || "http://192.168.1.23:3001";
+  || "https://mitimphal.manipuruniv.ac.in";
 
-export const API_PREFIX = "/mit";
+export const API_PREFIX = "/mitserver";
 
 export const apiClient = axios.create({
   baseURL: `${API_BASE_URL}${API_PREFIX}`,
