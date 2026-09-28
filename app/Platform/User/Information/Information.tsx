@@ -32,8 +32,8 @@ export default function Common({ name }: CommonProps) {
   );
 
   return (
-    <div className="min-h-screen space-y-6">
-      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
+    <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
+      <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
         {name}
       </div>
 
@@ -44,7 +44,7 @@ export default function Common({ name }: CommonProps) {
           </div>
         ) : matchingDoc ? (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900">{matchingDoc.title}</h2>
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 border-l-4 border-cyan-500 pl-3">{matchingDoc.title}</h2>
             <a
               href={`${API_BASE_URL}/uploads/informations/${matchingDoc.fileName}`}
               target="_blank"

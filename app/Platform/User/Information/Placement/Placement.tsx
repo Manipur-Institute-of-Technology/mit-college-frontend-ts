@@ -313,13 +313,13 @@ export default function Placement() {
 
   return (
     <>
-      <div className="min-h-screen space-y-6">
+      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
 
         {/* ────────────────────────────────────────────────────────────────── */}
         {/* PAGE TITLE */}
         {/* ────────────────────────────────────────────────────────────────── */}
 
-        <div className="uppercase text-[clamp(1.1rem,2.5vw,1.5rem)] font-bold tracking-[clamp(0.1em,0.3vw,0.2em)] p-3 sm:p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
+        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
           Placement
         </div>
 
@@ -327,46 +327,45 @@ export default function Placement() {
         {/* PAGE CONTENT */}
         {/* ────────────────────────────────────────────────────────────────── */}
 
-        <div className="space-y-5 text-gray-700">
+        <div className="space-y-6 text-gray-700 leading-7">
 
           {/* ──────────────────────────────────────────────────────────────── */}
           {/* INFORMATION HEADING */}
           {/* ──────────────────────────────────────────────────────────────── */}
 
-          <div>
-            <span className="text-[clamp(1.1rem,2.5vw,1.5rem)] font-bold text-gray-900">
+          <section className="space-y-3">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 border-l-4 border-cyan-500 pl-3">
               Information about Placement
-            </span>
-          </div>
+            </h2>
 
           {/* ──────────────────────────────────────────────────────────────── */}
           {/* INFORMATION CONTENT */}
           {/* ──────────────────────────────────────────────────────────────── */}
 
-          <div className="text-[clamp(0.875rem,1.2vw,1.125rem)] leading-[clamp(1.5rem,2vw,2rem)] text-justify">
+          <p className="text-sm sm:text-base md:text-[17px] leading-7 sm:leading-8 text-justify">
             The Institute provides Placement Assistance to all students. The
             Placement Officer acts as a Catalyst in facilitating the process
             of interaction between the students and prospective representatives
             of the Corporate Houses and Industries, Reputed firms and Govt.
             Organisations for recruiting prospective students from time to
             time.
-          </div>
+          </p>
+          </section>
 
           {/* ──────────────────────────────────────────────────────────────── */}
           {/* PLACEMENT RECORD HEADING */}
           {/* ──────────────────────────────────────────────────────────────── */}
 
-          <div>
-            <span className="text-[clamp(1.1rem,2.5vw,1.5rem)] font-bold text-gray-900">
+          <section className="space-y-4">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 border-l-4 border-cyan-400 pl-3">
               PLACEMENT RECORD FOR THE FINAL YEAR STUDENTS
-            </span>
-          </div>
+            </h2>
 
           {/* ──────────────────────────────────────────────────────────────── */}
           {/* PLACEMENT RECORDS */}
           {/* ──────────────────────────────────────────────────────────────── */}
 
-          <div className="text-[clamp(0.875rem,1.2vw,1.125rem)] leading-[clamp(1.5rem,2vw,2rem)] text-justify">
+          <div className="text-sm sm:text-base md:text-[17px] leading-7 sm:leading-8 text-justify">
 
             {/* LOADING */}
 
@@ -1030,17 +1029,16 @@ export default function Placement() {
             )}
 
           </div>
+          </section>
 
           {/* ──────────────────────────────────────────────────────────────── */}
           {/* ORGANISATIONS HEADING */}
           {/* ──────────────────────────────────────────────────────────────── */}
 
-          <div>
-            <span className="text-[clamp(1.1rem,2.5vw,1.5rem)] font-bold text-gray-900">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 border-l-4 border-cyan-400 pl-3">
               SOME OF THE REPUTED ORGANISATIONS/DEPARTMENTS/INSTITUTES WHERE
               OUR STUDENTS GOT PLACED
-            </span>
-          </div>
+          </h2>
 
           {/* ──────────────────────────────────────────────────────────────── */}
           {/* PLACEMENT LOGOS */}

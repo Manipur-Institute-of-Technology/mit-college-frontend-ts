@@ -434,15 +434,15 @@ export default function StudentList() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 pb-12">
+      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
 
         {/* HEADER */}
 
-        <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-b-2 border-cyan-600 text-white text-center shadow-sm">
+        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
           Student List
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
 
           {/* LOADING */}
 

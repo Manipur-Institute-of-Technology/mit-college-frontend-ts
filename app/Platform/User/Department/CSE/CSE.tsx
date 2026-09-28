@@ -4,19 +4,19 @@ import "../Department.css";
 
 function CSE() {
   return (
-    <div className="min-h-dvh bg-white text-gray-700">
+    <div className="min-h-dvh space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10 text-gray-700">
       {/* Department Header */}
-      <div className="bg-cyan-500 border-b border-gray-300 text-white text-center px-4 py-5 sm:py-6">
-        <h1 className="uppercase text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide sm:tracking-widest leading-relaxed">
+      <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
+        <h1>
           Department of Computer Science and Engineering
         </h1>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="max-w-7xl w-full mx-auto space-y-6 sm:space-y-8">
         
         {/* Programmes */}
         <section className="mb-7">
-          <h2 className="font-bold uppercase mb-3 text-gray-800">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase text-gray-800 border-l-4 border-cyan-400 pl-3 mb-3">
             Computer Science and Engineering department presently offers the
             following programmes:
           </h2>
@@ -36,7 +36,7 @@ function CSE() {
 
         {/* Vision */}
         <section className="mb-7">
-          <h2 className="font-bold uppercase mb-2 text-gray-800">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase text-gray-800 border-l-4 border-cyan-400 pl-3 mb-2">
             Vision:
           </h2>
 
@@ -50,7 +50,7 @@ function CSE() {
 
         {/* Mission */}
         <section className="mb-7">
-          <h2 className="font-bold uppercase mb-3 text-gray-800">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase text-gray-800 border-l-4 border-cyan-400 pl-3 mb-3">
             Mission:
           </h2>
 
@@ -81,7 +81,7 @@ function CSE() {
 
         {/* PEOs */}
         <section className="mb-7">
-          <h2 className="font-bold uppercase mb-3 text-gray-800">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase text-gray-800 border-l-4 border-cyan-400 pl-3 mb-3">
             Programme Educational Objectives (PEOs):
           </h2>
 
@@ -120,7 +120,7 @@ function CSE() {
 
         {/* Laboratories */}
         <section className="mb-7">
-          <h2 className="font-bold uppercase mb-3 text-gray-800">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase text-gray-800 border-l-4 border-cyan-400 pl-3 mb-3">
             Lab:
           </h2>
 
@@ -141,7 +141,7 @@ function CSE() {
 
         {/* Facilities */}
         <section className="mb-7">
-          <h2 className="font-bold uppercase mb-3 text-gray-800">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase text-gray-800 border-l-4 border-cyan-400 pl-3 mb-3">
             Facilities:
           </h2>
 

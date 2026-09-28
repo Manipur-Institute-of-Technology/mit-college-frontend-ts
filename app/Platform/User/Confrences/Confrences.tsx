@@ -44,7 +44,7 @@ function ConferenceCard({
             className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
               conf.category === "International"
                 ? "bg-cyan-100 text-cyan-700"
-                : "bg-blue-100 text-blue-700"
+                : "bg-cyan-100 text-cyan-700"
             }`}
           >
             {conf.category}
@@ -180,13 +180,13 @@ export default function Confrence() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
         {/* Page banner */}
-        <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-b-2 border-cyan-600 text-white text-center shadow-sm">
+        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
           Conference
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 py-10 space-y-10">
+        <div className="max-w-5xl w-full mx-auto space-y-6 sm:space-y-8">
           {/* Loading */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -207,7 +207,7 @@ export default function Confrence() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">
+                      <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 uppercase border-l-4 border-cyan-400 pl-3">
                         International
                       </h2>
 
@@ -243,7 +243,7 @@ export default function Confrence() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">
+                      <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 uppercase border-l-4 border-cyan-400 pl-3">
                         National
                       </h2>
 

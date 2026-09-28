@@ -254,13 +254,13 @@ export default function AicteVaani() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 pb-12">
+      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
 
         {/* ================================================================
             PAGE BANNER
         ================================================================ */}
 
-        <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-b-2 border-cyan-600 text-white text-center shadow-sm">
+        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
           AICTE-VAANI
         </div>
 
@@ -333,7 +333,7 @@ export default function AicteVaani() {
             CONTENT
         ================================================================ */}
 
-        <div className="max-w-5xl mx-auto px-4 py-10 space-y-10">
+        <div className="max-w-5xl w-full mx-auto space-y-6 sm:space-y-8">
 
           {/* LOADING */}
 
@@ -458,7 +458,7 @@ function EventCard({
 
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight">
           {event.topic}
         </h1>
 
@@ -542,7 +542,7 @@ function EventCard({
       {event.information && (
         <div className="space-y-3 pt-2">
 
-          <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
 
             <FileText className="w-5 h-5 text-cyan-600" />
 
@@ -568,7 +568,7 @@ function EventCard({
           .length > 0 && (
           <div className="space-y-3 pt-2">
 
-            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
 
               <Paperclip className="w-5 h-5 text-cyan-600" />
 
@@ -639,7 +639,7 @@ function EventCard({
           .length > 0 && (
           <div className="space-y-3 pt-2">
 
-            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
 
               <Bookmark className="w-5 h-5 text-cyan-600" />
 
@@ -700,7 +700,7 @@ function EventCard({
       {event.contact && (
         <div className="space-y-3 pt-4 border-t border-gray-200 bg-gray-50/60 rounded-xl p-5">
 
-          <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
 
             <User className="w-5 h-5 text-cyan-600" />
 

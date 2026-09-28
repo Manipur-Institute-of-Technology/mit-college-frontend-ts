@@ -362,7 +362,11 @@ export default function DepartmentData({
   return (
     <div
       className="
-        p-6
+        px-3
+        sm:px-5
+        md:px-8
+        lg:px-10
+        py-6
         max-w-6xl
         mx-auto
         space-y-6
@@ -383,9 +387,14 @@ export default function DepartmentData({
 
         <h2
           className="
-            text-2xl
+            text-lg
+            sm:text-xl
+            md:text-2xl
             font-bold
             text-gray-900
+            border-l-4
+            border-cyan-500
+            pl-3
           "
         >
           Faculty Members (
@@ -533,7 +542,7 @@ export default function DepartmentData({
                   gap-4
                   border
                   border-gray-200
-                  hover:border-rose-200
+                  hover:border-cyan-300
                   cursor-pointer
                   overflow-hidden
                 "
@@ -553,7 +562,7 @@ export default function DepartmentData({
                       z-20
                       w-32
                       py-1.5
-                      bg-rose-700
+                      bg-cyan-700
                       text-white
                       text-xs
                       font-extrabold
@@ -705,7 +714,7 @@ export default function DepartmentData({
                     <p
                       className="
                         text-xs
-                        text-rose-700
+                        text-cyan-700
                         font-semibold
                         pt-1
                       "

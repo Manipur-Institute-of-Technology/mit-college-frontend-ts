@@ -41,12 +41,12 @@ export default function HostelAdminstration() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 pb-12">
-        <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-b-2 border-cyan-600 text-white text-center shadow-sm">
+      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
+        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
           Hostel Administration
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        <div className="max-w-4xl w-full mx-auto space-y-6 sm:space-y-8">
           {loading ? (
             <div className="text-center py-20 text-gray-500 font-semibold">
               Loading hostel administration details...
@@ -58,7 +58,7 @@ export default function HostelAdminstration() {
                 className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4"
               >
                 <div className="border-b border-gray-200 pb-3">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 border-l-4 border-cyan-500 pl-3">
                     {admin.name}
                   </h2>
                   {admin.position && (

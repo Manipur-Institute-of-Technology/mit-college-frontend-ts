@@ -16,12 +16,12 @@ type AuthorityItem = {
 
 export default function Common({ name }: CommonProps) {
   return (
-    <>
-      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
+    <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
+      <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
         {name}
       </div>
       <AdministrationData name={name} />
-    </>
+    </div>
   );
 }
 
@@ -70,7 +70,7 @@ function AdministrationData({ name }: CommonProps) {
     : "/Images/Authority/placeholder.jpg";
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center gap-8 py-10 px-4 max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto flex flex-col justify-center items-center gap-6 sm:gap-8 py-6 sm:py-8">
       {loading ? (
         <div className="text-center py-20 text-gray-500 font-semibold">
           Loading administration details...
@@ -88,7 +88,7 @@ function AdministrationData({ name }: CommonProps) {
           )}
 
           <div className="flex flex-col justify-center items-center gap-2 text-center max-w-2xl">
-            <h1 className="text-2xl font-extrabold text-gray-900 tracking-wide">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 tracking-wide">
               {authority?.name ? authority.name : `About The ${name}`}
             </h1>
             {authority?.position && (
@@ -97,14 +97,14 @@ function AdministrationData({ name }: CommonProps) {
               </p>
             )}
             {authority?.info && (
-              <div className="text-gray-700 font-medium leading-relaxed whitespace-pre-line text-base bg-cyan-50/60 border border-cyan-100 p-4 rounded-xl w-full mt-2">
+              <div className="text-sm sm:text-base md:text-[17px] text-gray-700 leading-7 sm:leading-8 whitespace-pre-line bg-cyan-50/60 border border-cyan-100 p-4 rounded-lg w-full mt-2">
                 {authority.info}
               </div>
             )}
           </div>
 
           {authority?.bios && (
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4 text-gray-700 leading-relaxed text-sm sm:text-base text-justify w-full">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 shadow-sm space-y-4 text-gray-700 text-sm sm:text-base md:text-[17px] leading-7 sm:leading-8 text-justify w-full">
               {authority.bios.split("\n").map((line, index) => (
                 <p key={index} dangerouslySetInnerHTML={{ __html: line }} />
               ))}

@@ -3,11 +3,11 @@ import axios from "axios";
 // Centralized Backend Base URL
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string) 
-  || "http://localhost:3001"
+  // || "http://localhost:3001"
   // || "https://mit-college-backend.onrender.com" 
   || "https://mitimphal.manipuruniv.ac.in";
 
-export const API_PREFIX = "/mit";
+export const API_PREFIX = "/mitserver";
 
 export const apiClient = axios.create({
   baseURL: `${API_BASE_URL}${API_PREFIX}`,

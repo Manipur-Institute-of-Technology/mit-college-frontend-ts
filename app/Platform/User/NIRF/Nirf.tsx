@@ -423,35 +423,17 @@ export default function Nirf() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 pb-12">
+      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
 
         {/* ==================================================
             HEADER
         ================================================== */}
 
-        <div className="
-          uppercase
-          text-2xl
-          font-bold
-          tracking-widest
-          p-4
-          bg-cyan-500
-          border-b-2
-          border-cyan-600
-          text-white
-          text-center
-          shadow-sm
-        ">
+        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
           NIRF
         </div>
 
-        <div className="
-          max-w-4xl
-          mx-auto
-          px-4
-          py-10
-          space-y-10
-        ">
+        <div className="max-w-4xl w-full mx-auto space-y-6 sm:space-y-8">
 
           {/* =================================================
               OVERVIEW
@@ -500,7 +482,9 @@ export default function Nirf() {
                 </div>
 
                 <h1 className="
-                  text-2xl
+                  text-lg
+                  sm:text-xl
+                  md:text-2xl
                   font-bold
                   text-gray-800
                   mt-3
@@ -599,7 +583,9 @@ export default function Nirf() {
 
               <h3 className="
                 mt-5
-                text-lg
+                text-base
+                sm:text-lg
+                md:text-xl
                 font-semibold
                 text-gray-700
               ">
@@ -662,9 +648,14 @@ export default function Nirf() {
                   </div>
 
                   <h2 className="
-                    text-xl
-                    font-bold
+                    text-base
+                    sm:text-lg
+                    md:text-xl
+                    font-semibold
                     text-gray-800
+                    border-l-4
+                    border-cyan-400
+                    pl-3
                   ">
                     Year {year}
                   </h2>

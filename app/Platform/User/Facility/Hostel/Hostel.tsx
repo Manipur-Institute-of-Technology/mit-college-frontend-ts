@@ -43,14 +43,14 @@ export default function Hostel_Facility() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
       {/* Page Heading */}
-      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
+      <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
         Hostel
       </div>
 
       {/* Hostel Admin Section */}
-      <div className="w-full px-4 py-8">
+      <div className="w-full py-4 sm:py-6">
         {loading ? (
           <div className="flex justify-center items-center py-10">
             <p className="text-gray-500 text-lg">
@@ -79,7 +79,7 @@ export default function Hostel_Facility() {
                 <div className="p-6">
                   {/* Name */}
                   <div className="mb-4">
-                    <h3 className="text-2xl font-bold text-gray-800">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
                       {hostel.name}
                     </h3>
                   </div>
@@ -103,7 +103,7 @@ export default function Hostel_Facility() {
                       Information
                     </p>
 
-                    <p className="text-gray-600 leading-7 whitespace-pre-line">
+                    <p className="text-sm sm:text-base md:text-[17px] text-gray-600 leading-7 sm:leading-8 whitespace-pre-line">
                       {hostel.info}
                     </p>
                   </div>
@@ -124,6 +124,6 @@ export default function Hostel_Facility() {
 
       {/* Bottom Information */}
       <Informations />
-    </>
+    </div>
   );
 }

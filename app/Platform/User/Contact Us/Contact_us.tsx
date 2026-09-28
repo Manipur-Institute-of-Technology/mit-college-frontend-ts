@@ -46,7 +46,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
         htmlFor={id}
         className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-1 ${
           isActive
-            ? "-top-3 text-xs text-blue-600"
+            ? "-top-3 text-xs text-cyan-700"
             : "top-2.5 text-gray-500"
         }`}
       >
@@ -64,7 +64,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           className={`w-full px-3 pt-5 pb-2 border rounded-md focus:outline-none focus:ring-2 ${
             error
               ? "border-red-500 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
+              : "border-gray-300 focus:ring-cyan-500"
           }`}
         />
       ) : (
@@ -78,7 +78,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           className={`w-full px-3 pt-5 pb-2 border rounded-md focus:outline-none focus:ring-2 ${
             error
               ? "border-red-500 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
+              : "border-gray-300 focus:ring-cyan-500"
           }`}
         />
       )}
@@ -234,13 +234,13 @@ export default function Contact_Us() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
 
       {/* ─────────────────────────────────────────────────────────────────────
           PAGE TITLE
       ───────────────────────────────────────────────────────────────────── */}
 
-      <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
+      <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
         Contact Us
       </div>
 
@@ -248,7 +248,7 @@ export default function Contact_Us() {
           CONTENT
       ───────────────────────────────────────────────────────────────────── */}
 
-      <div className="flex flex-col md:flex-row m-4 items-center justify-around gap-6">
+      <div className="flex flex-col md:flex-row items-center justify-around gap-6">
 
         {/* ───────────────────────────────────────────────────────────────────
             ADDRESS + MAP
@@ -256,12 +256,12 @@ export default function Contact_Us() {
 
         <div className="flex-1 w-full flex flex-col gap-3 items-start justify-baseline font-semibold tracking-wider text-lg">
 
-          <p className="text-sm md:text-lg">
-            &emsp;Manipur Institute of Technology
+          <p className="text-sm sm:text-base md:text-[17px] leading-7 sm:leading-8 pl-3">
+            Manipur Institute of Technology
             <br />
-            &emsp;(A Constituent College of Manipur University)
+            (A Constituent College of Manipur University)
             <br />
-            &emsp;Imphal - 795003, Manipur, India
+            Imphal - 795003, Manipur, India
           </p>
 
           <div
@@ -333,7 +333,7 @@ export default function Contact_Us() {
           <button
             type="submit"
             disabled={isSending}
-            className="self-start mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
+            className="self-start mt-2 px-6 py-2 bg-cyan-600 text-white rounded-lg shadow hover:bg-cyan-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isSending
               ? "Sending..."

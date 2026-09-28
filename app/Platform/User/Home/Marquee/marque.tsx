@@ -150,7 +150,7 @@ export default function NewNotificationMarquee() {
     };
 
     return (
-    <div className="w-full overflow-hidden bg-red-600 px-2 py-2 rounded-lg">
+    <div className="w-full overflow-hidden bg-cyan-600 px-2 py-2 rounded-lg">
     {loading ? (
         <div className="text-sm text-white">
         Loading...
