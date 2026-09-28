@@ -131,7 +131,7 @@ function CE() {
 
         {/* Department Data */}
         <section className="mb-7">
-          <Department name="civil engineering" />
+          <Department name="Civil Engineering" />
         </section>
 
         {/* Laboratories */}

@@ -7,7 +7,7 @@ function ME() {
     <div className="uppercase text-2xl font-bold tracking-widest p-4 bg-cyan-500 border-2 border-gray-300 rounded-xs text-white text-center shadow-xs">
       Department of Mecanical Engineering
     </div>
-      <Department name="mechanical engineering" />
+      <Department name="Mechanical Engineering" />
       <Informations />
     </>
   );

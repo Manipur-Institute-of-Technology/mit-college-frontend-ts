@@ -115,7 +115,7 @@ function CSE() {
 
         {/* Department Data */}
         <section className="mb-7">
-          <Department name="computer science & engineering" />
+          <Department name="Computer Science & Engineering" />
         </section>
 
         {/* Laboratories */}

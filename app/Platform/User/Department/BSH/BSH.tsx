@@ -8,7 +8,7 @@ function BSH() {
         Department of Basic Science and Humanities
       </div>
 
-      <DepartmentData name="basic sciences & humanities" />
+      <DepartmentData name="Basic Sciences & Humanities" />
 
       <Informations />
     </>
