@@ -81,7 +81,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
           className="bg-slate-800 bg-blend-overlay bg-fixed bg-center bg-no-repeat bg-cover"
           style={{ backgroundImage: `url('${backgroundImageUrl}')` }}
         >
-          <div className="mx-auto max-w-7xl px-0 py-6 sm:px-6 lg:px-0 border border-black min-h-[100vh]">
+          <div className="mx-auto max-w-7xl px-4 py-6 border border-black min-h-[100vh]">
             <NotFound />
           </div>
         </main>

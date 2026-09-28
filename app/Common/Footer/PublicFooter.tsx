@@ -69,7 +69,7 @@ export default function PublicFooter() {
 									</p>
 
 									<p className="text-slate-300">
-										Takyelpat, Imphal - 795001, Manipur, India
+										Imphal - 795003, Manipur, India
 									</p>
 								</div>
 							</div>

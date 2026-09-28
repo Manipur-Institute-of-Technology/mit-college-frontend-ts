@@ -80,19 +80,19 @@ export default function TopNavbar() {
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-row flex-wrap text-center md:flex-nowrap justify-center items-center relative">
-          <div className="select-none w-max min-w-[18rem]">
+          <div className="select-none w-full min-w-0 md:w-max">
             <img
               src="/MIT_logo.png"
               alt="MIT full logo"
-              className="h-[80px] w-auto"
+              className="mx-auto h-[clamp(3.5rem,8vw,5rem)] w-auto max-w-full"
             />
           </div>
           <div className="hidden md:block h-[50px] w-[2px] bg-gray-700 mx-2"></div>
-          <div className="w-max">
-            <div className="text-rose-800 select-none text-nowrap">
+          <div className="w-full md:w-max">
+            <div className="text-rose-800 select-none text-center text-balance md:text-nowrap">
               A Constituent College of Manipur University
             </div>
-            <div className="font-bold text-rose-800 select-none text-nowrap">
+            <div className="font-bold text-rose-800 select-none text-center text-balance md:text-nowrap">
               Imphal-795003, Manipur
             </div>
           </div>

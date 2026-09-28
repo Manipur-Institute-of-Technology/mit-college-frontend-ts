@@ -72,6 +72,7 @@ export default [
       route("/hostel-admin", "./routes/admin/admin_hostel_admin_page.tsx"),
       route("/library-admin", "./routes/admin/admin_library_admin_page.tsx"),
       route("/student-list", "./routes/admin/admin_student_list_page.tsx"),
+      route("/student-Placement-list", "./routes/admin/admin_student_placement_list_page.tsx"),
     ]),
   ]),
   // Routes Specific for Faculty

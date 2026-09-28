@@ -95,6 +95,10 @@ const adminNavigation: AdminNavItem[] = [
     name: "Student List",
     href: "/admin/student-list",
   },
+  {
+    name: "Student Placement List",
+    href: "/admin/student-Placement-list",
+  },
 ];
 
 /*

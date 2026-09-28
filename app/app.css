@@ -5,8 +5,25 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-body{
-  font-size: 1.1rem;
+html {
+  font-size: clamp(14px, calc(12px + 0.35vw), 17px);
+  text-size-adjust: 100%;
+}
+
+body {
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+/* Keep long content and fixed-width embeds from widening the viewport. */
+main {
+  min-width: 0;
 }
 /* html,
 body {
