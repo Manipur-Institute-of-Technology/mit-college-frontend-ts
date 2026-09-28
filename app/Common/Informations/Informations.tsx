@@ -135,7 +135,7 @@ export default function Informations() {
   }, [newsNotificationData]);
 
   return (
-    <div className="flex flex-wrap justify-around items-start w-full gap-4 m-2 border-t-2 border-y-neutral-500 pt-8">
+    <div className="flex flex-wrap justify-around items-start w-full gap-4  border-t-2 border-y-neutral-500 pt-8">
 
       {/* ============================================================
           NEWS & NOTIFICATION
