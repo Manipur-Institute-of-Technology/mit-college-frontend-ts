@@ -66,7 +66,7 @@ export const navigationData: NavigationData[] = [
     href: "#",
     childrens: [
       { name: "Fire Safety Certificate", href: "/Fire_Safety_Certificate" },
-      { name: "Mandatory Disclosures", href: "/Mandatory_Disclosures" },
+      { name: "Mandatory Disclosure", href: "/Mandatory_Disclosures" },
       { name: "Ragging", href: "/Ragging" },
       {
         name: "Faculty Development Program",

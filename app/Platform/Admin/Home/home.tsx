@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Pagination from "../Pagination";
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient from "~/utils/apiClient";
@@ -115,6 +116,11 @@ export default function Admin_Home() {
     useState<FacultyRequest[]>([]);
 
   const [loading, setLoading] = useState(false);
+  const [facultyRequestPage, setFacultyRequestPage] = useState(1);
+  const [mailPage, setMailPage] = useState(1);
+  const dashboardPageSize = 5;
+  const safeFacultyRequestPage = Math.min(facultyRequestPage, Math.max(1, Math.ceil(facultyRequests.length / dashboardPageSize)));
+  const safeMailPage = Math.min(mailPage, Math.max(1, Math.ceil(mails.length / dashboardPageSize)));
 
   /**
    * =======================================================
@@ -708,7 +714,7 @@ export default function Admin_Home() {
         ) : (
           <div className="space-y-4">
 
-            {facultyRequests.map(
+            {facultyRequests.slice((safeFacultyRequestPage - 1) * dashboardPageSize, safeFacultyRequestPage * dashboardPageSize).map(
               (request) => {
                 const facultyName =
                   getFacultyName(
@@ -961,6 +967,7 @@ export default function Admin_Home() {
 
           </div>
         )}
+        <Pagination currentPage={safeFacultyRequestPage} totalItems={facultyRequests.length} pageSize={dashboardPageSize} onPageChange={setFacultyRequestPage} />
 
       </div>
 
@@ -993,7 +1000,7 @@ export default function Admin_Home() {
         ) : (
           <div className="space-y-3">
 
-            {mails.map((msg) => (
+            {mails.slice((safeMailPage - 1) * dashboardPageSize, safeMailPage * dashboardPageSize).map((msg) => (
 
               <div
                 key={msg._id}
@@ -1087,6 +1094,7 @@ export default function Admin_Home() {
 
           </div>
         )}
+        <Pagination currentPage={safeMailPage} totalItems={mails.length} pageSize={dashboardPageSize} onPageChange={setMailPage} />
 
       </div>
 

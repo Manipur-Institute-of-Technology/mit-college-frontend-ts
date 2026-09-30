@@ -8,6 +8,8 @@ import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
 import apiClient, { API_BASE_URL } from "~/utils/apiClient";
 
+import Pagination from "../Pagination";
+
 import {
   Bell,
   Info,
@@ -193,6 +195,12 @@ export default function Admin_News_Notification() {
 
   const [isLoading, setIsLoading] =
     useState(false);
+
+  const [activeNewsPage, setActiveNewsPage] = useState(1);
+  const [inactiveNewsPage, setInactiveNewsPage] = useState(1);
+  const [informationPage, setInformationPage] = useState(1);
+  const [downloadsPage, setDownloadsPage] = useState(1);
+  const listPageSize = 10;
 
   /* ------------------------------------------------------------------------
      ADD / EDIT MODAL
@@ -872,6 +880,19 @@ export default function Admin_News_Notification() {
       downloads,
     ]);
 
+  const activeListPage = activeTab === "notifications"
+    ? notificationFilter === "active" ? activeNewsPage : inactiveNewsPage
+    : activeTab === "information" ? informationPage : downloadsPage;
+  const safeListPage = Math.min(activeListPage, Math.max(1, Math.ceil(currentList.length / listPageSize)));
+  const pagedCurrentList = currentList.slice((safeListPage - 1) * listPageSize, safeListPage * listPageSize);
+  const changeListPage = (page: number) => {
+    if (activeTab === "notifications") {
+      if (notificationFilter === "active") setActiveNewsPage(page);
+      else setInactiveNewsPage(page);
+    } else if (activeTab === "information") setInformationPage(page);
+    else setDownloadsPage(page);
+  };
+
   /* ==========================================================================
      PAGE TITLE
   ========================================================================== */
@@ -1294,7 +1315,7 @@ export default function Admin_News_Notification() {
 
                 <tbody className="divide-y divide-gray-200">
 
-                  {currentList.map(
+                  {pagedCurrentList.map(
                     (item) => {
 
                       const fileUrl =
@@ -1495,6 +1516,7 @@ export default function Admin_News_Notification() {
 
             </div>
           )}
+          <Pagination currentPage={safeListPage} totalItems={currentList.length} pageSize={listPageSize} onPageChange={changeListPage} />
 
         </div>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+import Pagination from "../Pagination";
 import apiClient, {
   API_BASE_URL,
 } from "~/utils/apiClient";
@@ -65,6 +66,10 @@ export default function Admin_NIRF() {
 
   const [isLoading, setIsLoading] =
     useState(false);
+
+  const [nirfPage, setNirfPage] = useState(1);
+  const nirfPageSize = 10;
+  const safeNirfPage = Math.min(nirfPage, Math.max(1, Math.ceil(nirfList.length / nirfPageSize)));
 
   // ============================================================
   // MODAL STATE
@@ -1100,7 +1105,7 @@ export default function Admin_NIRF() {
 
                 <tbody className="divide-y divide-gray-200">
 
-                  {nirfList.map(
+                  {nirfList.slice((safeNirfPage - 1) * nirfPageSize, safeNirfPage * nirfPageSize).map(
                     (item) => {
 
                       const resourceUrl =
@@ -1268,6 +1273,7 @@ export default function Admin_NIRF() {
             </div>
 
           )}
+          <Pagination currentPage={safeNirfPage} totalItems={nirfList.length} pageSize={nirfPageSize} onPageChange={setNirfPage} />
 
         </div>
 

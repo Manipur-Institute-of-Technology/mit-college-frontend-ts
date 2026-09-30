@@ -13,6 +13,7 @@ import { BellIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { confirmExternalLink, showAlert } from "~/utils/alert_utils";
 
+import Pagination from "../Pagination";
 import "./faculties.css";
 
 import apiClient, {
@@ -248,6 +249,9 @@ export default function Admin_Faculty_Page() {
 
   const [loading, setLoading] =
     useState(true);
+
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [facultyPage, setFacultyPage] = useState(1);
 
   const [savingFaculty, setSavingFaculty] =
     useState(false);
@@ -1365,64 +1369,41 @@ export default function Admin_Faculty_Page() {
   }
 
   // =======================================================
-  // GROUP FACULTY BY DEPARTMENT
-  //
-  // ONLY ADDITION:
-  // Department blocks are created here.
-  //
-  // Departments with no faculty are automatically omitted.
-  // No pagination.
-  // No department selection/filter.
+  // DEPARTMENT FILTER AND PAGINATION
   // =======================================================
 
-  const groupedFaculty = new Map<
-    string,
-    {
-      department: Department | null;
-      faculty: FacultyMember[];
-    }
-  >();
+  const groupedFaculty = new Map<string, { department: Department | null; faculty: FacultyMember[] }>();
 
   facultyList.forEach((teacher) => {
-    const departmentId =
-      teacher.departmentId ||
-      teacher.department?._id ||
-      "unknown";
-
-    const departmentFromList =
-      departmentList.find(
-        (department) =>
-          department._id ===
-          departmentId
-      );
-
-    const existing =
-      groupedFaculty.get(
-        departmentId
-      );
-
+    const departmentId = teacher.departmentId || teacher.department?._id || "unknown";
+    const departmentFromList = departmentList.find((department) => department._id === departmentId);
+    const existing = groupedFaculty.get(departmentId);
     if (existing) {
-      existing.faculty.push(
-        teacher
-      );
+      existing.faculty.push(teacher);
     } else {
-      groupedFaculty.set(
-        departmentId,
-        {
-          department:
-            teacher.department ||
-            departmentFromList ||
-            null,
-          faculty: [teacher],
-        }
-      );
+      groupedFaculty.set(departmentId, {
+        department: teacher.department || departmentFromList || null,
+        faculty: [teacher],
+      });
     }
   });
 
-  const departmentGroups =
-    Array.from(
-      groupedFaculty.values()
-    );
+  const departmentGroups = Array.from(groupedFaculty.entries());
+  const availableDepartments = departmentGroups.map(([id, group]) => ({
+    id,
+    name: group.department?.name || "Department",
+  }));
+  const selectedGroup = departmentGroups.find(([id]) => id === selectedDepartment);
+  const departmentFaculty = selectedDepartment === "all"
+    ? facultyList
+    : selectedGroup?.[1].faculty || [];
+  const facultyPageSize = 9;
+  const facultyPageCount = Math.ceil(departmentFaculty.length / facultyPageSize);
+  const safeFacultyPage = Math.min(Math.max(facultyPage, 1), Math.max(facultyPageCount, 1));
+  const visibleFaculty = departmentFaculty.slice((safeFacultyPage - 1) * facultyPageSize, safeFacultyPage * facultyPageSize);
+  const selectedDepartmentName = selectedDepartment === "all"
+    ? "All Departments"
+    : availableDepartments.find((department) => department.id === selectedDepartment)?.name || "Department";
 
   // =======================================================
   // RENDER
@@ -1745,6 +1726,23 @@ export default function Admin_Faculty_Page() {
           GROUPED BY DEPARTMENT
       =================================================== */}
 
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter faculty by department">
+        {[{ id: "all", name: "All Departments" }, ...availableDepartments].map((department) => (
+          <button
+            key={department.id}
+            type="button"
+            onClick={() => {
+              setSelectedDepartment(department.id);
+              setFacultyPage(1);
+            }}
+            aria-pressed={selectedDepartment === department.id}
+            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${selectedDepartment === department.id ? "border-cyan-700 bg-cyan-700 text-white" : "border-gray-200 bg-white text-gray-700 hover:bg-cyan-50"}`}
+          >
+            {department.name}
+          </button>
+        ))}
+      </div>
+
       {loading ? (
         <div
           className="
@@ -1756,7 +1754,7 @@ export default function Admin_Faculty_Page() {
         >
           Loading faculty database...
         </div>
-      ) : facultyList.length === 0 ? (
+      ) : departmentFaculty.length === 0 ? (
         <div
           className="
             text-center
@@ -1769,18 +1767,16 @@ export default function Admin_Faculty_Page() {
             border-gray-200
           "
         >
-          No faculty profiles created in database yet.
+          No faculty profiles found in this department.
         </div>
       ) : (
         <div className="space-y-10">
-          {departmentGroups.map(
+          {[ { department: selectedDepartment === "all" ? null : selectedGroup?.[1].department || null, faculty: visibleFaculty } ].map(
             (
               group,
               departmentIndex
             ) => {
-              const departmentName =
-                group.department?.name ||
-                "Department";
+              const departmentName = selectedDepartmentName;
 
               return (
                 <section
@@ -1837,9 +1833,9 @@ export default function Admin_Faculty_Page() {
                           mt-0.5
                         "
                       >
-                        {group.faculty.length}{" "}
+                        {departmentFaculty.length}{" "}
                         faculty member
-                        {group.faculty.length !==
+                        {departmentFaculty.length !==
                         1
                           ? "s"
                           : ""}
@@ -2498,6 +2494,15 @@ export default function Admin_Faculty_Page() {
             }
           )}
         </div>
+      )}
+
+      {!loading && departmentFaculty.length > 0 && (
+        <Pagination
+          currentPage={safeFacultyPage}
+          totalItems={departmentFaculty.length}
+          pageSize={facultyPageSize}
+          onPageChange={setFacultyPage}
+        />
       )}
 
       {/* ===================================================

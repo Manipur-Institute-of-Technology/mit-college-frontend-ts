@@ -16,6 +16,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+import Pagination from "../Pagination";
 import apiClient from "~/utils/apiClient";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -41,6 +42,9 @@ export default function Admin_Conference() {
 
   const [conferences, setConferences] = useState<Conference[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [conferencePage, setConferencePage] = useState(1);
+  const conferencePageSize = 10;
+  const safeConferencePage = Math.min(conferencePage, Math.max(1, Math.ceil(conferences.length / conferencePageSize)));
 
   // ── Add modal state ─────────────────────────────────────────────────────────
 
@@ -656,7 +660,7 @@ export default function Admin_Conference() {
 
                 <tbody className="divide-y divide-gray-200">
 
-                  {conferences.map(
+                  {conferences.slice((safeConferencePage - 1) * conferencePageSize, safeConferencePage * conferencePageSize).map(
                     (conf) => (
 
                       <tr
@@ -797,6 +801,7 @@ export default function Admin_Conference() {
             </div>
 
           )}
+          <Pagination currentPage={safeConferencePage} totalItems={conferences.length} pageSize={conferencePageSize} onPageChange={setConferencePage} />
 
         </div>
 
