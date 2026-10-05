@@ -1706,70 +1706,47 @@ export default function TeacherHomePage() {
   // LOGOUT
   // =======================================================
 
-  const handleLogout =
-    async () => {
+const handleLogout = async () => {
+  const result = await showAlert({
+    title: "Logout?",
+    text: "Are you sure you want to sign out?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Logout",
+    cancelButtonText: "Cancel",
+    confirmButtonColor: "#ef4444",
+    cancelButtonColor: "#22c55e",
+    customClass: {
+      popup: "rounded-xl",
+    },
+  });
 
-      const result =
-        await showAlert({
-          title:
-            "Logout?",
+  if (!result.isConfirmed) {
+    return;
+  }
 
-          text:
-            "Are you sure you want to sign out?",
+  try {
+    if (user?.email) {
+      await apiClient.post("/account/logout", {
+        email: user.email,
+      });
+    }
+  } catch (error) {
+    // Even if the API logout fails, clear local authentication.
+  } finally {
+    // Clear authentication locally
+    setToken("");
+    setRole("");
+    setUser(null);
 
-          icon:
-            "warning",
+    // Remove stored authentication
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
 
-          showCancelButton:
-            true,
-
-          confirmButtonText:
-            "Logout",
-
-          cancelButtonText:
-            "Cancel",
-
-          confirmButtonColor:
-            "#ef4444",
-
-          cancelButtonColor:
-            "#22c55e",
-
-          customClass: {
-            popup:
-              "rounded-xl",
-          },
-        });
-
-      if (!result.isConfirmed) {
-        return;
-      }
-
-      try {
-
-        if (user?.email) {
-
-          await apiClient.post(
-            "/account/logout",
-            {
-              email:
-                user.email,
-            }
-          );
-        }
-
-      } catch (error) {
-
-      } finally {
-
-        setToken("");
-        setRole("");
-        setUser(null);
-
-        window.location.href =
-          "/faculty";
-      }
-    };
+    // Redirect
+    window.location.href = "/faculty";
+  }
+};
 
   // =======================================================
   // AUTH CHECK

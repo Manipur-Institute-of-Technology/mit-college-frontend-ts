@@ -21,6 +21,7 @@ type FacultyMember = {
   _id: string;
 
   firstName?: string;
+  middleName?: string;
   lastName?: string;
   namePrefix?: string;
 
@@ -79,14 +80,11 @@ export default function DepartmentData({
   // ======================================================
 
   useEffect(() => {
-
     let mounted = true;
 
     const fetchDepartmentFaculty =
       async () => {
-
         if (!name?.trim()) {
-
           if (mounted) {
             setFaculty([]);
             setLoading(false);
@@ -96,7 +94,6 @@ export default function DepartmentData({
         }
 
         try {
-
           setLoading(true);
 
           const response =
@@ -111,7 +108,6 @@ export default function DepartmentData({
             [];
 
           if (mounted) {
-
             setFaculty(
               Array.isArray(
                 facultyData
@@ -119,21 +115,15 @@ export default function DepartmentData({
                 ? facultyData
                 : []
             );
-
           }
-
         } catch (error: any) {
-
           if (mounted) {
             setFaculty([]);
           }
-
         } finally {
-
           if (mounted) {
             setLoading(false);
           }
-
         }
       };
 
@@ -151,7 +141,6 @@ export default function DepartmentData({
   const getRolesText = (
     roles: any
   ): string => {
-
     if (!roles) {
       return "";
     }
@@ -169,10 +158,8 @@ export default function DepartmentData({
     if (
       Array.isArray(roles)
     ) {
-
       return roles
         .map((role) => {
-
           if (
             typeof role === "string"
           ) {
@@ -214,6 +201,132 @@ export default function DepartmentData({
   };
 
   // ======================================================
+  // FACULTY RANK
+  // ======================================================
+  //
+  // SORT ORDER:
+  //
+  // 1. Professor
+  // 2. Associate Professor
+  // 3. Assistant Professor
+  // 4. Guest Faculty
+  // 5. Other
+  //
+  // ======================================================
+
+  const getFacultyRank = (
+    teacher: FacultyMember
+  ): number => {
+    const role =
+      getRolesText(
+        teacher.roles
+      ).toLowerCase();
+
+    // Check specific ranks first because
+    // "Associate Professor" and
+    // "Assistant Professor" also contain
+    // the word "Professor".
+
+    if (
+      role.includes(
+        "associate professor"
+      )
+    ) {
+      return 2;
+    }
+
+    if (
+      role.includes(
+        "assistant professor"
+      )
+    ) {
+      return 3;
+    }
+
+    if (
+      role.includes(
+        "guest faculty"
+      )
+    ) {
+      return 4;
+    }
+
+    if (
+      role.includes(
+        "professor"
+      )
+    ) {
+      return 1;
+    }
+
+    return 5;
+  };
+
+  // ======================================================
+  // FULL FACULTY NAME
+  // ======================================================
+
+  const getFacultyFullName = (
+    teacher: FacultyMember
+  ): string => {
+    return `${teacher.namePrefix || ""} ${
+      teacher.firstName || ""
+    } ${teacher.middleName || ""} ${
+      teacher.lastName || ""
+    }`
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  // ======================================================
+  // SORT FACULTY
+  // ======================================================
+  //
+  // FIRST:
+  // Faculty rank
+  //
+  // SECOND:
+  // Alphabetical name
+  //
+  // ======================================================
+
+  const sortedFaculty =
+    [...faculty].sort(
+      (a, b) => {
+        const rankA =
+          getFacultyRank(a);
+
+        const rankB =
+          getFacultyRank(b);
+
+        // First sort by faculty rank
+
+        if (
+          rankA !== rankB
+        ) {
+          return rankA - rankB;
+        }
+
+        // Same rank:
+        // sort alphabetically by name
+
+        const nameA =
+          getFacultyFullName(a);
+
+        const nameB =
+          getFacultyFullName(b);
+
+        return nameA.localeCompare(
+          nameB,
+          undefined,
+          {
+            sensitivity: "base",
+          }
+        );
+      }
+    );
+
+  // ======================================================
   // EXPERTISE CONVERTER
   // ======================================================
   //
@@ -232,7 +345,6 @@ export default function DepartmentData({
       | string[]
       | undefined
   ): string => {
-
     if (
       !expertFields ||
       expertFields.length === 0
@@ -241,7 +353,6 @@ export default function DepartmentData({
     }
 
     try {
-
       // Get first value
       //
       // '["AI, Machine Learning"]'
@@ -265,22 +376,17 @@ export default function DepartmentData({
       if (
         Array.isArray(parsed)
       ) {
-
         return parsed.join(", ");
-
       }
 
       return String(parsed);
-
     } catch (error) {
-
       console.error(
         "Error parsing expertFields:",
         error
       );
 
       return "";
-
     }
   };
 
@@ -297,7 +403,6 @@ export default function DepartmentData({
           mx-auto
         "
       >
-
         <div
           className="
             text-center
@@ -319,7 +424,6 @@ export default function DepartmentData({
   if (
     faculty.length === 0
   ) {
-
     return (
       <div
         className="
@@ -328,7 +432,6 @@ export default function DepartmentData({
           mx-auto
         "
       >
-
         <div
           className="
             text-center
@@ -372,7 +475,6 @@ export default function DepartmentData({
         space-y-6
       "
     >
-
       {/* ==================================================
           HEADER
       ================================================== */}
@@ -384,7 +486,6 @@ export default function DepartmentData({
           pb-3
         "
       >
-
         <h2
           className="
             text-lg
@@ -414,7 +515,6 @@ export default function DepartmentData({
             ? "s"
             : ""}
         </p>
-
       </div>
 
       {/* ==================================================
@@ -429,10 +529,8 @@ export default function DepartmentData({
           gap-6
         "
       >
-
-        {faculty.map(
+        {sortedFaculty.map(
           (teacher) => {
-
             // =============================================
             // NAME
             // =============================================
@@ -440,7 +538,7 @@ export default function DepartmentData({
             const fullName =
               `${teacher.namePrefix || ""} ${
                 teacher.firstName || ""
-              } ${
+              } ${teacher.middleName || ""} ${
                 teacher.lastName || ""
               }`
                 .replace(/\s+/g, " ")
@@ -463,7 +561,7 @@ export default function DepartmentData({
             const photoSrc =
               teacher.photoId
                 ? `${API_BASE_URL}/uploads/faculty/${teacher.photoId}`
-                : teacher.photo 
+                : teacher.photo;
 
             // =============================================
             // EMAIL
@@ -512,7 +610,6 @@ export default function DepartmentData({
               );
 
             return (
-
               <button
                 type="button"
                 key={teacher._id}
@@ -547,13 +644,11 @@ export default function DepartmentData({
                   overflow-hidden
                 "
               >
-
                 {/* ======================================
                     HOD BADGE
                 ======================================= */}
 
                 {teacher.hod === true && (
-
                   <div
                     className="
                       absolute
@@ -575,7 +670,6 @@ export default function DepartmentData({
                   >
                     HOD
                   </div>
-
                 )}
 
                 {/* ======================================
@@ -595,8 +689,7 @@ export default function DepartmentData({
                     bg-gray-100
                     flex-shrink-0
                   "
-                  onError={(e) => {                     
-                  }}
+                  onError={(e) => {}}
                 />
 
                 {/* ======================================
@@ -611,7 +704,6 @@ export default function DepartmentData({
                     space-y-1.5
                   "
                 >
-
                   {/* NAME */}
 
                   <h3
@@ -628,7 +720,6 @@ export default function DepartmentData({
                   {/* ROLE */}
 
                   {rolesText && (
-
                     <p
                       className="
                         text-cyan-800
@@ -636,15 +727,13 @@ export default function DepartmentData({
                         text-xs
                       "
                     >
-                      {rolesText}
+                      {rolesText.toUpperCase()}
                     </p>
-
                   )}
 
                   {/* EMAIL */}
 
                   {email && (
-
                     <p
                       className="
                         text-gray-500
@@ -655,28 +744,11 @@ export default function DepartmentData({
                     >
                       {email}
                     </p>
-
-                  )}
-
-                  {/* PHONE */}
-
-                  {phone && (
-
-                    <p
-                      className="
-                        text-gray-500
-                        text-xs
-                      "
-                    >
-                      {phone}
-                    </p>
-
                   )}
 
                   {/* DEGREE */}
 
                   {teacher.highestDegree && (
-
                     <p
                       className="
                         text-gray-700
@@ -684,16 +756,13 @@ export default function DepartmentData({
                         font-medium
                       "
                     >
-                      Degree:{" "}
                       {teacher.highestDegree}
                     </p>
-
                   )}
 
                   {/* EXPERTISE */}
 
                   {expertFields && (
-
                     <p
                       className="
                         text-gray-600
@@ -704,13 +773,11 @@ export default function DepartmentData({
                       Expertise:{" "}
                       {expertFields}
                     </p>
-
                   )}
 
                   {/* PAPER COUNT */}
 
                   {paperCount > 0 && (
-
                     <p
                       className="
                         text-xs
@@ -724,7 +791,6 @@ export default function DepartmentData({
                         ? "s"
                         : ""}
                     </p>
-
                   )}
 
                   {/* VIEW PROFILE */}
@@ -739,14 +805,11 @@ export default function DepartmentData({
                   >
                     Click to view full profile →
                   </p>
-
                 </div>
-
               </button>
             );
           }
         )}
-
       </div>
     </div>
   );

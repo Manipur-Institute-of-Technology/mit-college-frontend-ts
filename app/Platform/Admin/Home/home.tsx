@@ -116,11 +116,35 @@ export default function Admin_Home() {
     useState<FacultyRequest[]>([]);
 
   const [loading, setLoading] = useState(false);
-  const [facultyRequestPage, setFacultyRequestPage] = useState(1);
+
+  const [facultyRequestPage, setFacultyRequestPage] =
+    useState(1);
+
   const [mailPage, setMailPage] = useState(1);
+
   const dashboardPageSize = 5;
-  const safeFacultyRequestPage = Math.min(facultyRequestPage, Math.max(1, Math.ceil(facultyRequests.length / dashboardPageSize)));
-  const safeMailPage = Math.min(mailPage, Math.max(1, Math.ceil(mails.length / dashboardPageSize)));
+
+  const safeFacultyRequestPage = Math.min(
+    facultyRequestPage,
+    Math.max(
+      1,
+      Math.ceil(
+        facultyRequests.length /
+          dashboardPageSize
+      )
+    )
+  );
+
+  const safeMailPage = Math.min(
+    mailPage,
+    Math.max(
+      1,
+      Math.ceil(
+        mails.length /
+          dashboardPageSize
+      )
+    )
+  );
 
   /**
    * =======================================================
@@ -153,11 +177,15 @@ export default function Admin_Home() {
      */
 
     try {
-      const mailRes = await apiClient.get("/mail/GetMails");
+      const mailRes =
+        await apiClient.get(
+          "/mail/GetMails"
+        );
 
-      const mailData = Array.isArray(mailRes.data)
-        ? mailRes.data
-        : mailRes.data?.data || [];
+      const mailData =
+        Array.isArray(mailRes.data)
+          ? mailRes.data
+          : mailRes.data?.data || [];
 
       setMails(mailData);
     } catch (error: any) {
@@ -177,16 +205,64 @@ export default function Admin_Home() {
      */
 
     try {
-      const reqRes = await apiClient.get(
-        "/account/requestfaculty"
-      );
+      const reqRes =
+        await apiClient.get(
+          "/account/requestfaculty"
+        );
 
       const reqData =
         reqRes.data?.data?.requests ||
         reqRes.data?.requests ||
         [];
 
-      setFacultyRequests(reqData);
+      /**
+       * =====================================================
+       * SORT FACULTY REQUESTS
+       *
+       * OLDest request first
+       * NEWest request last
+       *
+       * Example:
+       *
+       * Oct 1
+       * Oct 2
+       * Oct 2
+       * Oct 3
+       * Oct 4
+       * ---------------- Page 1
+       * Oct 5
+       * Oct 6
+       * Oct 7
+       * Oct 8
+       * Oct 9
+       * ---------------- Page 2
+       * =====================================================
+       */
+      const sortedFacultyRequests =
+        [...reqData].sort(
+          (
+            a: FacultyRequest,
+            b: FacultyRequest
+          ) => {
+            const dateA = a.createdAt
+              ? new Date(
+                  a.createdAt
+                ).getTime()
+              : 0;
+
+            const dateB = b.createdAt
+              ? new Date(
+                  b.createdAt
+                ).getTime()
+              : 0;
+
+            return dateA - dateB;
+          }
+        );
+
+      setFacultyRequests(
+        sortedFacultyRequests
+      );
     } catch (error: any) {
       setFacultyRequests([]);
 
@@ -206,7 +282,10 @@ export default function Admin_Home() {
    * =========================================================
    */
   useEffect(() => {
-    if (token && role === "admin") {
+    if (
+      token &&
+      role === "admin"
+    ) {
       fetchDashboardData();
     }
   }, [token, role]);
@@ -303,23 +382,16 @@ export default function Admin_Home() {
           `/mail/DeleteMail/${id}`
         );
 
-        /**
-         * Remove deleted mail from UI
-         */
-        setMails((previous) =>
-          previous.filter(
-            (mail) => mail._id !== id
-          )
+        setMails(
+          (previous) =>
+            previous.filter(
+              (mail) =>
+                mail._id !== id
+            )
         );
 
-        /**
-         * Close custom confirmation modal
-         */
         setConfirmationAction(null);
 
-        /**
-         * Show SweetAlert success message
-         */
         await alertSuccess(
           `Message from ${name} has been deleted successfully.`
         );
@@ -344,9 +416,6 @@ export default function Admin_Home() {
             `/account/requestfaculty/accept/${id}`
           );
 
-        /**
-         * Remove request from pending list
-         */
         setFacultyRequests(
           (previous) =>
             previous.filter(
@@ -355,14 +424,8 @@ export default function Admin_Home() {
             )
         );
 
-        /**
-         * Close custom confirmation modal
-         */
         setConfirmationAction(null);
 
-        /**
-         * Show SweetAlert success message
-         */
         await alertSuccess(
           response.data?.message ||
             response.data?.data?.message ||
@@ -389,9 +452,6 @@ export default function Admin_Home() {
             `/account/requestfaculty/delete/${id}`
           );
 
-        /**
-         * Remove request from UI
-         */
         setFacultyRequests(
           (previous) =>
             previous.filter(
@@ -400,14 +460,8 @@ export default function Admin_Home() {
             )
         );
 
-        /**
-         * Close custom confirmation modal
-         */
         setConfirmationAction(null);
 
-        /**
-         * Show SweetAlert success message
-         */
         await alertSuccess(
           response.data?.data?.message ||
             response.data?.message ||
@@ -415,15 +469,11 @@ export default function Admin_Home() {
         );
       }
     } catch (error: any) {
-      /**
-       * =====================================================
-       * BACKEND ERROR MESSAGE
-       * =====================================================
-       */
       const backendMessage =
         error?.response?.data?.error ||
         error?.response?.data?.message ||
-        error?.response?.data?.error?.message;
+        error?.response?.data?.error
+          ?.message;
 
       toast.error(
         backendMessage ||
@@ -451,7 +501,10 @@ export default function Admin_Home() {
       .filter(Boolean)
       .join(" ");
 
-    return name || request.username;
+    return (
+      name ||
+      request.username
+    );
   };
 
   /**
@@ -466,7 +519,8 @@ export default function Admin_Home() {
       return "Not provided";
     }
 
-    const parsedDate = new Date(date);
+    const parsedDate =
+      new Date(date);
 
     if (
       Number.isNaN(
@@ -527,10 +581,15 @@ export default function Admin_Home() {
    * AUTH CHECK
    * =========================================================
    */
-  if (!token || role !== "admin") {
+  if (
+    !token ||
+    role !== "admin"
+  ) {
     return (
       <div className="p-4 space-y-6">
-        <SignIn_SignUP role="admin" />
+        <SignIn_SignUP
+          role="admin"
+        />
       </div>
     );
   }
@@ -653,7 +712,9 @@ export default function Admin_Home() {
         </div>
 
         <button
-          onClick={fetchDashboardData}
+          onClick={
+            fetchDashboardData
+          }
           disabled={loading}
           className="
             flex
@@ -706,7 +767,8 @@ export default function Admin_Home() {
           </span>
         </div>
 
-        {facultyRequests.length === 0 ? (
+        {facultyRequests.length ===
+        0 ? (
           <p className="text-center py-8 text-gray-500 text-sm">
             No pending faculty registration
             requests.
@@ -714,260 +776,294 @@ export default function Admin_Home() {
         ) : (
           <div className="space-y-4">
 
-            {facultyRequests.slice((safeFacultyRequestPage - 1) * dashboardPageSize, safeFacultyRequestPage * dashboardPageSize).map(
-              (request) => {
-                const facultyName =
-                  getFacultyName(
-                    request
+            {facultyRequests
+              .slice(
+                (safeFacultyRequestPage -
+                  1) *
+                  dashboardPageSize,
+                safeFacultyRequestPage *
+                  dashboardPageSize
+              )
+              .map(
+                (request) => {
+                  const facultyName =
+                    getFacultyName(
+                      request
+                    );
+
+                  return (
+                    <div
+                      key={
+                        request._id
+                      }
+                      className="
+                        p-5
+                        bg-gray-50
+                        rounded-2xl
+                        border
+                        border-gray-200
+                      "
+                    >
+
+                      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+
+                        <div className="min-w-0 flex-1">
+
+                          <div className="flex flex-wrap items-center gap-2">
+
+                            <h3 className="font-bold text-gray-900 text-lg">
+                              {
+                                facultyName
+                              }
+                            </h3>
+
+                            {request.hod && (
+                              <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-1 rounded-full uppercase">
+                                HOD
+                              </span>
+                            )}
+
+                            {request.sex && (
+                              <span className="text-[10px] bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded-full">
+                                {
+                                  request.sex
+                                }
+                              </span>
+                            )}
+
+                          </div>
+
+                          <p className="text-xs text-gray-600 font-mono mt-1">
+                            Username:{" "}
+                            {
+                              request.username
+                            }
+                          </p>
+
+                          <p className="text-xs text-gray-600 font-mono mt-1">
+                            {
+                              request.email
+                            }
+                          </p>
+
+                        </div>
+
+                        {/* ACTIONS */}
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+
+                          <button
+                            onClick={() =>
+                              handleAcceptFaculty(
+                                request._id,
+                                facultyName
+                              )
+                            }
+                            className="
+                              flex
+                              items-center
+                              justify-center
+                              gap-1.5
+                              px-4
+                              py-2
+                              bg-green-600
+                              hover:bg-green-700
+                              text-white
+                              text-xs
+                              font-bold
+                              rounded-lg
+                              transition-colors
+                              shadow-sm
+                            "
+                          >
+                            <Check className="w-4 h-4" />
+
+                            Approve
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              handleDeleteFaculty(
+                                request._id,
+                                facultyName
+                              )
+                            }
+                            className="
+                              flex
+                              items-center
+                              justify-center
+                              gap-1.5
+                              px-4
+                              py-2
+                              bg-red-600
+                              hover:bg-red-700
+                              text-white
+                              text-xs
+                              font-bold
+                              rounded-lg
+                              transition-colors
+                              shadow-sm
+                            "
+                          >
+                            <Trash2 className="w-4 h-4" />
+
+                            Delete
+                          </button>
+
+                        </div>
+                      </div>
+
+                      {/* FACULTY INFORMATION */}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
+
+                        <div className="bg-white rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            <Phone className="w-4 h-4" />
+
+                            <span className="text-[10px] font-bold uppercase">
+                              Phone
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-semibold text-gray-800">
+                            {request.phoneNumber ||
+                              "Not provided"}
+                          </p>
+                        </div>
+
+                        <div className="bg-white rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            <Building2 className="w-4 h-4" />
+
+                            <span className="text-[10px] font-bold uppercase">
+                              Department
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-semibold text-gray-800">
+                            {request.departmentId?.name ||
+                              "Not provided"}
+                          </p>
+                        </div>
+
+                        <div className="bg-white rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            <GraduationCap className="w-4 h-4" />
+
+                            <span className="text-[10px] font-bold uppercase">
+                              Highest Degree
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-semibold text-gray-800">
+                            {request.highestDegree ||
+                              "Not provided"}
+                          </p>
+                        </div>
+
+                        <div className="bg-white rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            <BriefcaseBusiness className="w-4 h-4" />
+
+                            <span className="text-[10px] font-bold uppercase">
+                              Faculty Role
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-semibold text-gray-800">
+                            {getRoles(
+                              request.roles
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="bg-white rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            <CalendarDays className="w-4 h-4" />
+
+                            <span className="text-[10px] font-bold uppercase">
+                              Start Date
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-semibold text-gray-800">
+                            {formatDate(
+                              request.startDate
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="bg-white rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            <GraduationCap className="w-4 h-4" />
+
+                            <span className="text-[10px] font-bold uppercase">
+                              Expertise
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-semibold text-gray-800">
+                            {getExpertFields(
+                              request.expertFields
+                            )}
+                          </p>
+                        </div>
+
+                      </div>
+
+                      {/* BIO */}
+
+                      {request.bios && (
+                        <div className="mt-3 bg-white rounded-xl border border-gray-100 p-4">
+
+                          <p className="text-[10px] font-bold uppercase text-gray-500 mb-1">
+                            Biography
+                          </p>
+
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {
+                              request.bios
+                            }
+                          </p>
+
+                        </div>
+                      )}
+
+                      {/* CREATED DATE */}
+
+                      {request.createdAt && (
+                        <p className="text-[11px] text-gray-400 mt-3">
+                          Registration request
+                          received:{" "}
+                          {new Date(
+                            request.createdAt
+                          ).toLocaleString()}
+                        </p>
+                      )}
+
+                    </div>
                   );
-
-                return (
-                  <div
-                    key={request._id}
-                    className="
-                      p-5
-                      bg-gray-50
-                      rounded-2xl
-                      border
-                      border-gray-200
-                    "
-                  >
-
-                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
-
-                      <div className="min-w-0 flex-1">
-
-                        <div className="flex flex-wrap items-center gap-2">
-
-                          <h3 className="font-bold text-gray-900 text-lg">
-                            {facultyName}
-                          </h3>
-
-                          {request.hod && (
-                            <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-1 rounded-full uppercase">
-                              HOD
-                            </span>
-                          )}
-
-                          {request.sex && (
-                            <span className="text-[10px] bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded-full">
-                              {request.sex}
-                            </span>
-                          )}
-
-                        </div>
-
-                        <p className="text-xs text-gray-600 font-mono mt-1">
-                          Username:{" "}
-                          {request.username}
-                        </p>
-
-                        <p className="text-xs text-gray-600 font-mono mt-1">
-                          {request.email}
-                        </p>
-
-                      </div>
-
-                      {/* ACTIONS */}
-
-                      <div className="flex items-center gap-2 flex-shrink-0">
-
-                        <button
-                          onClick={() =>
-                            handleAcceptFaculty(
-                              request._id,
-                              facultyName
-                            )
-                          }
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-1.5
-                            px-4
-                            py-2
-                            bg-green-600
-                            hover:bg-green-700
-                            text-white
-                            text-xs
-                            font-bold
-                            rounded-lg
-                            transition-colors
-                            shadow-sm
-                          "
-                        >
-                          <Check className="w-4 h-4" />
-
-                          Approve
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleDeleteFaculty(
-                              request._id,
-                              facultyName
-                            )
-                          }
-                          className="
-                            flex
-                            items-center
-                            justify-center
-                            gap-1.5
-                            px-4
-                            py-2
-                            bg-red-600
-                            hover:bg-red-700
-                            text-white
-                            text-xs
-                            font-bold
-                            rounded-lg
-                            transition-colors
-                            shadow-sm
-                          "
-                        >
-                          <Trash2 className="w-4 h-4" />
-
-                          Delete
-                        </button>
-
-                      </div>
-                    </div>
-
-                    {/* FACULTY INFORMATION */}
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
-
-                      <div className="bg-white rounded-xl border border-gray-100 p-3">
-                        <div className="flex items-center gap-2 text-gray-500 mb-1">
-                          <Phone className="w-4 h-4" />
-
-                          <span className="text-[10px] font-bold uppercase">
-                            Phone
-                          </span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-800">
-                          {request.phoneNumber ||
-                            "Not provided"}
-                        </p>
-                      </div>
-
-                      <div className="bg-white rounded-xl border border-gray-100 p-3">
-                        <div className="flex items-center gap-2 text-gray-500 mb-1">
-                          <Building2 className="w-4 h-4" />
-
-                          <span className="text-[10px] font-bold uppercase">
-                            Department
-                          </span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-800">
-                          {request.departmentId?.name ||
-                            "Not provided"}
-                        </p>
-                      </div>
-
-                      <div className="bg-white rounded-xl border border-gray-100 p-3">
-                        <div className="flex items-center gap-2 text-gray-500 mb-1">
-                          <GraduationCap className="w-4 h-4" />
-
-                          <span className="text-[10px] font-bold uppercase">
-                            Highest Degree
-                          </span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-800">
-                          {request.highestDegree ||
-                            "Not provided"}
-                        </p>
-                      </div>
-
-                      <div className="bg-white rounded-xl border border-gray-100 p-3">
-                        <div className="flex items-center gap-2 text-gray-500 mb-1">
-                          <BriefcaseBusiness className="w-4 h-4" />
-
-                          <span className="text-[10px] font-bold uppercase">
-                            Faculty Role
-                          </span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-800">
-                          {getRoles(
-                            request.roles
-                          )}
-                        </p>
-                      </div>
-
-                      <div className="bg-white rounded-xl border border-gray-100 p-3">
-                        <div className="flex items-center gap-2 text-gray-500 mb-1">
-                          <CalendarDays className="w-4 h-4" />
-
-                          <span className="text-[10px] font-bold uppercase">
-                            Start Date
-                          </span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-800">
-                          {formatDate(
-                            request.startDate
-                          )}
-                        </p>
-                      </div>
-
-                      <div className="bg-white rounded-xl border border-gray-100 p-3">
-                        <div className="flex items-center gap-2 text-gray-500 mb-1">
-                          <GraduationCap className="w-4 h-4" />
-
-                          <span className="text-[10px] font-bold uppercase">
-                            Expertise
-                          </span>
-                        </div>
-
-                        <p className="text-sm font-semibold text-gray-800">
-                          {getExpertFields(
-                            request.expertFields
-                          )}
-                        </p>
-                      </div>
-
-                    </div>
-
-                    {/* BIO */}
-
-                    {request.bios && (
-                      <div className="mt-3 bg-white rounded-xl border border-gray-100 p-4">
-
-                        <p className="text-[10px] font-bold uppercase text-gray-500 mb-1">
-                          Biography
-                        </p>
-
-                        <p className="text-sm text-gray-700 leading-relaxed">
-                          {request.bios}
-                        </p>
-
-                      </div>
-                    )}
-
-                    {/* CREATED DATE */}
-
-                    {request.createdAt && (
-                      <p className="text-[11px] text-gray-400 mt-3">
-                        Registration request
-                        received:{" "}
-                        {new Date(
-                          request.createdAt
-                        ).toLocaleString()}
-                      </p>
-                    )}
-
-                  </div>
-                );
-              }
-            )}
+                }
+              )}
 
           </div>
         )}
-        <Pagination currentPage={safeFacultyRequestPage} totalItems={facultyRequests.length} pageSize={dashboardPageSize} onPageChange={setFacultyRequestPage} />
+
+        <Pagination
+          currentPage={
+            safeFacultyRequestPage
+          }
+          totalItems={
+            facultyRequests.length
+          }
+          pageSize={
+            dashboardPageSize
+          }
+          onPageChange={
+            setFacultyRequestPage
+          }
+        />
 
       </div>
 
@@ -993,108 +1089,134 @@ export default function Admin_Home() {
 
         </div>
 
-        {mails.length === 0 ? (
+        {mails.length ===
+        0 ? (
           <p className="text-center py-6 text-gray-500 text-sm">
             No contact messages received.
           </p>
         ) : (
           <div className="space-y-3">
 
-            {mails.slice((safeMailPage - 1) * dashboardPageSize, safeMailPage * dashboardPageSize).map((msg) => (
+            {mails
+              .slice(
+                (safeMailPage - 1) *
+                  dashboardPageSize,
+                safeMailPage *
+                  dashboardPageSize
+              )
+              .map(
+                (msg) => (
+                  <div
+                    key={
+                      msg._id
+                    }
+                    className="
+                      flex
+                      flex-col
+                      md:flex-row
+                      md:items-center
+                      justify-between
+                      gap-4
+                      p-4
+                      bg-gray-50
+                      rounded-xl
+                      border
+                      border-gray-200
+                    "
+                  >
 
-              <div
-                key={msg._id}
-                className="
-                  flex
-                  flex-col
-                  md:flex-row
-                  md:items-center
-                  justify-between
-                  gap-4
-                  p-4
-                  bg-gray-50
-                  rounded-xl
-                  border
-                  border-gray-200
-                "
-              >
+                    <div className="space-y-1">
 
-                <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
 
-                  <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-gray-900 text-sm">
+                          {
+                            msg.name
+                          }
+                        </span>
 
-                    <span className="font-bold text-gray-900 text-sm">
-                      {msg.name}
-                    </span>
+                      </div>
 
-                    {/* <span className="text-xs text-gray-500 font-mono">
-                      ({msg.email})
-                    </span> */}
+                      {msg.subject && (
+                        <p className="text-xs font-semibold text-cyan-800">
+                          Subject:{" "}
+                          {
+                            msg.subject
+                          }
+                        </p>
+                      )}
+
+                      <p className="text-sm text-gray-700 bg-white p-3 rounded-lg border border-gray-100 mt-2">
+                        {
+                          msg.message
+                        }
+                      </p>
+
+                      {msg.createdAt && (
+                        <p className="text-[11px] text-gray-400">
+                          Received:{" "}
+                          {new Date(
+                            msg.createdAt
+                          ).toLocaleString()}
+                        </p>
+                      )}
+
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        handleDeleteMail(
+                          msg._id,
+                          msg.name
+                        )
+                      }
+                      className="
+                        flex
+                        items-center
+                        justify-center
+                        gap-1.5
+                        px-3
+                        py-1.5
+                        bg-red-50
+                        hover:bg-red-100
+                        text-red-700
+                        text-xs
+                        font-bold
+                        rounded-lg
+                        border
+                        border-red-200
+                        transition-colors
+                        self-start
+                        md:self-auto
+                        flex-shrink-0
+                      "
+                    >
+                      <Trash2 className="w-4 h-4" />
+
+                      Delete
+                    </button>
 
                   </div>
-
-                  {msg.subject && (
-                    <p className="text-xs font-semibold text-cyan-800">
-                      Subject:{" "}
-                      {msg.subject}
-                    </p>
-                  )}
-
-                  <p className="text-sm text-gray-700 bg-white p-3 rounded-lg border border-gray-100 mt-2">
-                    {msg.message}
-                  </p>
-
-                  {msg.createdAt && (
-                    <p className="text-[11px] text-gray-400">
-                      Received:{" "}
-                      {new Date(
-                        msg.createdAt
-                      ).toLocaleString()}
-                    </p>
-                  )}
-
-                </div>
-
-                <button
-                  onClick={() =>
-                    handleDeleteMail(
-                      msg._id,
-                      msg.name
-                    )
-                  }
-                  className="
-                    flex
-                    items-center
-                    justify-center
-                    gap-1.5
-                    px-3
-                    py-1.5
-                    bg-red-50
-                    hover:bg-red-100
-                    text-red-700
-                    text-xs
-                    font-bold
-                    rounded-lg
-                    border
-                    border-red-200
-                    transition-colors
-                    self-start
-                    md:self-auto
-                    flex-shrink-0
-                  "
-                >
-                  <Trash2 className="w-4 h-4" />
-
-                  Delete
-                </button>
-
-              </div>
-
-            ))}
+                )
+              )}
 
           </div>
         )}
-        <Pagination currentPage={safeMailPage} totalItems={mails.length} pageSize={dashboardPageSize} onPageChange={setMailPage} />
+
+        <Pagination
+          currentPage={
+            safeMailPage
+          }
+          totalItems={
+            mails.length
+          }
+          pageSize={
+            dashboardPageSize
+          }
+          onPageChange={
+            setMailPage
+          }
+        />
 
       </div>
 
@@ -1115,8 +1237,11 @@ export default function Admin_Home() {
             backdrop-blur-sm
             px-4
           "
-          onClick={closeConfirmationModal}
+          onClick={
+            closeConfirmationModal
+          }
         >
+
           <div
             className="
               w-full
@@ -1137,9 +1262,7 @@ export default function Admin_Home() {
             }
           >
 
-            {/* =================================================
-                CLOSE BUTTON
-            ================================================= */}
+            {/* CLOSE BUTTON */}
 
             <div className="flex justify-end">
 
@@ -1169,9 +1292,7 @@ export default function Admin_Home() {
 
             </div>
 
-            {/* =================================================
-                ICON
-            ================================================= */}
+            {/* ICON */}
 
             <div className="flex justify-center -mt-2 mb-4">
 
@@ -1215,9 +1336,7 @@ export default function Admin_Home() {
 
             </div>
 
-            {/* =================================================
-                TITLE
-            ================================================= */}
+            {/* TITLE */}
 
             <h2
               className="
@@ -1227,12 +1346,12 @@ export default function Admin_Home() {
                 text-center
               "
             >
-              {getConfirmationTitle()}
+              {
+                getConfirmationTitle()
+              }
             </h2>
 
-            {/* =================================================
-                MESSAGE
-            ================================================= */}
+            {/* MESSAGE */}
 
             <p
               className="
@@ -1243,12 +1362,12 @@ export default function Admin_Home() {
                 leading-relaxed
               "
             >
-              {getConfirmationMessage()}
+              {
+                getConfirmationMessage()
+              }
             </p>
 
-            {/* =================================================
-                TARGET NAME
-            ================================================= */}
+            {/* TARGET NAME */}
 
             <div
               className="
@@ -1268,14 +1387,14 @@ export default function Admin_Home() {
               </p>
 
               <p className="text-sm font-bold text-gray-800 mt-1">
-                {confirmationAction.name}
+                {
+                  confirmationAction.name
+                }
               </p>
 
             </div>
 
-            {/* =================================================
-                BUTTONS
-            ================================================= */}
+            {/* BUTTONS */}
 
             <div className="flex gap-3 mt-6">
 
@@ -1335,6 +1454,7 @@ export default function Admin_Home() {
             </div>
 
           </div>
+
         </div>
       )}
 

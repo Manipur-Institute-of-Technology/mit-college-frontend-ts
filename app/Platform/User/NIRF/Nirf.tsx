@@ -28,7 +28,6 @@ export type NirfItem = {
   header?: string;
   description?: string;
 
-  // New structure
   resource?: NirfResource;
 
   year?: string;
@@ -116,7 +115,6 @@ const getResourceValue = (
     return resource.url?.trim() || "";
   }
 
-  // Fallback if backend doesn't send type correctly
   return (
     resource.file?.trim() ||
     resource.url?.trim() ||
@@ -339,33 +337,44 @@ export default function Nirf() {
         const response =
           await apiClient.get("/nirf");
 
-        // ------------------------------------------------------
-        // Backend can return:
-        //
-        // { data: [...] }
-        //
-        // OR
-        //
-        // [...]
-        // ------------------------------------------------------
-
         const data =
           response.data?.data ??
           (Array.isArray(response.data)
             ? response.data
             : []);
 
-        // ------------------------------------------------------
         // Only active records
-        // ------------------------------------------------------
-
         const activeItems =
           data.filter(
             (item: NirfItem) =>
               item.status !== "Inactive"
           );
 
-        setNirfItems(activeItems);
+        // Newest first, oldest last
+        const sortedItems = [
+          ...activeItems,
+        ].sort(
+          (
+            a: NirfItem,
+            b: NirfItem
+          ) => {
+            const dateA = a.createdAt
+              ? new Date(
+                  a.createdAt
+                ).getTime()
+              : 0;
+
+            const dateB = b.createdAt
+              ? new Date(
+                  b.createdAt
+                ).getTime()
+              : 0;
+
+            return dateB - dateA;
+          }
+        );
+
+        setNirfItems(sortedItems);
       } catch (error) {
         setNirfItems([]);
       } finally {
@@ -373,49 +382,8 @@ export default function Nirf() {
       }
     };
 
-    fetchNirfData();
-  }, []);
-
-  // ==========================================================
-  // GROUP BY YEAR
-  // ==========================================================
-
-  const groupedByYear =
-    nirfItems.reduce<
-      Record<string, NirfItem[]>
-    >((acc, item) => {
-      const year =
-        item.year || "Other";
-
-      if (!acc[year]) {
-        acc[year] = [];
-      }
-
-      acc[year].push(item);
-
-      return acc;
-    }, {});
-
-  // ==========================================================
-  // SORT YEARS
-  // ==========================================================
-
-  const sortedYears =
-    Object.keys(
-      groupedByYear
-    ).sort((a, b) => {
-      const yearA = Number(a);
-      const yearB = Number(b);
-
-      if (
-        !Number.isNaN(yearA) &&
-        !Number.isNaN(yearB)
-      ) {
-        return yearB - yearA;
-      }
-
-      return b.localeCompare(a);
-    });
+  fetchNirfData();
+}, []);
 
   // ==========================================================
   // UI
@@ -439,66 +407,72 @@ export default function Nirf() {
               OVERVIEW
           ================================================= */}
 
-          <div className="
-            bg-white
-            rounded-2xl
-            border
-            border-gray-200
-            p-6
-            shadow-sm
-          ">
-
-            <div className="
-              flex
-              flex-col
-              md:flex-row
-              items-start
-              md:items-center
-              gap-6
-            ">
-
+          <div
+            className="
+              bg-white
+              rounded-2xl
+              border
+              border-gray-200
+              p-6
+              shadow-sm
+            "
+          >
+            <div
+              className="
+                flex
+                flex-col
+                md:flex-row
+                items-start
+                md:items-center
+                gap-6
+              "
+            >
               <div className="flex-1">
 
-                <div className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  px-3
-                  py-1
-                  bg-cyan-50
-                  text-cyan-700
-                  rounded-full
-                  text-xs
-                  font-semibold
-                  border
-                  border-cyan-200
-                ">
-
+                <div
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    px-3
+                    py-1
+                    bg-cyan-50
+                    text-cyan-700
+                    rounded-full
+                    text-xs
+                    font-semibold
+                    border
+                    border-cyan-200
+                  "
+                >
                   <Award className="w-4 h-4" />
 
                   National Institutional
                   Ranking Framework
-
                 </div>
 
-                <h1 className="
-                  text-lg
-                  sm:text-xl
-                  md:text-2xl
-                  font-bold
-                  text-gray-800
-                  mt-3
-                ">
+                <h1
+                  className="
+                    text-lg
+                    sm:text-xl
+                    md:text-2xl
+                    font-bold
+                    text-gray-800
+                    mt-3
+                  "
+                >
                   NIRF Data Submissions & Reports
                 </h1>
 
-                <p className="
-                  text-gray-600
-                  text-sm
-                  leading-relaxed
-                  max-w-2xl
-                  mt-2
-                ">
+                <p
+                  className="
+                    text-gray-600
+                    text-sm
+                    leading-relaxed
+                    max-w-2xl
+                    mt-2
+                  "
+                >
                   Access official National
                   Institutional Ranking Framework
                   (NIRF) data reports, submitted
@@ -507,9 +481,7 @@ export default function Nirf() {
                 </p>
 
               </div>
-
             </div>
-
           </div>
 
           {/* =================================================
@@ -518,118 +490,121 @@ export default function Nirf() {
 
           {loading ? (
 
-            <div className="
-              flex
-              flex-col
-              items-center
-              justify-center
-              py-16
-            ">
+            <div
+              className="
+                flex
+                flex-col
+                items-center
+                justify-center
+                py-16
+              "
+            >
+              <div
+                className="
+                  w-10
+                  h-10
+                  border-4
+                  border-cyan-200
+                  border-t-cyan-500
+                  rounded-full
+                  animate-spin
+                "
+              />
 
-              <div className="
-                w-10
-                h-10
-                border-4
-                border-cyan-200
-                border-t-cyan-500
-                rounded-full
-                animate-spin
-              " />
-
-              <p className="
-                mt-4
-                text-gray-500
-                font-medium
-              ">
+              <p
+                className="
+                  mt-4
+                  text-gray-500
+                  font-medium
+                "
+              >
                 Loading NIRF information...
               </p>
-
             </div>
 
-          ) : sortedYears.length === 0 ? (
+          ) : nirfItems.length === 0 ? (
 
             /* =================================================
                EMPTY
             ================================================== */
 
-            <div className="
-              bg-white
-              rounded-2xl
-              border
-              border-gray-200
-              p-12
-              text-center
-              shadow-sm
-            ">
-
-              <div className="
-                mx-auto
-                w-16
-                h-16
-                flex
-                items-center
-                justify-center
-                bg-gray-100
-                rounded-full
-              ">
-
-                <FileText className="
-                  w-7
-                  h-7
-                  text-gray-400
-                " />
-
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                border
+                border-gray-200
+                p-12
+                text-center
+                shadow-sm
+              "
+            >
+              <div
+                className="
+                  mx-auto
+                  w-16
+                  h-16
+                  flex
+                  items-center
+                  justify-center
+                  bg-gray-100
+                  rounded-full
+                "
+              >
+                <FileText
+                  className="
+                    w-7
+                    h-7
+                    text-gray-400
+                  "
+                />
               </div>
 
-              <h3 className="
-                mt-5
-                text-base
-                sm:text-lg
-                md:text-xl
-                font-semibold
-                text-gray-700
-              ">
+              <h3
+                className="
+                  mt-5
+                  text-base
+                  sm:text-lg
+                  md:text-xl
+                  font-semibold
+                  text-gray-700
+                "
+              >
                 No NIRF information available
               </h3>
 
-              <p className="
-                mt-1
-                text-sm
-                text-gray-500
-              ">
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-gray-500
+                "
+              >
                 There are currently no NIRF
                 documents or links available.
               </p>
-
             </div>
 
           ) : (
 
             /* =================================================
-               YEARS
+               NIRF ITEMS
             ================================================== */
 
-            sortedYears.map((year) => (
+            <section className="space-y-4">
 
-              <section
-                key={year}
-                className="space-y-4"
-              >
-
-                {/* =================================================
-                    YEAR HEADER
-                ================================================== */}
-
-                <div className="
+              <div
+                className="
                   flex
                   items-center
                   gap-3
                   border-b
                   border-gray-200
                   pb-3
-                ">
-
-                  <div className="
+                "
+              >
+                <div
+                  className="
                     flex
                     items-center
                     justify-center
@@ -637,17 +612,19 @@ export default function Nirf() {
                     h-10
                     bg-cyan-100
                     rounded-xl
-                  ">
-
-                    <Calendar className="
+                  "
+                >
+                  <Award
+                    className="
                       w-5
                       h-5
                       text-cyan-600
-                    " />
+                    "
+                  />
+                </div>
 
-                  </div>
-
-                  <h2 className="
+                <h2
+                  className="
                     text-base
                     sm:text-lg
                     md:text-xl
@@ -656,11 +633,13 @@ export default function Nirf() {
                     border-l-4
                     border-cyan-400
                     pl-3
-                  ">
-                    Year {year}
-                  </h2>
+                  "
+                >
+                  NIRF Resources
+                </h2>
 
-                  <span className="
+                <span
+                  className="
                     ml-auto
                     text-xs
                     bg-cyan-100
@@ -671,240 +650,227 @@ export default function Nirf() {
                     rounded-full
                     border
                     border-cyan-200
-                  ">
+                  "
+                >
+                  {nirfItems.length}{" "}
+                  {nirfItems.length === 1
+                    ? "entry"
+                    : "entries"}
+                </span>
+              </div>
 
-                    {groupedByYear[year].length}{" "}
+              {/* =================================================
+                  ITEMS
+              ================================================== */}
 
-                    {groupedByYear[year].length === 1
-                      ? "entry"
-                      : "entries"}
+              <div className="grid gap-4">
 
-                  </span>
+                {nirfItems.map((item) => {
 
-                </div>
+                  const resourceType =
+                    getResourceType(item);
 
-                {/* =================================================
-                    ITEMS
-                ================================================== */}
+                  const isLink =
+                    resourceType === "link";
 
-                <div className="grid gap-4">
+                  const resourceValue =
+                    getResourceValue(item);
 
-                  {groupedByYear[year].map(
-                    (item) => {
+                  return (
+                    <div
+                      key={item._id}
+                      className="
+                        group
+                        relative
+                        flex
+                        flex-col
+                        sm:flex-row
+                        items-start
+                        sm:items-center
+                        justify-between
+                        gap-4
+                        bg-white
+                        border
+                        border-gray-200
+                        hover:border-cyan-400
+                        rounded-2xl
+                        p-5
+                        shadow-sm
+                        hover:shadow-lg
+                        transition-all
+                        duration-300
+                      "
+                    >
 
-                      const resourceType =
-                        getResourceType(item);
+                      {/* LEFT ACCENT */}
 
-                      const isLink =
-                        resourceType ===
-                        "link";
+                      <div
+                        className="
+                          absolute
+                          left-0
+                          top-4
+                          bottom-4
+                          w-1
+                          bg-cyan-500
+                          rounded-r-full
+                        "
+                      />
 
-                      const resourceValue =
-                        getResourceValue(item);
+                      {/* =================================================
+                          INFORMATION
+                      ================================================== */}
 
-                      return (
-
+                      <div
+                        className="
+                          flex
+                          items-start
+                          gap-3.5
+                          flex-1
+                          pl-2
+                        "
+                      >
                         <div
-                          key={item._id}
                           className="
-                            group
-                            relative
-                            flex
-                            flex-col
-                            sm:flex-row
-                            items-start
-                            sm:items-center
-                            justify-between
-                            gap-4
-                            bg-white
-                            border
-                            border-gray-200
-                            hover:border-cyan-400
-                            rounded-2xl
-                            p-5
-                            shadow-sm
-                            hover:shadow-lg
-                            transition-all
-                            duration-300
+                            p-3
+                            bg-cyan-50
+                            text-cyan-600
+                            rounded-xl
+                            group-hover:bg-cyan-100
+                            transition-colors
+                            flex-shrink-0
                           "
                         >
+                          {isLink ? (
+                            <LinkIcon
+                              className="w-5 h-5"
+                            />
+                          ) : (
+                            <FileText
+                              className="w-5 h-5"
+                            />
+                          )}
+                        </div>
 
-                          {/* LEFT ACCENT */}
+                        <div className="space-y-2">
 
-                          <div className="
-                            absolute
-                            left-0
-                            top-4
-                            bottom-4
-                            w-1
-                            bg-cyan-500
-                            rounded-r-full
-                          " />
-
-                          {/* =================================================
-                              INFORMATION
-                          ================================================== */}
-
-                          <div className="
-                            flex
-                            items-start
-                            gap-3.5
-                            flex-1
-                            pl-2
-                          ">
-
-                            <div className="
-                              p-3
-                              bg-cyan-50
-                              text-cyan-600
-                              rounded-xl
-                              group-hover:bg-cyan-100
+                          <h3
+                            className="
+                              font-bold
+                              text-gray-900
+                              text-base
+                              leading-snug
+                              group-hover:text-cyan-700
                               transition-colors
-                              flex-shrink-0
-                            ">
+                            "
+                          >
+                            {item.header ||
+                              "NIRF Resource"}
+                          </h3>
 
-                              {isLink ? (
-                                <LinkIcon className="
-                                  w-5
-                                  h-5
-                                " />
-                              ) : (
-                                <FileText className="
-                                  w-5
-                                  h-5
-                                " />
-                              )}
+                          {item.description && (
+                            <p
+                              className="
+                                text-sm
+                                text-gray-600
+                                leading-relaxed
+                              "
+                            >
+                              {item.description}
+                            </p>
+                          )}
 
-                            </div>
-
-                            <div className="space-y-2">
-
-                              <h3 className="
-                                font-bold
-                                text-gray-900
-                                text-base
-                                leading-snug
-                                group-hover:text-cyan-700
-                                transition-colors
-                              ">
-                                {item.header ||
-                                  "NIRF Resource"}
-                              </h3>
-
-                              {item.description && (
-
-                                <p className="
-                                  text-sm
-                                  text-gray-600
-                                  leading-relaxed
-                                ">
-                                  {item.description}
-                                </p>
-
-                              )}
-
-                              <div className="
+                          {item.year && (
+                            <div
+                              className="
                                 flex
                                 items-center
                                 gap-1.5
                                 text-xs
                                 text-gray-500
-                              ">
-
-                                <Calendar className="
+                              "
+                            >
+                              <Calendar
+                                className="
                                   w-3.5
                                   h-3.5
                                   text-cyan-500
-                                " />
+                                "
+                              />
 
-                                <span>
-                                  {item.year ||
-                                    "-"}
-                                </span>
-
-                              </div>
-
+                              <span>
+                                {item.year}
+                              </span>
                             </div>
-
-                          </div>
-
-                          {/* =================================================
-                              BUTTON
-                          ================================================== */}
-
-                          <button
-                            type="button"
-                            disabled={!resourceValue}
-                            onClick={() =>
-                              handleNirfClick(
-                                item
-                              )}
-                            className="
-                              flex-shrink-0
-                              w-full
-                              sm:w-auto
-                              flex
-                              items-center
-                              justify-center
-                              gap-2
-                              px-4
-                              py-2.5
-                              bg-cyan-500
-                              hover:bg-cyan-600
-                              disabled:bg-gray-300
-                              disabled:cursor-not-allowed
-                              text-white
-                              text-sm
-                              font-semibold
-                              rounded-xl
-                              shadow-sm
-                              hover:shadow-md
-                              transition-all
-                            "
-                          >
-
-                            {isLink ? (
-                              <>
-                                <span>
-                                  Visit Link
-                                </span>
-
-                                <ExternalLink className="
-                                  w-4
-                                  h-4
-                                " />
-                              </>
-                            ) : (
-                              <>
-                                <span>
-                                  View Document
-                                </span>
-
-                                <FileText className="
-                                  w-4
-                                  h-4
-                                " />
-                              </>
-                            )}
-
-                          </button>
+                          )}
 
                         </div>
+                      </div>
 
-                      );
-                    }
-                  )}
+                      {/* =================================================
+                          BUTTON
+                      ================================================== */}
 
-                </div>
+                      <button
+                        type="button"
+                        disabled={!resourceValue}
+                        onClick={() =>
+                          handleNirfClick(item)
+                        }
+                        className="
+                          flex-shrink-0
+                          w-full
+                          sm:w-auto
+                          flex
+                          items-center
+                          justify-center
+                          gap-2
+                          px-4
+                          py-2.5
+                          bg-cyan-500
+                          hover:bg-cyan-600
+                          disabled:bg-gray-300
+                          disabled:cursor-not-allowed
+                          text-white
+                          text-sm
+                          font-semibold
+                          rounded-xl
+                          shadow-sm
+                          hover:shadow-md
+                          transition-all
+                        "
+                      >
+                        {isLink ? (
+                          <>
+                            <span>
+                              Visit Link
+                            </span>
 
-              </section>
+                            <ExternalLink
+                              className="w-4 h-4"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <span>
+                              View Document
+                            </span>
 
-            ))
+                            <FileText
+                              className="w-4 h-4"
+                            />
+                          </>
+                        )}
+                      </button>
 
+                    </div>
+                  );
+                })}
+
+              </div>
+            </section>
           )}
 
         </div>
-
       </div>
 
       <Informations />

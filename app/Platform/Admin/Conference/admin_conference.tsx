@@ -14,6 +14,7 @@ import {
   Link as LinkIcon,
   AlertTriangle,
   ExternalLink,
+  Pencil,
 } from "lucide-react";
 
 import Pagination from "../Pagination";
@@ -44,9 +45,18 @@ export default function Admin_Conference() {
   const [isLoading, setIsLoading] = useState(false);
   const [conferencePage, setConferencePage] = useState(1);
   const conferencePageSize = 10;
-  const safeConferencePage = Math.min(conferencePage, Math.max(1, Math.ceil(conferences.length / conferencePageSize)));
 
-  // ── Add modal state ─────────────────────────────────────────────────────────
+  const safeConferencePage = Math.min(
+    conferencePage,
+    Math.max(
+      1,
+      Math.ceil(
+        conferences.length / conferencePageSize
+      )
+    )
+  );
+
+  // ── Add modal state ────────────────────────────────────────────────────────
 
   const [showModal, setShowModal] = useState(false);
 
@@ -63,6 +73,43 @@ export default function Admin_Conference() {
 
   const [submitting, setSubmitting] = useState(false);
 
+  // ── Edit modal state ───────────────────────────────────────────────────────
+
+  const [editingConference, setEditingConference] =
+    useState<Conference | null>(null);
+
+  // ── Sort conferences: newest first ─────────────────────────────────────────
+  //
+  // createdAt is used for ordering.
+  // Newest = first
+  // Oldest = last
+  //
+  // If createdAt is missing, the conference stays in its current relative
+  // position instead of causing an invalid date comparison.
+
+  const sortConferencesNewestFirst = (
+    list: Conference[]
+  ): Conference[] => {
+    return [...list].sort((a, b) => {
+      if (!a.createdAt && !b.createdAt) {
+        return 0;
+      }
+
+      if (!a.createdAt) {
+        return 1;
+      }
+
+      if (!b.createdAt) {
+        return -1;
+      }
+
+      return (
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+      );
+    });
+  };
+
   // ── Fetch conferences ──────────────────────────────────────────────────────
 
   const fetchConferences = async () => {
@@ -73,11 +120,19 @@ export default function Admin_Conference() {
 
       const data: Conference[] =
         res.data?.data ??
-        (Array.isArray(res.data) ? res.data : []);
+        (Array.isArray(res.data)
+          ? res.data
+          : []);
 
-      setConferences(
+      const sortedData = sortConferencesNewestFirst(
         Array.isArray(data) ? data : []
       );
+
+      setConferences(sortedData);
+
+      // Always return to page 1 after refreshing.
+      // This ensures the newest conferences are shown immediately.
+      setConferencePage(1);
     } catch (error) {
       await Swal.fire({
         icon: "error",
@@ -90,7 +145,7 @@ export default function Admin_Conference() {
     }
   };
 
-  // ── Initial load ────────────────────────────────────────────────────────────
+  // ── Initial load ───────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (token && role === "admin") {
@@ -98,9 +153,11 @@ export default function Admin_Conference() {
     }
   }, [token, role]);
 
-  // ── Reset & open modal ──────────────────────────────────────────────────────
+  // ── Reset & open add modal ─────────────────────────────────────────────────
 
   const openAddModal = () => {
+    setEditingConference(null);
+
     setFormCategory("International");
     setFormTitle("");
     setFormStartDate("");
@@ -111,12 +168,28 @@ export default function Admin_Conference() {
     setShowModal(true);
   };
 
-  // ── Close modal ─────────────────────────────────────────────────────────────
+  // ── Open edit modal ─────────────────────────────────────────────────────────
+
+  const openEditModal = (conf: Conference) => {
+    setEditingConference(conf);
+
+    setFormCategory(conf.category);
+    setFormTitle(conf.title);
+    setFormStartDate(conf.startDate);
+    setFormEndDate(conf.endDate);
+    setFormLink(conf.link);
+    setFormStatus(conf.status);
+
+    setShowModal(true);
+  };
+
+  // ── Close modal ────────────────────────────────────────────────────────────
 
   const closeModal = () => {
     if (submitting) return;
 
     setShowModal(false);
+    setEditingConference(null);
   };
 
   // ── External link detection ────────────────────────────────────────────────
@@ -165,7 +238,6 @@ export default function Admin_Conference() {
   ) => {
     e.preventDefault();
 
-    // Title validation
     if (!formTitle.trim()) {
       await Swal.fire({
         icon: "warning",
@@ -177,7 +249,6 @@ export default function Admin_Conference() {
       return;
     }
 
-    // Start date validation
     if (!formStartDate) {
       await Swal.fire({
         icon: "warning",
@@ -189,7 +260,6 @@ export default function Admin_Conference() {
       return;
     }
 
-    // End date validation
     if (!formEndDate) {
       await Swal.fire({
         icon: "warning",
@@ -201,7 +271,6 @@ export default function Admin_Conference() {
       return;
     }
 
-    // Date validation
     if (formEndDate < formStartDate) {
       await Swal.fire({
         icon: "warning",
@@ -213,7 +282,6 @@ export default function Admin_Conference() {
       return;
     }
 
-    // Link validation
     if (!formLink.trim()) {
       await Swal.fire({
         icon: "warning",
@@ -245,14 +313,19 @@ export default function Admin_Conference() {
       const created: Conference =
         res.data?.data ?? res.data;
 
-      setConferences((prev) => [
-        created,
-        ...prev,
-      ]);
+      setConferences((prev) =>
+        sortConferencesNewestFirst([
+          created,
+          ...prev,
+        ])
+      );
+
+      // Show the newly created conference on page 1.
+      setConferencePage(1);
 
       setShowModal(false);
+      setEditingConference(null);
 
-      // Reset form
       setFormCategory("International");
       setFormTitle("");
       setFormStartDate("");
@@ -274,6 +347,133 @@ export default function Admin_Conference() {
           error?.response?.data?.error ||
           error?.response?.data?.message ||
           "Failed to add conference. Please try again.",
+        confirmButtonColor: "#be123c",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ── Edit conference ────────────────────────────────────────────────────────
+
+  const handleEdit = async (
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
+
+    if (!formTitle.trim()) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Title Required",
+        text: "Please enter a conference title.",
+        confirmButtonColor: "#be123c",
+      });
+
+      return;
+    }
+
+    if (!formStartDate) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Start Date Required",
+        text: "Please select the conference start date.",
+        confirmButtonColor: "#be123c",
+      });
+
+      return;
+    }
+
+    if (!formEndDate) {
+      await Swal.fire({
+        icon: "warning",
+        title: "End Date Required",
+        text: "Please select the conference end date.",
+        confirmButtonColor: "#be123c",
+      });
+
+      return;
+    }
+
+    if (formEndDate < formStartDate) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Invalid Date Range",
+        text: "End date cannot be earlier than start date.",
+        confirmButtonColor: "#be123c",
+      });
+
+      return;
+    }
+
+    if (!formLink.trim()) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Link Required",
+        text: "Please enter the conference website/link.",
+        confirmButtonColor: "#be123c",
+      });
+
+      return;
+    }
+
+    if (!editingConference) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    const payload = {
+      category: formCategory,
+      title: formTitle.trim(),
+      startDate: formStartDate,
+      endDate: formEndDate,
+      link: formLink.trim(),
+      status: formStatus,
+    };
+
+    try {
+      const res = await apiClient.put(
+        `/conference/edit/${editingConference._id}`,
+        payload
+      );
+
+      const updated: Conference =
+        res.data?.data ?? res.data;
+
+      setConferences((prev) =>
+        sortConferencesNewestFirst(
+          prev.map((conference) =>
+            conference._id === updated._id
+              ? updated
+              : conference
+          )
+        )
+      );
+
+      setShowModal(false);
+      setEditingConference(null);
+
+      setFormCategory("International");
+      setFormTitle("");
+      setFormStartDate("");
+      setFormEndDate("");
+      setFormLink("");
+      setFormStatus("Active");
+
+      await Swal.fire({
+        icon: "success",
+        title: "Conference Updated",
+        text: "Conference updated successfully.",
+        confirmButtonColor: "#be123c",
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: "error",
+        title: "Failed to Update",
+        text:
+          error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          "Failed to update conference. Please try again.",
         confirmButtonColor: "#be123c",
       });
     } finally {
@@ -363,7 +563,7 @@ export default function Admin_Conference() {
     );
   }
 
-  // ── Category counts ────────────────────────────────────────────────────────
+  // ── Category counts ─────────────────────────────────────────────────────────
 
   const international =
     conferences.filter(
@@ -373,7 +573,8 @@ export default function Admin_Conference() {
 
   const national =
     conferences.filter(
-      (c) => c.category === "National"
+      (c) =>
+        c.category === "National"
     );
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -383,9 +584,7 @@ export default function Admin_Conference() {
 
       <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* ====================================================================
-            HEADER
-        ==================================================================== */}
+        {/* HEADER */}
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
 
@@ -415,13 +614,9 @@ export default function Admin_Conference() {
 
             <div className="flex items-center gap-3">
 
-              {/* Refresh */}
-
               <button
                 type="button"
-                onClick={
-                  fetchConferences
-                }
+                onClick={fetchConferences}
                 disabled={isLoading}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl border border-gray-300 transition-colors disabled:opacity-50"
               >
@@ -438,13 +633,9 @@ export default function Admin_Conference() {
 
               </button>
 
-              {/* Add */}
-
               <button
                 type="button"
-                onClick={
-                  openAddModal
-                }
+                onClick={openAddModal}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-700 hover:bg-rose-800 text-white text-sm font-semibold rounded-xl shadow-md transition-colors"
               >
 
@@ -460,19 +651,16 @@ export default function Admin_Conference() {
 
         </div>
 
-        {/* ====================================================================
-            TOTALS
-        ==================================================================== */}
+        {/* TOTALS */}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-          {/* Total */}
 
           <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
 
             <div className="flex items-center justify-between">
 
               <div>
+
                 <div className="text-3xl font-bold text-rose-700">
                   {conferences.length}
                 </div>
@@ -480,23 +668,25 @@ export default function Admin_Conference() {
                 <div className="text-sm text-gray-500 font-medium mt-1">
                   Total Conferences
                 </div>
+
               </div>
 
               <div className="p-3 rounded-xl bg-rose-50">
+
                 <Calendar className="w-6 h-6 text-rose-700" />
+
               </div>
 
             </div>
 
           </div>
 
-          {/* International */}
-
           <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
 
             <div className="flex items-center justify-between">
 
               <div>
+
                 <div className="text-3xl font-bold text-blue-600">
                   {international.length}
                 </div>
@@ -504,23 +694,25 @@ export default function Admin_Conference() {
                 <div className="text-sm text-gray-500 font-medium mt-1">
                   International
                 </div>
+
               </div>
 
               <div className="p-3 rounded-xl bg-blue-50">
+
                 <Globe className="w-6 h-6 text-blue-600" />
+
               </div>
 
             </div>
 
           </div>
 
-          {/* National */}
-
           <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
 
             <div className="flex items-center justify-between">
 
               <div>
+
                 <div className="text-3xl font-bold text-green-600">
                   {national.length}
                 </div>
@@ -528,10 +720,13 @@ export default function Admin_Conference() {
                 <div className="text-sm text-gray-500 font-medium mt-1">
                   National
                 </div>
+
               </div>
 
               <div className="p-3 rounded-xl bg-green-50">
+
                 <MapPin className="w-6 h-6 text-green-600" />
+
               </div>
 
             </div>
@@ -540,9 +735,7 @@ export default function Admin_Conference() {
 
         </div>
 
-        {/* ====================================================================
-            TABLE
-        ==================================================================== */}
+        {/* TABLE */}
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
@@ -555,8 +748,7 @@ export default function Admin_Conference() {
               </h2>
 
               <p className="text-xs text-gray-500 mt-1">
-                Manage all conference
-                announcements.
+                Newest conferences are shown first.
               </p>
 
             </div>
@@ -566,8 +758,6 @@ export default function Admin_Conference() {
             </span>
 
           </div>
-
-          {/* Loading */}
 
           {isLoading ? (
 
@@ -582,8 +772,6 @@ export default function Admin_Conference() {
             </div>
 
           ) : conferences.length === 0 ? (
-
-            /* Empty */
 
             <div className="p-12 text-center">
 
@@ -604,9 +792,7 @@ export default function Admin_Conference() {
 
               <button
                 type="button"
-                onClick={
-                  openAddModal
-                }
+                onClick={openAddModal}
                 className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-sm font-semibold"
               >
 
@@ -619,8 +805,6 @@ export default function Admin_Conference() {
             </div>
 
           ) : (
-
-            /* Table */
 
             <div className="overflow-x-auto">
 
@@ -660,17 +844,19 @@ export default function Admin_Conference() {
 
                 <tbody className="divide-y divide-gray-200">
 
-                  {conferences.slice((safeConferencePage - 1) * conferencePageSize, safeConferencePage * conferencePageSize).map(
-                    (conf) => (
+                  {conferences
+                    .slice(
+                      (safeConferencePage - 1) *
+                        conferencePageSize,
+                      safeConferencePage *
+                        conferencePageSize
+                    )
+                    .map((conf) => (
 
                       <tr
-                        key={
-                          conf._id
-                        }
+                        key={conf._id}
                         className="hover:bg-gray-50/80 transition-colors"
                       >
-
-                        {/* Category */}
 
                         <td className="px-6 py-4">
 
@@ -696,8 +882,6 @@ export default function Admin_Conference() {
 
                         </td>
 
-                        {/* Title */}
-
                         <td className="px-6 py-4">
 
                           <p className="font-semibold text-gray-900 line-clamp-2 max-w-sm">
@@ -705,8 +889,6 @@ export default function Admin_Conference() {
                           </p>
 
                         </td>
-
-                        {/* Date */}
 
                         <td className="px-6 py-4">
 
@@ -725,20 +907,14 @@ export default function Admin_Conference() {
 
                         </td>
 
-                        {/* Link */}
-
                         <td className="px-6 py-4">
 
                           <a
-                            href={
-                              conf.link
-                            }
+                            href={conf.link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-rose-700 hover:text-rose-900 text-xs font-semibold flex items-center gap-1 underline max-w-[180px] truncate"
-                            title={
-                              conf.link
-                            }
+                            title={conf.link}
                           >
 
                             <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
@@ -750,8 +926,6 @@ export default function Admin_Conference() {
                           </a>
 
                         </td>
-
-                        {/* Status */}
 
                         <td className="px-6 py-4">
 
@@ -768,31 +942,47 @@ export default function Admin_Conference() {
 
                         </td>
 
-                        {/* Actions */}
-
                         <td className="px-6 py-4 text-right">
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleDelete(
-                                conf
-                              )
-                            }
-                            className="inline-flex items-center justify-center p-2 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 rounded-lg border border-gray-200 transition-colors"
-                            title="Delete conference"
-                          >
+                          <div className="inline-flex items-center gap-2">
 
-                            <Trash2 className="w-4 h-4" />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openEditModal(
+                                  conf
+                                )
+                              }
+                              className="inline-flex items-center justify-center p-2 bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-700 rounded-lg border border-gray-200 transition-colors"
+                              title="Edit conference"
+                            >
 
-                          </button>
+                              <Pencil className="w-4 h-4" />
+
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDelete(
+                                  conf
+                                )
+                              }
+                              className="inline-flex items-center justify-center p-2 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 rounded-lg border border-gray-200 transition-colors"
+                              title="Delete conference"
+                            >
+
+                              <Trash2 className="w-4 h-4" />
+
+                            </button>
+
+                          </div>
 
                         </td>
 
                       </tr>
 
-                    )
-                  )}
+                    ))}
 
                 </tbody>
 
@@ -801,23 +991,25 @@ export default function Admin_Conference() {
             </div>
 
           )}
-          <Pagination currentPage={safeConferencePage} totalItems={conferences.length} pageSize={conferencePageSize} onPageChange={setConferencePage} />
+
+          <Pagination
+            currentPage={safeConferencePage}
+            totalItems={conferences.length}
+            pageSize={conferencePageSize}
+            onPageChange={setConferencePage}
+          />
 
         </div>
 
       </div>
 
-      {/* ====================================================================
-          ADD MODAL
-      ==================================================================== */}
+      {/* ADD / EDIT MODAL */}
 
       {showModal && (
 
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onClick={
-            closeModal
-          }
+          onClick={closeModal}
         >
 
           <div
@@ -827,31 +1019,32 @@ export default function Admin_Conference() {
             }
           >
 
-            {/* Modal Header */}
-
             <div className="flex justify-between items-center border-b border-gray-200 pb-3">
 
               <div>
 
                 <h3 className="text-xl font-bold text-gray-800">
-                  Add New Conference
+
+                  {editingConference
+                    ? "Edit Conference"
+                    : "Add New Conference"}
+
                 </h3>
 
                 <p className="text-xs text-gray-500 mt-1">
-                  Enter the conference
-                  information below.
+
+                  {editingConference
+                    ? "Update the conference information below."
+                    : "Enter the conference information below."}
+
                 </p>
 
               </div>
 
               <button
                 type="button"
-                onClick={
-                  closeModal
-                }
-                disabled={
-                  submitting
-                }
+                onClick={closeModal}
+                disabled={submitting}
                 className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-50"
               >
 
@@ -863,18 +1056,16 @@ export default function Admin_Conference() {
 
             </div>
 
-            {/* Form */}
-
             <form
               onSubmit={
-                handleAdd
+                editingConference
+                  ? handleEdit
+                  : handleAdd
               }
               className="space-y-4"
             >
 
-              {/* ============================================================
-                  CATEGORY
-              ============================================================ */}
+              {/* CATEGORY */}
 
               <div>
 
@@ -889,56 +1080,52 @@ export default function Admin_Conference() {
                       "International",
                       "National",
                     ] as ConferenceCategory[]
-                  ).map(
-                    (cat) => (
+                  ).map((cat) => (
 
-                      <label
-                        key={cat}
-                        className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors text-sm font-semibold ${
+                    <label
+                      key={cat}
+                      className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors text-sm font-semibold ${
+                        formCategory ===
+                        cat
+                          ? "border-rose-700 bg-rose-50 text-rose-800"
+                          : "border-gray-200 text-gray-600 hover:border-gray-300"
+                      }`}
+                    >
+
+                      <input
+                        type="radio"
+                        name="category"
+                        value={cat}
+                        checked={
                           formCategory ===
                           cat
-                            ? "border-rose-700 bg-rose-50 text-rose-800"
-                            : "border-gray-200 text-gray-600 hover:border-gray-300"
-                        }`}
-                      >
-
-                        <input
-                          type="radio"
-                          name="category"
-                          value={cat}
-                          checked={
-                            formCategory ===
+                        }
+                        onChange={() =>
+                          setFormCategory(
                             cat
-                          }
-                          onChange={() =>
-                            setFormCategory(
-                              cat
-                            )
-                          }
-                          className="hidden"
-                        />
+                          )
+                        }
+                        className="hidden"
+                      />
 
-                        {cat ===
-                        "International" ? (
-                          <Globe className="w-4 h-4" />
-                        ) : (
-                          <MapPin className="w-4 h-4" />
-                        )}
+                      {cat ===
+                      "International" ? (
+                        <Globe className="w-4 h-4" />
+                      ) : (
+                        <MapPin className="w-4 h-4" />
+                      )}
 
-                        {cat}
+                      {cat}
 
-                      </label>
+                    </label>
 
-                    )
-                  )}
+                  ))}
 
                 </div>
 
               </div>
 
-              {/* ============================================================
-                  TITLE
-              ============================================================ */}
+              {/* TITLE */}
 
               <div>
 
@@ -947,9 +1134,7 @@ export default function Admin_Conference() {
                 </label>
 
                 <textarea
-                  value={
-                    formTitle
-                  }
+                  value={formTitle}
                   onChange={(e) =>
                     setFormTitle(
                       e.target.value
@@ -966,13 +1151,9 @@ export default function Admin_Conference() {
 
               </div>
 
-              {/* ============================================================
-                  DATES
-              ============================================================ */}
+              {/* DATES */}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                {/* Start */}
 
                 <div>
 
@@ -986,9 +1167,7 @@ export default function Admin_Conference() {
 
                     <input
                       type="date"
-                      value={
-                        formStartDate
-                      }
+                      value={formStartDate}
                       onChange={(e) =>
                         setFormStartDate(
                           e.target.value
@@ -1002,8 +1181,6 @@ export default function Admin_Conference() {
 
                 </div>
 
-                {/* End */}
-
                 <div>
 
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">
@@ -1016,9 +1193,7 @@ export default function Admin_Conference() {
 
                     <input
                       type="date"
-                      value={
-                        formEndDate
-                      }
+                      value={formEndDate}
                       min={
                         formStartDate ||
                         undefined
@@ -1038,9 +1213,7 @@ export default function Admin_Conference() {
 
               </div>
 
-              {/* ============================================================
-                  LINK
-              ============================================================ */}
+              {/* LINK */}
 
               <div>
 
@@ -1054,9 +1227,7 @@ export default function Admin_Conference() {
 
                 <input
                   type="url"
-                  value={
-                    formLink
-                  }
+                  value={formLink}
                   onChange={(e) =>
                     setFormLink(
                       e.target.value
@@ -1092,9 +1263,7 @@ export default function Admin_Conference() {
 
               </div>
 
-              {/* ============================================================
-                  STATUS
-              ============================================================ */}
+              {/* STATUS */}
 
               <div>
 
@@ -1103,13 +1272,10 @@ export default function Admin_Conference() {
                 </label>
 
                 <select
-                  value={
-                    formStatus
-                  }
+                  value={formStatus}
                   onChange={(e) =>
                     setFormStatus(
-                      e.target
-                        .value as ConferenceStatus
+                      e.target.value as ConferenceStatus
                     )
                   }
                   className="w-full border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 focus:outline-none bg-white"
@@ -1129,20 +1295,14 @@ export default function Admin_Conference() {
 
               </div>
 
-              {/* ============================================================
-                  BUTTONS
-              ============================================================ */}
+              {/* BUTTONS */}
 
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
 
                 <button
                   type="button"
-                  onClick={
-                    closeModal
-                  }
-                  disabled={
-                    submitting
-                  }
+                  onClick={closeModal}
+                  disabled={submitting}
                   className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   Cancel
@@ -1150,23 +1310,41 @@ export default function Admin_Conference() {
 
                 <button
                   type="submit"
-                  disabled={
-                    submitting
-                  }
+                  disabled={submitting}
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-rose-700 hover:bg-rose-800 disabled:opacity-60 text-white rounded-xl text-sm font-semibold shadow transition-colors"
                 >
 
                   {submitting ? (
                     <>
+
                       <RefreshCw className="w-4 h-4 animate-spin" />
 
-                      Saving...
+                      {editingConference
+                        ? "Updating..."
+                        : "Saving..."}
+
                     </>
                   ) : (
                     <>
-                      <Plus className="w-4 h-4" />
 
-                      Add Conference
+                      {editingConference ? (
+                        <>
+
+                          <Pencil className="w-4 h-4" />
+
+                          Update Conference
+
+                        </>
+                      ) : (
+                        <>
+
+                          <Plus className="w-4 h-4" />
+
+                          Add Conference
+
+                        </>
+                      )}
+
                     </>
                   )}
 

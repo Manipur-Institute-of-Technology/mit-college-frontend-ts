@@ -20,6 +20,7 @@ export type TeacherDataType = {
   _id?: string;
 
   firstName?: string;
+  middleName?: string;
   lastName?: string;
   namePrefix?: string;
 
@@ -383,7 +384,7 @@ const Teacher_Profile_View: React.FC<
           const fullName =
             `${teacher.namePrefix || ""} ${
               teacher.firstName || ""
-            } ${
+        } ${teacher.middleName || ""} ${
               teacher.lastName || ""
             }`
               .replace(/\s+/g, " ")
@@ -739,33 +740,6 @@ const Teacher_Profile_View: React.FC<
                         "
                       >
                         {email ||
-                          "N/A"}
-                      </p>
-
-                    </div>
-
-                    {/* PHONE */}
-
-                    <div>
-
-                      <p
-                        className="
-                          font-semibold
-                          text-gray-500
-                          text-xs
-                          uppercase
-                        "
-                      >
-                        Phone
-                      </p>
-
-                      <p
-                        className="
-                          font-medium
-                          text-gray-900
-                        "
-                      >
-                        {phone ||
                           "N/A"}
                       </p>
 

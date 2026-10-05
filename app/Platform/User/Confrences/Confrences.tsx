@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "~/utils/apiClient";
 import Informations from "~/Common/Informations/Informations";
+import Swal from "sweetalert2";
 import {
   ExternalLink,
   Globe,
@@ -30,35 +31,63 @@ function ConferenceCard({
   onLinkClick,
 }: {
   conf: Conference;
-  onLinkClick: (href: string) => void;
+  onLinkClick: (conf: Conference) => void;
 }) {
+  const isInactive = conf.status === "Inactive";
+
   return (
-    <div className="group relative flex items-start justify-between gap-4 bg-white border border-gray-200 hover:border-cyan-400 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300">
+    <div
+      className={`group relative flex items-start justify-between gap-4 bg-white border rounded-2xl p-5 shadow-sm transition-all duration-300 ${
+        isInactive
+          ? "border-gray-200 opacity-90"
+          : "border-gray-200 hover:border-cyan-400 hover:shadow-lg"
+      }`}
+    >
       {/* Left accent */}
-      <div className="absolute left-0 top-4 bottom-4 w-1 bg-cyan-500 rounded-r-full" />
+      <div
+        className={`absolute left-0 top-4 bottom-4 w-1 rounded-r-full ${
+          isInactive ? "bg-gray-400" : "bg-cyan-500"
+        }`}
+      />
 
       <div className="flex-1 pl-3">
-        {/* Category */}
-        <div className="mb-2">
+        {/* Category + Status */}
+        <div className="mb-2 flex flex-wrap items-center gap-2">
           <span
             className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-              conf.category === "International"
-                ? "bg-cyan-100 text-cyan-700"
+              isInactive
+                ? "bg-gray-100 text-gray-600"
                 : "bg-cyan-100 text-cyan-700"
             }`}
           >
             {conf.category}
           </span>
+
+          {isInactive && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+              Inactive
+            </span>
+          )}
         </div>
 
         {/* Title */}
-        <p className="font-bold text-gray-900 text-base md:text-lg leading-snug group-hover:text-cyan-700 transition-colors">
+        <p
+          className={`font-bold text-base md:text-lg leading-snug transition-colors ${
+            isInactive
+              ? "text-gray-600"
+              : "text-gray-900 group-hover:text-cyan-700"
+          }`}
+        >
           {conf.title}
         </p>
 
         {/* Date */}
         <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
-          <Calendar className="w-4 h-4 flex-shrink-0 text-cyan-500" />
+          <Calendar
+            className={`w-4 h-4 flex-shrink-0 ${
+              isInactive ? "text-gray-400" : "text-cyan-500"
+            }`}
+          />
           <span>{conf.date}</span>
         </div>
       </div>
@@ -66,13 +95,27 @@ function ConferenceCard({
       {/* Visit button */}
       <button
         type="button"
-        onClick={() => onLinkClick(conf.link)}
-        className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all whitespace-nowrap"
-        aria-label={`Visit conference: ${conf.title}`}
+        onClick={() => onLinkClick(conf)}
+        className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 text-white text-sm font-semibold rounded-xl shadow-sm transition-all whitespace-nowrap ${
+          isInactive
+            ? "bg-gray-400 hover:bg-gray-500"
+            : "bg-cyan-500 hover:bg-cyan-600 hover:shadow-md"
+        }`}
+        aria-label={
+          isInactive
+            ? `Conference ended: ${conf.title}`
+            : `Visit conference: ${conf.title}`
+        }
       >
-        <span className="hidden sm:inline">Visit</span>
+        <span className="hidden sm:inline">
+          {isInactive ? "Ended" : "Visit"}
+        </span>
 
-        <ArrowRight className="w-4 h-4" />
+        {isInactive ? (
+          <ExternalLink className="w-4 h-4" />
+        ) : (
+          <ArrowRight className="w-4 h-4" />
+        )}
       </button>
     </div>
   );
@@ -81,8 +124,7 @@ function ConferenceCard({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function Confrence() {
-  const [conferences, setConferences] =
-    useState<Conference[]>([]);
+  const [conferences, setConferences] = useState<Conference[]>([]);
 
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
@@ -98,6 +140,30 @@ export default function Confrence() {
     } catch {
       return false;
     }
+  };
+
+  // ─── Handle conference link click ──────────────────────────────────────────
+
+  const handleConferenceLink = (conference: Conference) => {
+    // Inactive conference
+    if (conference.status === "Inactive") {
+      Swal.fire({
+        icon: "info",
+        title: "Conference Ended",
+        text: "This conference is no longer active. The event period has ended, so the conference link is unavailable.",
+        confirmButtonText: "Okay",
+        confirmButtonColor: "#06b6d4",
+        customClass: {
+          popup: "rounded-xl",
+          confirmButton: "rounded-lg",
+        },
+      });
+
+      return;
+    }
+
+    // Active conference
+    setPendingHref(conference.link);
   };
 
   // ─── Handle external link confirmation ─────────────────────────────────────
@@ -145,17 +211,8 @@ export default function Confrence() {
           response.data?.data ??
           (Array.isArray(response.data) ? response.data : []);
 
-        // Only display active conferences
-        const active = data.filter(
-          (conference) => conference.status !== "Inactive"
-        );
-
-        /*
-         * If backend has data, use backend data.
-         * If backend returns no active data, show empty state
-         * instead of showing sample data.
-         */
-        setConferences(active);
+        // Keep BOTH active and inactive conferences
+        setConferences(data);
       } catch (error) {
         setConferences([]);
       } finally {
@@ -169,11 +226,20 @@ export default function Confrence() {
   // ─── Category filtering ────────────────────────────────────────────────────
 
   const international = conferences.filter(
-    (conference) => conference.category === "International"
+    (conference) =>
+      conference.category === "International" &&
+      conference.status !== "Inactive"
   );
 
   const national = conferences.filter(
-    (conference) => conference.category === "National"
+    (conference) =>
+      conference.category === "National" &&
+      conference.status !== "Inactive"
+  );
+
+  // All inactive conferences
+  const inactiveConferences = conferences.filter(
+    (conference) => conference.status === "Inactive"
   );
 
   // ─── Render ────────────────────────────────────────────────────────────────
@@ -227,7 +293,7 @@ export default function Confrence() {
                       <ConferenceCard
                         key={conference._id}
                         conf={conference}
-                        onLinkClick={setPendingHref}
+                        onLinkClick={handleConferenceLink}
                       />
                     ))}
                   </div>
@@ -263,9 +329,49 @@ export default function Confrence() {
                       <ConferenceCard
                         key={conference._id}
                         conf={conference}
-                        onLinkClick={setPendingHref}
+                        onLinkClick={handleConferenceLink}
                       />
                     ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Inactive Conferences */}
+              {inactiveConferences.length > 0 && (
+                <section className="pt-4">
+                  <div className="border-t border-gray-200 pt-8">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-xl">
+                        <Calendar className="w-5 h-5 text-gray-500" />
+                      </div>
+
+                      <div>
+                        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-700 uppercase border-l-4 border-gray-400 pl-3">
+                          Inactive Conferences
+                        </h2>
+
+                        <p className="text-sm text-gray-500">
+                          Previous conferences and completed events
+                        </p>
+                      </div>
+
+                      <span className="ml-auto text-xs bg-gray-100 text-gray-600 font-semibold px-3 py-1 rounded-full border border-gray-200">
+                        {inactiveConferences.length}{" "}
+                        {inactiveConferences.length === 1
+                          ? "entry"
+                          : "entries"}
+                      </span>
+                    </div>
+
+                    <div className="space-y-4">
+                      {inactiveConferences.map((conference) => (
+                        <ConferenceCard
+                          key={conference._id}
+                          conf={conference}
+                          onLinkClick={handleConferenceLink}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </section>
               )}

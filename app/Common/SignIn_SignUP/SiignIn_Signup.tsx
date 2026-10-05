@@ -68,21 +68,10 @@ type UserFormData = {
 };
 
 const facultyRoles = [
-  "principal",
-  "chairman",
-  "professor",
-  "guest professor",
-  "associate professor",
-  "guest lecturer",
-  "teaching assistant",
-  "male warden",
-  "female warden",
-  "dean",
-  "lab technician",
-  "administrative assistant",
-  "registrar",
-  "librarian",
-  "vice chancellor",
+  "Professor",
+  "Associate Professor",
+  "Assistant Professor",
+  "Guest Faculty",
 ];
 
 const inputClass =
@@ -133,6 +122,7 @@ export default function SignIn_SignUP({
   // =========================================================
   // AUTH
   // =========================================================
+  const [usernameWarning, setUsernameWarning] = useState<string>("");
 
   const {
     setToken,
@@ -354,36 +344,49 @@ export default function SignIn_SignUP({
   // HANDLE INPUT
   // =========================================================
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement |
-        HTMLSelectElement |
-        HTMLTextAreaElement
-    >
-  ) => {
-    const {
-      name,
-      value,
-      type,
-    } = e.target;
+const handleChange = (
+  e: React.ChangeEvent<
+    HTMLInputElement |
+      HTMLSelectElement |
+      HTMLTextAreaElement
+  >
+) => {
+  const {
+    name,
+    value,
+    type,
+  } = e.target;
 
-    if (type === "checkbox") {
-      const checkbox =
-        e.target as HTMLInputElement;
-
-      setFormData((previous) => ({
-        ...previous,
-        [name]: checkbox.checked,
-      }));
-
+  // Username validation
+  if (name === "username") {
+    if (!/^[A-Za-z]*$/.test(value)) {
+      setUsernameWarning(
+        "Only alphabets (A-Z and a-z) are allowed."
+      );
       return;
     }
 
+    // Remove warning when valid input is entered
+    setUsernameWarning("");
+  }
+
+  if (type === "checkbox") {
+    const checkbox =
+      e.target as HTMLInputElement;
+
     setFormData((previous) => ({
       ...previous,
-      [name]: value,
+      [name]: checkbox.checked,
     }));
-  };
+
+    return;
+  }
+
+  setFormData((previous) => ({
+    ...previous,
+    [name]: value,
+  }));
+};
 
   // =========================================================
   // PROFILE PHOTO
@@ -2193,20 +2196,22 @@ export default function SignIn_SignUP({
                         Username *
                       </label>
 
-                      <input
-                        name="username"
-                        value={
-                          formData.username
-                        }
-                        onChange={
-                          handleChange
-                        }
-                        placeholder="Enter username"
-                        required
-                        className={
-                          inputClass
-                        }
-                      />
+                      <div className="relative">
+                        <input
+                          name="username"
+                          value={formData.username}
+                          onChange={handleChange}
+                          placeholder="Enter username"
+                          required
+                          className={inputClass}
+                        />
+
+                        {usernameWarning && (
+                          <span className="absolute left-2 top-full z-10 mt-1 rounded bg-red-500 px-2 py-1 text-[11px] text-white shadow">
+                            {usernameWarning}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div>

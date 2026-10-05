@@ -60,16 +60,27 @@ export default function Admin_NIRF() {
   // LIST STATE
   // ============================================================
 
-  const [nirfList, setNirfList] = useState<NirfItem[]>(
-    []
-  );
+  const [nirfList, setNirfList] =
+    useState<NirfItem[]>([]);
 
   const [isLoading, setIsLoading] =
     useState(false);
 
-  const [nirfPage, setNirfPage] = useState(1);
+  const [nirfPage, setNirfPage] =
+    useState(1);
+
   const nirfPageSize = 10;
-  const safeNirfPage = Math.min(nirfPage, Math.max(1, Math.ceil(nirfList.length / nirfPageSize)));
+
+  const safeNirfPage = Math.min(
+    nirfPage,
+    Math.max(
+      1,
+      Math.ceil(
+        nirfList.length /
+          nirfPageSize
+      )
+    )
+  );
 
   // ============================================================
   // MODAL STATE
@@ -94,9 +105,12 @@ export default function Admin_NIRF() {
   const [formDescription, setFormDescription] =
     useState("");
 
-  const [formYear, setFormYear] = useState(
-    new Date().getFullYear().toString()
-  );
+  const [formYear, setFormYear] =
+    useState(
+      new Date()
+        .getFullYear()
+        .toString()
+    );
 
   const [resourceType, setResourceType] =
     useState<ResourceType>("link");
@@ -126,8 +140,49 @@ export default function Admin_NIRF() {
         response.data ??
         [];
 
+      // ========================================================
+      // NEWEST FIRST
+      // ========================================================
+      //
+      // Sort by createdAt in descending order:
+      //
+      // newest record  -> first
+      // oldest record  -> last
+      //
+      // [...data] prevents mutation of the original API array.
+      // ========================================================
+
+      const sortedData =
+        Array.isArray(data)
+          ? [...data].sort(
+              (a, b) =>
+                new Date(
+                  b.createdAt || 0
+                ).getTime() -
+                new Date(
+                  a.createdAt || 0
+                ).getTime()
+            )
+          : [];
+
       setNirfList(
-        Array.isArray(data) ? data : []
+        sortedData
+      );
+
+      // If the current page becomes invalid
+      // after refreshing/deleting records,
+      // return to the last valid page.
+      setNirfPage((currentPage) =>
+        Math.min(
+          currentPage,
+          Math.max(
+            1,
+            Math.ceil(
+              sortedData.length /
+                nirfPageSize
+            )
+          )
+        )
       );
     } catch (error: any) {
       const message =
@@ -147,7 +202,10 @@ export default function Admin_NIRF() {
   // ============================================================
 
   useEffect(() => {
-    if (token && role === "admin") {
+    if (
+      token &&
+      role === "admin"
+    ) {
       fetchNirfData();
     }
   }, [token, role]);
@@ -162,7 +220,9 @@ export default function Admin_NIRF() {
     setFormDescription("");
 
     setFormYear(
-      new Date().getFullYear().toString()
+      new Date()
+        .getFullYear()
+        .toString()
     );
 
     setResourceType("link");
@@ -257,9 +317,12 @@ export default function Admin_NIRF() {
     // ----------------------------------------------------------
 
     if (
-      item.resource.type === "link"
+      item.resource.type ===
+      "link"
     ) {
-      return item.resource.url || "";
+      return (
+        item.resource.url || ""
+      );
     }
 
     // ----------------------------------------------------------
@@ -274,8 +337,12 @@ export default function Admin_NIRF() {
     }
 
     if (
-      file.startsWith("http://") ||
-      file.startsWith("https://")
+      file.startsWith(
+        "http://"
+      ) ||
+      file.startsWith(
+        "https://"
+      )
     ) {
       return file;
     }
@@ -308,12 +375,18 @@ export default function Admin_NIRF() {
       const hostname =
         url.hostname
           .toLowerCase()
-          .replace(/^www\./, "");
+          .replace(
+            /^www\./,
+            ""
+          );
 
       const currentHostname =
         window.location.hostname
           .toLowerCase()
-          .replace(/^www\./, "");
+          .replace(
+            /^www\./,
+            ""
+          );
 
       const internalHosts =
         new Set([
@@ -692,12 +765,19 @@ export default function Admin_NIRF() {
           response.data?.data;
 
         if (createdItem) {
+          // ====================================================
+          // NEWEST ITEM AT TOP
+          // ====================================================
           setNirfList(
             (previous) => [
               createdItem,
               ...previous,
             ]
           );
+
+          // Make sure the user is on
+          // the first page after adding.
+          setNirfPage(1);
         } else {
           await fetchNirfData();
         }
@@ -754,10 +834,6 @@ export default function Admin_NIRF() {
     id: string,
     header: string
   ) => {
-    // ==========================================================
-    // SWEETALERT CONFIRMATION
-    // ==========================================================
-
     const result =
       await showAlert({
         title:
@@ -817,10 +893,6 @@ export default function Admin_NIRF() {
               item._id !== id
           )
       );
-
-      // ========================================================
-      // DELETE SUCCESS
-      // ========================================================
 
       await showAlert({
         title: "Deleted!",
@@ -919,8 +991,12 @@ export default function Admin_NIRF() {
 
               <button
                 type="button"
-                onClick={fetchNirfData}
-                disabled={isLoading}
+                onClick={
+                  fetchNirfData
+                }
+                disabled={
+                  isLoading
+                }
                 className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold disabled:opacity-50"
               >
 
@@ -995,7 +1071,7 @@ export default function Admin_NIRF() {
               </h2>
 
               <p className="text-xs text-gray-500 mt-0.5">
-                Manage NIRF records
+                Newest submissions appear first
               </p>
 
             </div>
@@ -1105,166 +1181,173 @@ export default function Admin_NIRF() {
 
                 <tbody className="divide-y divide-gray-200">
 
-                  {nirfList.slice((safeNirfPage - 1) * nirfPageSize, safeNirfPage * nirfPageSize).map(
-                    (item) => {
+                  {nirfList
+                    .slice(
+                      (safeNirfPage - 1) *
+                        nirfPageSize,
+                      safeNirfPage *
+                        nirfPageSize
+                    )
+                    .map(
+                      (item) => {
 
-                      const resourceUrl =
-                        getResourceUrl(
-                          item
-                        );
+                        const resourceUrl =
+                          getResourceUrl(
+                            item
+                          );
 
-                      return (
-                        <tr
-                          key={
-                            item._id
-                          }
-                          className="hover:bg-gray-50 transition-colors"
-                        >
+                        return (
+                          <tr
+                            key={
+                              item._id
+                            }
+                            className="hover:bg-gray-50 transition-colors"
+                          >
 
-                          {/* YEAR */}
+                            {/* YEAR */}
 
-                          <td className="px-5 py-4 align-top">
+                            <td className="px-5 py-4 align-top">
 
-                            <span className="inline-flex items-center gap-1.5 bg-cyan-50 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-lg text-xs font-bold">
+                              <span className="inline-flex items-center gap-1.5 bg-cyan-50 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-lg text-xs font-bold">
 
-                              <Calendar className="w-3.5 h-3.5" />
+                                <Calendar className="w-3.5 h-3.5" />
 
-                              {item.year ||
-                                "-"}
+                                {item.year ||
+                                  "-"}
 
-                            </span>
+                              </span>
 
-                          </td>
+                            </td>
 
-                          {/* HEADER */}
+                            {/* HEADER */}
 
-                          <td className="px-5 py-4 align-top">
+                            <td className="px-5 py-4 align-top">
 
-                            <div className="flex gap-2">
+                              <div className="flex gap-2">
 
-                              <Award className="w-4 h-4 text-rose-600 mt-0.5 flex-shrink-0" />
+                                <Award className="w-4 h-4 text-rose-600 mt-0.5 flex-shrink-0" />
 
-                              <p className="font-semibold text-gray-900 max-w-[280px] line-clamp-3">
+                                <p className="font-semibold text-gray-900 max-w-[280px] line-clamp-3">
 
-                                {item.header ||
+                                  {item.header ||
+                                    "-"}
+
+                                </p>
+
+                              </div>
+
+                            </td>
+
+                            {/* DESCRIPTION */}
+
+                            <td className="px-5 py-4 align-top">
+
+                              <p className="text-sm text-gray-600 max-w-[320px] line-clamp-3">
+
+                                {item.description ||
                                   "-"}
 
                               </p>
 
-                            </div>
+                            </td>
 
-                          </td>
+                            {/* RESOURCE */}
 
-                          {/* DESCRIPTION */}
+                            <td className="px-5 py-4 align-top">
 
-                          <td className="px-5 py-4 align-top">
+                              {resourceUrl ? (
 
-                            <p className="text-sm text-gray-600 max-w-[320px] line-clamp-3">
-
-                              {item.description ||
-                                "-"}
-
-                            </p>
-
-                          </td>
-
-                          {/* RESOURCE */}
-
-                          <td className="px-5 py-4 align-top">
-
-                            {resourceUrl ? (
-
-                              <a
-                                href={
-                                  resourceUrl
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 max-w-[220px] text-rose-700 hover:text-rose-900 text-sm font-semibold"
-                                title={
-                                  resourceUrl
-                                }
-                              >
-
-                                {item
-                                  .resource
-                                  ?.type ===
-                                "file" ? (
-                                  <FileText className="w-4 h-4 flex-shrink-0" />
-                                ) : (
-                                  <LinkIcon className="w-4 h-4 flex-shrink-0" />
-                                )}
-
-                                <span className="truncate">
+                                <a
+                                  href={
+                                    resourceUrl
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 max-w-[220px] text-rose-700 hover:text-rose-900 text-sm font-semibold"
+                                  title={
+                                    resourceUrl
+                                  }
+                                >
 
                                   {item
                                     .resource
                                     ?.type ===
-                                  "file"
-                                    ? "Open File"
-                                    : "Open Link"}
+                                  "file" ? (
+                                    <FileText className="w-4 h-4 flex-shrink-0" />
+                                  ) : (
+                                    <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                                  )}
 
+                                  <span className="truncate">
+
+                                    {item
+                                      .resource
+                                      ?.type ===
+                                    "file"
+                                      ? "Open File"
+                                      : "Open Link"}
+
+                                  </span>
+
+                                  <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+
+                                </a>
+
+                              ) : (
+
+                                <span className="text-xs text-gray-400">
+                                  No resource
                                 </span>
 
-                                <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+                              )}
 
-                              </a>
+                            </td>
 
-                            ) : (
+                            {/* ACTIONS */}
 
-                              <span className="text-xs text-gray-400">
-                                No resource
-                              </span>
+                            <td className="px-5 py-4 align-top">
 
-                            )}
+                              <div className="flex justify-end items-center gap-2">
 
-                          </td>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    openEditModal(
+                                      item
+                                    )
+                                  }
+                                  className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
+                                  title="Edit NIRF"
+                                >
 
-                          {/* ACTIONS */}
+                                  <Edit2 className="w-4 h-4" />
 
-                          <td className="px-5 py-4 align-top">
+                                </button>
 
-                            <div className="flex justify-end items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDelete(
+                                      item._id,
+                                      item.header
+                                    )
+                                  }
+                                  className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                                  title="Delete NIRF"
+                                >
 
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  openEditModal(
-                                    item
-                                  )
-                                }
-                                className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
-                                title="Edit NIRF"
-                              >
+                                  <Trash2 className="w-4 h-4" />
 
-                                <Edit2 className="w-4 h-4" />
+                                </button>
 
-                              </button>
+                              </div>
 
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleDelete(
-                                    item._id,
-                                    item.header
-                                  )
-                                }
-                                className="p-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
-                                title="Delete NIRF"
-                              >
+                            </td>
 
-                                <Trash2 className="w-4 h-4" />
-
-                              </button>
-
-                            </div>
-
-                          </td>
-
-                        </tr>
-                      );
-                    }
-                  )}
+                          </tr>
+                        );
+                      }
+                    )}
 
                 </tbody>
 
@@ -1273,7 +1356,21 @@ export default function Admin_NIRF() {
             </div>
 
           )}
-          <Pagination currentPage={safeNirfPage} totalItems={nirfList.length} pageSize={nirfPageSize} onPageChange={setNirfPage} />
+
+          <Pagination
+            currentPage={
+              safeNirfPage
+            }
+            totalItems={
+              nirfList.length
+            }
+            pageSize={
+              nirfPageSize
+            }
+            onPageChange={
+              setNirfPage
+            }
+          />
 
         </div>
 
@@ -1287,7 +1384,9 @@ export default function Admin_NIRF() {
 
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onMouseDown={(event) => {
+          onMouseDown={(
+            event
+          ) => {
 
             if (
               event.target ===
@@ -1301,7 +1400,9 @@ export default function Admin_NIRF() {
 
           <div
             className="bg-white w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl"
-            onMouseDown={(event) =>
+            onMouseDown={(
+              event
+            ) =>
               event.stopPropagation()
             }
           >

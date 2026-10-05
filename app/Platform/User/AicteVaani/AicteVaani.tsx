@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-
 import Informations from "~/Common/Informations/Informations";
-
-import apiClient, {
-  API_BASE_URL,
-} from "~/utils/apiClient";
-
+import apiClient, { API_BASE_URL } from "~/utils/apiClient";
 import {
   Calendar,
   Clock,
@@ -22,10 +17,14 @@ import {
   Sparkles,
   Layers,
 } from "lucide-react";
+import {
+  confirmExternalLink,
+  showAlert,
+} from "~/utils/alert_utils";
 
-import { confirmExternalLink } from "~/utils/alert_utils";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ============================================================
+// TYPES
+// ============================================================
 
 export type AttachmentOrLink = {
   id: number | string;
@@ -58,80 +57,30 @@ export type AicteVaaniItem = {
   updatedAt?: string;
 };
 
-// ─── External Link Helper ─────────────────────────────────────────────────────
+// ============================================================
+// HELPERS
+// ============================================================
 
 const isExternalLink = (url: string) => {
   try {
-    const linkUrl = new URL(url, window.location.origin);
-
-    return (
-      linkUrl.origin !==
-      window.location.origin
-    );
+    const target = new URL(url, window.location.origin);
+    return target.origin !== window.location.origin;
   } catch {
     return false;
   }
 };
 
-// ─── Open Link / File ─────────────────────────────────────────────────────────
+const getResourceUrl = (url: string) => {
+  if (!url) return "";
 
-const handleLinkClick = (url: string) => {
-  if (!url || url === "#") {
-    return;
-  }
-
-  if (isExternalLink(url)) {
-    confirmExternalLink({
-      title: "Leave this site?",
-      text: "You are being redirected to an external document / website.",
-      confirmButtonText: "Continue",
-      cancelButtonText: "Stay here",
-      confirmButtonColor: "#0891b2",
-      cancelButtonColor: "#ef4444",
-      customClass: {
-        popup: "rounded-xl",
-      },
-    }).then((confirmed) => {
-      if (confirmed) {
-        window.open(
-          url,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      }
-    });
-  } else {
-    window.open(
-      url,
-      "_blank",
-      "noopener,noreferrer"
-    );
-  }
-};
-
-// ─── Resource URL Helper ──────────────────────────────────────────────────────
-
-const getResourceUrl = (
-  url: string
-): string => {
-  if (!url) {
-    return "";
-  }
-
-  // Already absolute URL
-  if (
-    url.startsWith("http://") ||
-    url.startsWith("https://")
-  ) {
+  if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
 
-  // Protocol-relative URL
   if (url.startsWith("//")) {
     return `https:${url}`;
   }
 
-  // Relative URL
   if (url.startsWith("/")) {
     return `${API_BASE_URL}${url}`;
   }
@@ -139,715 +88,900 @@ const getResourceUrl = (
   return `${API_BASE_URL}/${url}`;
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
 
-export default function AicteVaani() {
-  const [items, setItems] =
-    useState<AicteVaaniItem[]>([]);
+export default function AicteVaaniPage() {
+  const [items, setItems] = useState<AicteVaaniItem[]>([]);
+  const [selectedId, setSelectedId] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [selectedId, setSelectedId] =
-    useState<string>("");
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState<string>("");
-
-  // ────────────────────────────────────────────────────────────────────────────
-  // FETCH AICTE-VAANI DATA
-  // ────────────────────────────────────────────────────────────────────────────
+  // ============================================================
+  // FETCH AICTE-VAANI
+  // ============================================================
 
   useEffect(() => {
-    let mounted = true;
+    const fetchAicteVaani = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    const fetchAicteVaani =
-      async () => {
-        try {
-          setLoading(true);
-          setError("");
+        const response = await apiClient.get("/aicte-vaani");
 
-          const response =
-            await apiClient.get(
-              "/aicte-vaani"
-            );
+        const data = response.data?.data;
 
-          if (!mounted) {
-            return;
-          }
+        const fetchedItems: AicteVaaniItem[] = Array.isArray(data)
+          ? data
+          : [];
 
-          const data =
-            response.data?.data;
+        // --------------------------------------------------------
+        // Sort latest event first
+        // --------------------------------------------------------
 
-          const fetchedItems: AicteVaaniItem[] =
-            Array.isArray(data)
-              ? data
-              : [];
+        const sortedItems = [...fetchedItems].sort((a, b) => {
+          const dateA = new Date(
+            a.updatedAt || a.createdAt || 0
+          ).getTime();
 
-          // Only show Active records publicly
-          const activeItems =
-            fetchedItems.filter(
-              (item) =>
-                item.status !==
-                "Inactive"
-            );
+          const dateB = new Date(
+            b.updatedAt || b.createdAt || 0
+          ).getTime();
 
-          setItems(
-            activeItems
-          );
+          return dateB - dateA;
+        });
 
-          if (
-            activeItems.length >
-            0
-          ) {
-            setSelectedId(
-              activeItems[0]._id
-            );
-          } else {
-            setSelectedId("");
-          }
-        } catch (err: any) {
-          if (!mounted) {
-            return;
-          }
+        setItems(sortedItems);
 
-          const message =
-            err?.response?.data
-              ?.error ||
-            err?.response?.data
-              ?.message ||
-            err?.message ||
-            "Failed to fetch AICTE-VAANI events.";
+        // --------------------------------------------------------
+        // Automatically select the latest event
+        // --------------------------------------------------------
 
-          setError(message);
-          setItems([]);
+        if (sortedItems.length > 0) {
+          setSelectedId(sortedItems[0]._id);
+        } else {
           setSelectedId("");
-        } finally {
-          if (mounted) {
-            setLoading(false);
-          }
         }
-      };
+      } catch (err) {
+        console.error("Failed to fetch AICTE-VAANI:", err);
+        setError("Unable to load AICTE-VAANI information.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchAicteVaani();
-
-    return () => {
-      mounted = false;
-    };
   }, []);
 
-  // ────────────────────────────────────────────────────────────────────────────
-  // CURRENT ITEM
-  // ────────────────────────────────────────────────────────────────────────────
+  // ============================================================
+  // SELECTED EVENT
+  // ============================================================
 
   const currentItem =
-    items.find(
-      (item) =>
-        item._id === selectedId
-    ) ||
+    items.find((item) => item._id === selectedId) ||
     items[0] ||
     null;
 
-  // ────────────────────────────────────────────────────────────────────────────
-  // RENDER
-  // ────────────────────────────────────────────────────────────────────────────
+  const isInactive = currentItem?.status === "Inactive";
 
-  return (
-    <>
-      <div className="min-h-screen space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
+  // ============================================================
+  // LINK HANDLER
+  // ============================================================
 
-        {/* ================================================================
-            PAGE BANNER
-        ================================================================ */}
+  const handleLinkClick = async (
+    url: string,
+    inactive = false
+  ) => {
+    if (!url || url === "#") {
+      return;
+    }
 
-        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
-          AICTE-VAANI
-        </div>
+    // ----------------------------------------------------------
+    // Inactive event
+    // ----------------------------------------------------------
 
-        {/* ================================================================
-            EVENT SELECTOR
-        ================================================================ */}
+    if (inactive) {
+      await showAlert({
+        title: "Event Has Ended",
+        text: "This AICTE-VAANI event is no longer active. The event period has ended and its resources are currently unavailable.",
+        icon: "info",
+        confirmButtonColor: "#0891b2",
+      });
 
-        {!loading &&
-          items.length > 1 && (
-            <div className="bg-white border-b border-gray-200 py-3 px-4 shadow-sm">
+      return;
+    }
 
-              <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+    // ----------------------------------------------------------
+    // External link
+    // ----------------------------------------------------------
 
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+    if (isExternalLink(url)) {
+      const confirmed = await confirmExternalLink({
+        title: "Leave this site?",
+        text: "You are being redirected to an external document / website.",
+        confirmButtonText: "Continue",
+        cancelButtonText: "Stay here",
+        confirmButtonColor: "#22c55e",
+        cancelButtonColor: "#ef4444",
+        customClass: {
+          popup: "rounded-xl",
+        },
+      });
 
-                  <Layers className="w-4 h-4 text-cyan-600" />
+      if (confirmed) {
+        window.open(
+          url,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
 
-                  <span>
-                    Select Workshop / Event:
-                  </span>
+      return;
+    }
 
+    // ----------------------------------------------------------
+    // Same-origin / backend resource
+    // ----------------------------------------------------------
+
+    window.open(
+      url,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  // ============================================================
+  // EVENT CARD
+  // ============================================================
+
+  const EventCard = ({
+    event,
+    inactive = false,
+  }: {
+    event: AicteVaaniItem;
+    inactive?: boolean;
+  }) => {
+    return (
+      <div
+        className={`rounded-2xl border overflow-hidden transition-all duration-300 ${
+          inactive
+            ? "border-gray-300 bg-gray-100 opacity-75"
+            : "border-gray-200 bg-white shadow-sm"
+        }`}
+      >
+        {/* ======================================================
+            HEADER
+        ====================================================== */}
+
+        <div
+          className={`px-6 py-5 border-b ${
+            inactive
+              ? "bg-gray-200 border-gray-300"
+              : "bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-100"
+          }`}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div
+                  className={`p-2.5 rounded-xl ${
+                    inactive
+                      ? "bg-gray-300 text-gray-500"
+                      : "bg-cyan-100 text-cyan-700"
+                  }`}
+                >
+                  <Sparkles size={22} />
                 </div>
 
-                <select
-                  id="vaani-select"
-                  value={
-                    selectedId
-                  }
-                  onChange={(e) =>
-                    setSelectedId(
-                      e.target.value
-                    )
-                  }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-semibold rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-cyan-500 focus:outline-none max-w-full sm:max-w-md truncate cursor-pointer"
-                >
-                  <option value="all">
-                    View All Events (
-                    {items.length}
-                    )
-                  </option>
+                <div>
+                  <h2
+                    className={`text-xl md:text-2xl font-bold ${
+                      inactive
+                        ? "text-gray-500"
+                        : "text-gray-800"
+                    }`}
+                  >
+                    {event.header}
+                  </h2>
 
-                  {items.map(
-                    (
-                      event,
-                      index
-                    ) => (
-                      <option
-                        key={
-                          event._id
-                        }
-                        value={
-                          event._id
-                        }
-                      >
-                        {index + 1}.{" "}
-                        {
-                          event.topic
-                        }
-                      </option>
-                    )
+                  {event.topic && (
+                    <p
+                      className={`mt-1 font-medium ${
+                        inactive
+                          ? "text-gray-500"
+                          : "text-cyan-700"
+                      }`}
+                    >
+                      {event.topic}
+                    </p>
                   )}
-                </select>
-
+                </div>
               </div>
 
-            </div>
-          )}
+              {/* ==================================================
+                  STATUS BADGE
+              ================================================== */}
 
-        {/* ================================================================
-            CONTENT
-        ================================================================ */}
-
-        <div className="max-w-5xl w-full mx-auto space-y-6 sm:space-y-8">
-
-          {/* LOADING */}
-
-          {loading && (
-            <div className="text-center py-16">
-
-              <div className="inline-flex items-center gap-3 text-gray-500 font-medium">
-
-                <div className="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-
-                Loading AICTE-VAANI details...
-
-              </div>
-
-            </div>
-          )}
-
-          {/* ERROR */}
-
-          {!loading &&
-            error && (
-              <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
-
-                <FileText className="w-10 h-10 mx-auto text-red-300" />
-
-                <h3 className="font-semibold text-gray-800 mt-4">
-                  Unable to load AICTE-VAANI
-                </h3>
-
-                <p className="text-sm text-red-500 mt-2">
-                  {error}
-                </p>
-
-              </div>
-            )}
-
-          {/* NO DATA */}
-
-          {!loading &&
-            !error &&
-            items.length === 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-500">
-
-                <FileText className="w-10 h-10 mx-auto text-gray-300" />
-
-                <h3 className="font-semibold text-gray-700 mt-4">
-                  No AICTE-VAANI events listed currently.
-                </h3>
-
-                <p className="text-sm text-gray-400 mt-2">
-                  Please check back later for upcoming events.
-                </p>
-
-              </div>
-            )}
-
-          {/* ALL EVENTS */}
-
-          {!loading &&
-            !error &&
-            items.length > 0 &&
-            selectedId ===
-              "all" &&
-            items.map(
-              (event) => (
-                <EventCard
-                  key={
-                    event._id
-                  }
-                  event={
-                    event
-                  }
+              <span
+                className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                  inactive
+                    ? "bg-gray-400 text-white"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    inactive
+                      ? "bg-white"
+                      : "bg-green-500"
+                  }`}
                 />
-              )
-            )}
 
-          {/* SELECTED EVENT */}
+                {inactive ? "Inactive" : "Active"}
+              </span>
+            </div>
+          </div>
+        </div>
 
-          {!loading &&
-            !error &&
-            items.length > 0 &&
-            selectedId !==
-              "all" &&
-            currentItem && (
-              <EventCard
-                event={
-                  currentItem
+        {/* ======================================================
+            EVENT DETAILS
+        ====================================================== */}
+
+        <div
+          className={`p-6 ${
+            inactive
+              ? "text-gray-500"
+              : "text-gray-700"
+          }`}
+        >
+          {/* ====================================================
+              DATE / TIME / VENUE
+          ==================================================== */}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {/* Date */}
+
+            <div
+              className={`flex items-start gap-3 p-4 rounded-xl ${
+                inactive
+                  ? "bg-gray-200"
+                  : "bg-gray-50"
+              }`}
+            >
+              <Calendar
+                size={20}
+                className={
+                  inactive
+                    ? "text-gray-400"
+                    : "text-cyan-600"
                 }
               />
-            )}
 
-        </div>
-      </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  Date
+                </p>
 
-      <Informations />
-    </>
-  );
-}
+                <p
+                  className={`mt-1 font-medium ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-700"
+                  }`}
+                >
+                  {event.dates || "—"}
+                </p>
+              </div>
+            </div>
 
-// ─── Event Card ───────────────────────────────────────────────────────────────
+            {/* Time */}
 
-function EventCard({
-  event,
-}: {
-  event: AicteVaaniItem;
-}) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden space-y-6 p-6 sm:p-8">
+            <div
+              className={`flex items-start gap-3 p-4 rounded-xl ${
+                inactive
+                  ? "bg-gray-200"
+                  : "bg-gray-50"
+              }`}
+            >
+              <Clock
+                size={20}
+                className={
+                  inactive
+                    ? "text-gray-400"
+                    : "text-cyan-600"
+                }
+              />
 
-      {/* ================================================================
-          HEADER & TOPIC
-      ================================================================ */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  Time
+                </p>
 
-      <div className="space-y-3">
+                <p
+                  className={`mt-1 font-medium ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-700"
+                  }`}
+                >
+                  {event.time || "—"}
+                </p>
+              </div>
+            </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-100 text-cyan-800 rounded-full text-xs font-bold uppercase tracking-wider">
+            {/* Venue */}
 
-          <Sparkles className="w-3.5 h-3.5" />
+            <div
+              className={`flex items-start gap-3 p-4 rounded-xl ${
+                inactive
+                  ? "bg-gray-200"
+                  : "bg-gray-50"
+              }`}
+            >
+              <MapPin
+                size={20}
+                className={
+                  inactive
+                    ? "text-gray-400"
+                    : "text-cyan-600"
+                }
+              />
 
-          {event.header ||
-            "AICTE-VAANI WORKSHOP"}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  Venue
+                </p>
 
-        </div>
-
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight">
-          {event.topic}
-        </h1>
-
-      </div>
-
-      {/* ================================================================
-          EVENT INFORMATION BAR
-      ================================================================ */}
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-cyan-50/70 border border-cyan-100 rounded-xl p-4 text-sm">
-
-        {/* DATE */}
-
-        <div className="flex items-center gap-3">
-
-          <Calendar className="w-5 h-5 text-cyan-600 flex-shrink-0" />
-
-          <div>
-
-            <span className="text-xs text-gray-500 uppercase font-semibold block">
-              Dates
-            </span>
-
-            <span className="font-semibold text-gray-800">
-              {event.dates ||
-                "-"}
-            </span>
-
+                <p
+                  className={`mt-1 font-medium ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-700"
+                  }`}
+                >
+                  {event.venue || "—"}
+                </p>
+              </div>
+            </div>
           </div>
 
-        </div>
+          {/* ====================================================
+              INFORMATION
+          ==================================================== */}
 
-        {/* TIME */}
+          {event.information && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Layers
+                  size={20}
+                  className={
+                    inactive
+                      ? "text-gray-400"
+                      : "text-cyan-600"
+                  }
+                />
 
-        <div className="flex items-center gap-3">
+                <h3
+                  className={`text-lg font-bold ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Information
+                </h3>
+              </div>
 
-          <Clock className="w-5 h-5 text-cyan-600 flex-shrink-0" />
+              <div
+                className={`rounded-xl p-5 leading-relaxed whitespace-pre-line ${
+                  inactive
+                    ? "bg-gray-200 text-gray-500"
+                    : "bg-gray-50 text-gray-700"
+                }`}
+              >
+                {event.information}
+              </div>
+            </div>
+          )}
 
-          <div>
+          {/* ====================================================
+              ATTACHMENTS
+          ==================================================== */}
 
-            <span className="text-xs text-gray-500 uppercase font-semibold block">
-              Time
-            </span>
+          {event.attachments?.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Paperclip
+                  size={20}
+                  className={
+                    inactive
+                      ? "text-gray-400"
+                      : "text-cyan-600"
+                  }
+                />
 
-            <span className="font-semibold text-gray-800">
-              {event.time ||
-                "-"}
-            </span>
+                <h3
+                  className={`text-lg font-bold ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Attachments
+                </h3>
+              </div>
 
-          </div>
-
-        </div>
-
-        {/* VENUE */}
-
-        <div className="flex items-center gap-3">
-
-          <MapPin className="w-5 h-5 text-cyan-600 flex-shrink-0" />
-
-          <div>
-
-            <span className="text-xs text-gray-500 uppercase font-semibold block">
-              Venue
-            </span>
-
-            <span className="font-semibold text-gray-800">
-              {event.venue ||
-                "-"}
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* ================================================================
-          DETAILED INFORMATION
-      ================================================================ */}
-
-      {event.information && (
-        <div className="space-y-3 pt-2">
-
-          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
-
-            <FileText className="w-5 h-5 text-cyan-600" />
-
-            About the Event
-
-          </h2>
-
-          <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-            {event.information}
-          </div>
-
-        </div>
-      )}
-
-      {/* ================================================================
-          ATTACHMENTS
-      ================================================================ */}
-
-      {Array.isArray(
-        event.attachments
-      ) &&
-        event.attachments
-          .length > 0 && (
-          <div className="space-y-3 pt-2">
-
-            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
-
-              <Paperclip className="w-5 h-5 text-cyan-600" />
-
-              Attachments
-
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-              {event.attachments.map(
-                (
-                  attachment,
-                  index
-                ) => {
-
-                  const url =
-                    getResourceUrl(
-                      attachment.url
-                    );
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {event.attachments.map((attachment) => {
+                  const url = getResourceUrl(
+                    attachment.url
+                  );
 
                   return (
                     <button
-                      key={
-                        attachment.id ||
-                        index
-                      }
+                      key={attachment.id}
                       type="button"
                       onClick={() =>
                         handleLinkClick(
-                          url
+                          url,
+                          inactive
                         )
                       }
-                      className="flex items-center justify-between gap-3 p-4 bg-gray-50 hover:bg-cyan-50 border border-gray-200 hover:border-cyan-300 rounded-xl transition-all text-left group"
+                      className={`group flex items-center justify-between gap-3 p-4 rounded-xl border text-left transition ${
+                        inactive
+                          ? "bg-gray-200 border-gray-300 text-gray-500 cursor-pointer"
+                          : "bg-white border-gray-200 hover:border-cyan-300 hover:bg-cyan-50"
+                      }`}
                     >
-
                       <div className="flex items-center gap-3 min-w-0">
-
-                        <FileText className="w-5 h-5 text-cyan-600 group-hover:scale-110 transition-transform flex-shrink-0" />
-
-                        <span className="text-sm font-semibold text-gray-800 group-hover:text-cyan-800 truncate">
-                          {
-                            attachment.title
+                        <FileText
+                          size={20}
+                          className={
+                            inactive
+                              ? "text-gray-400"
+                              : "text-cyan-600"
                           }
-                        </span>
+                        />
 
+                        <span className="font-medium truncate">
+                          {attachment.title}
+                        </span>
                       </div>
 
-                      <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-cyan-600 flex-shrink-0" />
-
+                      <ExternalLink
+                        size={17}
+                        className="shrink-0"
+                      />
                     </button>
                   );
-                }
-              )}
-
+                })}
+              </div>
             </div>
+          )}
 
-          </div>
-        )}
+          {/* ====================================================
+              IMPORTANT LINKS
+          ==================================================== */}
 
-      {/* ================================================================
-          IMPORTANT LINKS
-      ================================================================ */}
+          {event.extraLinks?.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Bookmark
+                  size={20}
+                  className={
+                    inactive
+                      ? "text-gray-400"
+                      : "text-cyan-600"
+                  }
+                />
 
-      {Array.isArray(
-        event.extraLinks
-      ) &&
-        event.extraLinks
-          .length > 0 && (
-          <div className="space-y-3 pt-2">
+                <h3
+                  className={`text-lg font-bold ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Important Links
+                </h3>
+              </div>
 
-            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
-
-              <Bookmark className="w-5 h-5 text-cyan-600" />
-
-              Important Links
-
-            </h2>
-
-            <div className="space-y-2">
-
-              {event.extraLinks.map(
-                (
-                  link,
-                  index
-                ) => {
-
-                  const url =
-                    getResourceUrl(
-                      link.url
-                    );
+              <div className="flex flex-wrap gap-3">
+                {event.extraLinks.map((link) => {
+                  const url = getResourceUrl(link.url);
 
                   return (
                     <button
-                      key={
-                        link.id ||
-                        index
-                      }
+                      key={link.id}
                       type="button"
                       onClick={() =>
                         handleLinkClick(
-                          url
+                          url,
+                          inactive
                         )
                       }
-                      className="w-full flex items-center justify-between gap-3 p-3 bg-white hover:bg-cyan-50 border border-gray-200 hover:border-cyan-300 rounded-xl transition-all text-left group"
+                      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition ${
+                        inactive
+                          ? "bg-gray-300 text-gray-500"
+                          : "bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
+                      }`}
                     >
+                      {link.title}
 
-                      <span className="text-sm font-semibold text-cyan-700 group-hover:underline truncate">
-                        {
-                          link.title
-                        }
-                      </span>
-
-                      <ExternalLink className="w-4 h-4 text-cyan-600 flex-shrink-0" />
-
+                      <ExternalLink size={16} />
                     </button>
                   );
-                }
-              )}
-
+                })}
+              </div>
             </div>
+          )}
 
+          {/* ====================================================
+              CONTACT
+          ==================================================== */}
+
+          {event.contact && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <User
+                  size={20}
+                  className={
+                    inactive
+                      ? "text-gray-400"
+                      : "text-cyan-600"
+                  }
+                />
+
+                <h3
+                  className={`text-lg font-bold ${
+                    inactive
+                      ? "text-gray-500"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Contact Information
+                </h3>
+              </div>
+
+              <div
+                className={`rounded-xl p-5 ${
+                  inactive
+                    ? "bg-gray-200"
+                    : "bg-gray-50"
+                }`}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Coordinator */}
+
+                  {event.contact.coordinator && (
+                    <div className="flex items-start gap-3">
+                      <User
+                        size={18}
+                        className={
+                          inactive
+                            ? "text-gray-400"
+                            : "text-cyan-600"
+                        }
+                      />
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase">
+                          Coordinator
+                        </p>
+
+                        <p
+                          className={
+                            inactive
+                              ? "text-gray-500"
+                              : "text-gray-700"
+                          }
+                        >
+                          {event.contact.coordinator}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Co-Coordinator */}
+
+                  {event.contact.coCoordinator && (
+                    <div className="flex items-start gap-3">
+                      <User
+                        size={18}
+                        className={
+                          inactive
+                            ? "text-gray-400"
+                            : "text-cyan-600"
+                        }
+                      />
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase">
+                          Co-Coordinator
+                        </p>
+
+                        <p
+                          className={
+                            inactive
+                              ? "text-gray-500"
+                              : "text-gray-700"
+                          }
+                        >
+                          {event.contact.coCoordinator}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Department */}
+
+                  {event.contact.department && (
+                    <div className="flex items-start gap-3">
+                      <Building
+                        size={18}
+                        className={
+                          inactive
+                            ? "text-gray-400"
+                            : "text-cyan-600"
+                        }
+                      />
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase">
+                          Department
+                        </p>
+
+                        <p
+                          className={
+                            inactive
+                              ? "text-gray-500"
+                              : "text-gray-700"
+                          }
+                        >
+                          {event.contact.department}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Website */}
+
+                  {event.contact.website && (
+                    <div className="flex items-start gap-3">
+                      <Globe
+                        size={18}
+                        className={
+                          inactive
+                            ? "text-gray-400"
+                            : "text-cyan-600"
+                        }
+                      />
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase">
+                          Website
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleLinkClick(
+                              getResourceUrl(
+                                event.contact
+                                  .website || ""
+                              ),
+                              inactive
+                            )
+                          }
+                          className={`font-medium break-all text-left ${
+                            inactive
+                              ? "text-gray-500"
+                              : "text-cyan-700 hover:underline"
+                          }`}
+                        >
+                          {event.contact.website}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Email */}
+
+                  {event.contact.email && (
+                    <div className="flex items-start gap-3">
+                      <Mail
+                        size={18}
+                        className={
+                          inactive
+                            ? "text-gray-400"
+                            : "text-cyan-600"
+                        }
+                      />
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase">
+                          Email
+                        </p>
+
+                        <a
+                          href={`mailto:${event.contact.email}`}
+                          className={
+                            inactive
+                              ? "text-gray-500"
+                              : "text-cyan-700 hover:underline"
+                          }
+                        >
+                          {event.contact.email}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Phone */}
+
+                  {event.contact.phone && (
+                    <div className="flex items-start gap-3">
+                      <Phone
+                        size={18}
+                        className={
+                          inactive
+                            ? "text-gray-400"
+                            : "text-cyan-600"
+                        }
+                      />
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase">
+                          Phone
+                        </p>
+
+                        <a
+                          href={`tel:${event.contact.phone}`}
+                          className={
+                            inactive
+                              ? "text-gray-500"
+                              : "text-cyan-700 hover:underline"
+                          }
+                        >
+                          {event.contact.phone}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ============================================================
+  // RENDER
+  // ============================================================
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* ========================================================
+          PAGE HEADER
+      ======================================================== */}
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        {/* ======================================================
+            LOADING
+        ====================================================== */}
+
+        {loading && (
+          <div className="flex justify-center py-16">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-cyan-200 border-t-cyan-600" />
           </div>
         )}
 
-      {/* ================================================================
-          CONTACT INFORMATION
-      ================================================================ */}
+        {/* ======================================================
+            ERROR
+        ====================================================== */}
 
-      {event.contact && (
-        <div className="space-y-3 pt-4 border-t border-gray-200 bg-gray-50/60 rounded-xl p-5">
-
-          <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 flex items-center gap-2 border-l-4 border-cyan-400 pl-3">
-
-            <User className="w-5 h-5 text-cyan-600" />
-
-            Contact Details
-
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-gray-700">
-
-            {/* COORDINATOR */}
-
-            {event.contact
-              .coordinator && (
-              <div>
-
-                <span className="font-bold text-gray-900 block">
-                  Coordinator:
-                </span>
-
-                <span>
-                  {
-                    event
-                      .contact
-                      .coordinator
-                  }
-                </span>
-
-              </div>
-            )}
-
-            {/* CO-COORDINATOR */}
-
-            {event.contact
-              .coCoordinator && (
-              <div>
-
-                <span className="font-bold text-gray-900 block">
-                  Co-Coordinator:
-                </span>
-
-                <span>
-                  {
-                    event
-                      .contact
-                      .coCoordinator
-                  }
-                </span>
-
-              </div>
-            )}
-
-            {/* DEPARTMENT */}
-
-            {event.contact
-              .department && (
-              <div className="flex items-center gap-2">
-
-                <Building className="w-4 h-4 text-cyan-600 flex-shrink-0" />
-
-                <span>
-                  {
-                    event
-                      .contact
-                      .department
-                  }
-                </span>
-
-              </div>
-            )}
-
-            {/* PHONE */}
-
-            {event.contact
-              .phone && (
-              <div className="flex items-center gap-2">
-
-                <Phone className="w-4 h-4 text-cyan-600 flex-shrink-0" />
-
-                <a
-                  href={`tel:${event.contact.phone}`}
-                  className="hover:underline"
-                >
-                  {
-                    event
-                      .contact
-                      .phone
-                  }
-                </a>
-
-              </div>
-            )}
-
-            {/* EMAIL */}
-
-            {event.contact
-              .email && (
-              <div className="flex items-center gap-2 min-w-0">
-
-                <Mail className="w-4 h-4 text-cyan-600 flex-shrink-0" />
-
-                <a
-                  href={`mailto:${event.contact.email}`}
-                  className="hover:underline text-cyan-700 truncate"
-                >
-                  {
-                    event
-                      .contact
-                      .email
-                  }
-                </a>
-
-              </div>
-            )}
-
-            {/* WEBSITE */}
-
-            {event.contact
-              .website && (
-              <div className="flex items-center gap-2">
-
-                <Globe className="w-4 h-4 text-cyan-600 flex-shrink-0" />
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleLinkClick(
-                      getResourceUrl(
-                        event
-                          .contact
-                          .website ||
-                          ""
-                      )
-                    )
-                  }
-                  className="hover:underline text-cyan-700 font-semibold"
-                >
-                  Website Link
-                </button>
-
-              </div>
-            )}
-
+        {!loading && error && (
+          <div className="rounded-xl bg-red-50 border border-red-200 text-red-700 p-5 text-center">
+            {error}
           </div>
+        )}
 
-        </div>
-      )}
+        {/* ======================================================
+            NO DATA
+        ====================================================== */}
 
+        {!loading && !error && items.length === 0 && (
+          <div className="rounded-xl bg-gray-50 border border-gray-200 p-10 text-center">
+            <Sparkles
+              size={40}
+              className="mx-auto text-gray-400 mb-3"
+            />
+
+            <h2 className="text-lg font-semibold text-gray-700">
+              No AICTE-VAANI events available
+            </h2>
+
+            <p className="text-gray-500 mt-1">
+              Please check again later.
+            </p>
+          </div>
+        )}
+
+        {/* ======================================================
+            EVENT SELECTION
+        ====================================================== */}
+
+        {!loading && !error && items.length > 0 && (
+          <>
+            <div className="mb-6">
+              <label
+                htmlFor="aicte-vaani-event"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Select AICTE-VAANI Event
+              </label>
+
+              <div className="relative">
+                <select
+                  id="aicte-vaani-event"
+                  value={selectedId}
+                  onChange={(e) =>
+                    setSelectedId(e.target.value)
+                  }
+                  className="w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-3.5 pr-10 text-gray-700 font-medium shadow-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                >
+                  {items.map((item) => {
+                    const inactive =
+                      item.status === "Inactive";
+
+                    return (
+                      <option
+                        key={item._id}
+                        value={item._id}
+                      >
+                        {item.topic ||
+                          item.header ||
+                          "AICTE-VAANI Event"}
+                        {inactive
+                          ? " (Inactive)"
+                          : ""}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* ==================================================
+                SELECTED EVENT
+            ================================================== */}
+
+            {currentItem && (
+              <EventCard
+                event={currentItem}
+                inactive={isInactive}
+              />
+            )}
+          </>
+        )}
+      </div>
+      <Informations/>
     </div>
   );
 }

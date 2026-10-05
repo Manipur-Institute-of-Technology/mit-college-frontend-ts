@@ -14,7 +14,7 @@ import {
 
 import { useAuth } from "~/context/AuthContext";
 import SignIn_SignUP from "~/Common/SignIn_SignUP/SiignIn_Signup";
-import apiClient, {  API_BASE_URL,} from "~/utils/apiClient";
+import apiClient, { API_BASE_URL } from "~/utils/apiClient";
 
 export type AuthorityItem = {
   _id: string;
@@ -233,12 +233,10 @@ export default function Admin_Authority() {
       return;
     }
 
-    if (!bios.trim()) {
-      toast.error(
-        "Biography is required."
-      );
-      return;
-    }
+    /*
+     * Biography is optional.
+     * No validation is required here.
+     */
 
     /*
      * Photo required only when creating
@@ -303,6 +301,12 @@ export default function Admin_Authority() {
       info.trim()
     );
 
+    /*
+     * Biography is optional.
+     * Empty biography will simply be sent as
+     * an empty string.
+     */
+
     formData.append(
       "bios",
       bios.trim()
@@ -316,9 +320,9 @@ export default function Admin_Authority() {
     }
 
     /*
-     * ==========================================================
+     * ============================================================
      * API
-     * ==========================================================
+     * ============================================================
      */
 
     try {
@@ -697,7 +701,9 @@ export default function Admin_Authority() {
         : `${API_BASE_URL}/uploads/authority/${item.photo}`
       : "";
 
-    /*`${API_BASE_URL}/uploads/faculty/${faculty.photoId}`
+      console.log(item)
+
+    /*
      * ========================================================
      * CARD
      * ========================================================
@@ -754,9 +760,15 @@ export default function Admin_Authority() {
             Biography
           </h4>
 
-          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-            {item.bios}
-          </p>
+          {item.bios?.trim() ? (
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+              {item.bios}
+            </p>
+          ) : (
+            <p className="text-sm text-gray-400 italic">
+              No biography provided.
+            </p>
+          )}
         </div>
 
         {/* ACTIONS */}
@@ -998,7 +1010,7 @@ Chairman, Governing Body of MIT`}
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                    Detailed Biography *
+                    Detailed Biography
                   </label>
 
                   <textarea
@@ -1010,7 +1022,6 @@ Chairman, Governing Body of MIT`}
                     }
                     placeholder="Enter biography..."
                     className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-500"
-                    required
                   />
                 </div>
 

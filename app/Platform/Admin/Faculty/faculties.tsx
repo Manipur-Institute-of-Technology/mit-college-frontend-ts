@@ -11,7 +11,10 @@ import {
 } from "react-icons/fa";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import { confirmExternalLink, showAlert } from "~/utils/alert_utils";
+import {
+  confirmExternalLink,
+  showAlert,
+} from "~/utils/alert_utils";
 
 import Pagination from "../Pagination";
 import "./faculties.css";
@@ -211,6 +214,89 @@ const getFacultyRole = (
 };
 
 // =========================================================
+// FACULTY RANK SORTING
+// =========================================================
+
+const getFacultyRank = (
+  faculty: FacultyMember
+): number => {
+  const role = Array.isArray(
+    faculty.roles
+  )
+    ? faculty.roles.join(" ")
+    : faculty.roles || "";
+
+  const normalizedRole =
+    role.toLowerCase().trim();
+
+  if (
+    normalizedRole.includes(
+      "associate professor"
+    )
+  ) {
+    return 2;
+  }
+
+  if (
+    normalizedRole.includes(
+      "assistant professor"
+    )
+  ) {
+    return 3;
+  }
+
+  if (
+    normalizedRole.includes(
+      "guest faculty"
+    )
+  ) {
+    return 4;
+  }
+
+  if (
+    normalizedRole.includes(
+      "professor"
+    )
+  ) {
+    return 1;
+  }
+
+  return 5;
+};
+
+const sortFacultyByRankAndName = (
+  faculty: FacultyMember[]
+): FacultyMember[] => {
+  return [...faculty].sort(
+    (a, b) => {
+      const rankA =
+        getFacultyRank(a);
+
+      const rankB =
+        getFacultyRank(b);
+
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+
+      const nameA =
+        getFacultyName(a);
+
+      const nameB =
+        getFacultyName(b);
+
+      return nameA.localeCompare(
+        nameB,
+        undefined,
+        {
+          sensitivity: "base",
+        }
+      );
+    }
+  );
+};
+
+// =========================================================
 // ADMIN FACULTY PAGE
 // =========================================================
 
@@ -241,6 +327,15 @@ export default function Admin_Faculty_Page() {
   const [requests, setRequests] =
     useState<FacultyRequest[]>([]);
 
+  // =======================================================
+  // REQUEST PAGINATION
+  // =======================================================
+
+  const [requestPage, setRequestPage] =
+    useState(1);
+
+  const requestPageSize = 5;
+
   const [facultyList, setFacultyList] =
     useState<FacultyMember[]>([]);
 
@@ -250,8 +345,11 @@ export default function Admin_Faculty_Page() {
   const [loading, setLoading] =
     useState(true);
 
-  const [selectedDepartment, setSelectedDepartment] = useState("all");
-  const [facultyPage, setFacultyPage] = useState(1);
+  const [selectedDepartment, setSelectedDepartment] =
+    useState("all");
+
+  const [facultyPage, setFacultyPage] =
+    useState(1);
 
   const [savingFaculty, setSavingFaculty] =
     useState(false);
@@ -405,6 +503,10 @@ export default function Admin_Faculty_Page() {
             ? requestData
             : []
         );
+
+        // Always return to page 1
+        // when fresh requests are loaded.
+        setRequestPage(1);
       } catch (error) {
         toast.error(
           getApiErrorMessage(
@@ -432,8 +534,86 @@ export default function Admin_Faculty_Page() {
   }, [token, role]);
 
   // =======================================================
+  // REQUEST PAGINATION
+  // =======================================================
+
+  /*
+   * Requests are sorted by creation date,
+   * oldest first.
+   *
+   * Example:
+   *
+   * Oct 1
+   * Oct 2
+   * Oct 2
+   * Oct 3
+   * Oct 4  -> PAGE 1
+   *
+   * Oct 5
+   * Oct 6
+   * Oct 7
+   * Oct 8
+   * Oct 9  -> PAGE 2
+   */
+
+  const sortedRequests =
+    [...requests].sort(
+      (a, b) => {
+        const dateA =
+          a.createdAt
+            ? new Date(
+                a.createdAt
+              ).getTime()
+            : 0;
+
+        const dateB =
+          b.createdAt
+            ? new Date(
+                b.createdAt
+              ).getTime()
+            : 0;
+
+        return dateA - dateB;
+      }
+    );
+
+  const requestPageCount =
+    Math.ceil(
+      sortedRequests.length /
+        requestPageSize
+    );
+
+  const safeRequestPage =
+    Math.min(
+      Math.max(
+        requestPage,
+        1
+      ),
+      Math.max(
+        requestPageCount,
+        1
+      )
+    );
+
+  const visibleRequests =
+    sortedRequests.slice(
+      (safeRequestPage - 1) *
+        requestPageSize,
+      safeRequestPage *
+        requestPageSize
+    );
+
+  // =======================================================
+  // OPEN REQUEST MODAL
+  // =======================================================
+
+  const openRequestModal = () => {
+    setRequestPage(1);
+    setShowRequestModal(true);
+  };
+
+  // =======================================================
   // OPEN TEACHER PROFILE
-  // ONLY FACULTY CLICK REDIRECT
   // =======================================================
 
   const openTeacherProfile = (
@@ -1372,38 +1552,119 @@ export default function Admin_Faculty_Page() {
   // DEPARTMENT FILTER AND PAGINATION
   // =======================================================
 
-  const groupedFaculty = new Map<string, { department: Department | null; faculty: FacultyMember[] }>();
+  const groupedFaculty = new Map<
+    string,
+    {
+      department: Department | null;
+      faculty: FacultyMember[];
+    }
+  >();
 
   facultyList.forEach((teacher) => {
-    const departmentId = teacher.departmentId || teacher.department?._id || "unknown";
-    const departmentFromList = departmentList.find((department) => department._id === departmentId);
-    const existing = groupedFaculty.get(departmentId);
+    const departmentId =
+      teacher.departmentId ||
+      teacher.department?._id ||
+      "unknown";
+
+    const departmentFromList =
+      departmentList.find(
+        (department) =>
+          department._id ===
+          departmentId
+      );
+
+    const existing =
+      groupedFaculty.get(
+        departmentId
+      );
+
     if (existing) {
-      existing.faculty.push(teacher);
+      existing.faculty.push(
+        teacher
+      );
     } else {
-      groupedFaculty.set(departmentId, {
-        department: teacher.department || departmentFromList || null,
-        faculty: [teacher],
-      });
+      groupedFaculty.set(
+        departmentId,
+        {
+          department:
+            teacher.department ||
+            departmentFromList ||
+            null,
+          faculty: [teacher],
+        }
+      );
     }
   });
 
-  const departmentGroups = Array.from(groupedFaculty.entries());
-  const availableDepartments = departmentGroups.map(([id, group]) => ({
-    id,
-    name: group.department?.name || "Department",
-  }));
-  const selectedGroup = departmentGroups.find(([id]) => id === selectedDepartment);
-  const departmentFaculty = selectedDepartment === "all"
-    ? facultyList
-    : selectedGroup?.[1].faculty || [];
+  const departmentGroups =
+    Array.from(
+      groupedFaculty.entries()
+    );
+
+  const availableDepartments =
+    departmentGroups.map(
+      ([id, group]) => ({
+        id,
+        name:
+          group.department?.name ||
+          "Department",
+      })
+    );
+
+  const selectedGroup =
+    departmentGroups.find(
+      ([id]) =>
+        id === selectedDepartment
+    );
+
+  const departmentFaculty =
+    selectedDepartment === "all"
+      ? facultyList
+      : selectedGroup?.[1]
+          .faculty || [];
+
+  const sortedDepartmentFaculty =
+    sortFacultyByRankAndName(
+      departmentFaculty
+    );
+
   const facultyPageSize = 9;
-  const facultyPageCount = Math.ceil(departmentFaculty.length / facultyPageSize);
-  const safeFacultyPage = Math.min(Math.max(facultyPage, 1), Math.max(facultyPageCount, 1));
-  const visibleFaculty = departmentFaculty.slice((safeFacultyPage - 1) * facultyPageSize, safeFacultyPage * facultyPageSize);
-  const selectedDepartmentName = selectedDepartment === "all"
-    ? "All Departments"
-    : availableDepartments.find((department) => department.id === selectedDepartment)?.name || "Department";
+
+  const facultyPageCount =
+    Math.ceil(
+      sortedDepartmentFaculty.length /
+        facultyPageSize
+    );
+
+  const safeFacultyPage =
+    Math.min(
+      Math.max(
+        facultyPage,
+        1
+      ),
+      Math.max(
+        facultyPageCount,
+        1
+      )
+    );
+
+  const visibleFaculty =
+    sortedDepartmentFaculty.slice(
+      (safeFacultyPage - 1) *
+        facultyPageSize,
+      safeFacultyPage *
+        facultyPageSize
+    );
+
+  const selectedDepartmentName =
+    selectedDepartment === "all"
+      ? "All Departments"
+      : availableDepartments.find(
+          (department) =>
+            department.id ===
+            selectedDepartment
+        )?.name ||
+        "Department";
 
   // =======================================================
   // RENDER
@@ -1463,10 +1724,8 @@ export default function Admin_Faculty_Page() {
               rounded-xl
               transition-colors
             "
-            onClick={() =>
-              setShowRequestModal(
-                true
-              )
+            onClick={
+              openRequestModal
             }
             aria-label="View Faculty Requests"
           >
@@ -1608,114 +1867,166 @@ export default function Admin_Faculty_Page() {
                 No pending registration requests.
               </div>
             ) : (
-              <div
-                className="
-                  space-y-3
-                  overflow-y-auto
-                  flex-1
-                  pr-1
-                "
-              >
-                {requests.map(
-                  (request) => (
-                    <div
-                      key={
-                        request._id
-                      }
-                      className="
-                        flex
-                        flex-col
-                        sm:flex-row
-                        sm:items-center
-                        justify-between
-                        bg-blue-50
-                        border
-                        border-blue-200
-                        rounded-xl
-                        p-4
-                        gap-3
-                      "
-                    >
-                      <div>
-                        <p
-                          className="
-                            font-bold
-                            text-gray-900
-                            text-sm
-                          "
-                        >
-                          {request.firstName
-                            ? `${request.firstName} ${request.lastName || ""}`
-                            : request.username}
-                        </p>
+              <>
+                {/* =========================================
+                    PAGINATED REQUEST LIST
+                ========================================= */}
 
-                        <p
-                          className="
-                            text-xs
-                            text-gray-500
-                            font-mono
-                          "
-                        >
-                          {request.email}
-                        </p>
-                      </div>
-
+                <div
+                  className="
+                    space-y-3
+                    overflow-y-auto
+                    flex-1
+                    pr-1
+                  "
+                >
+                  {visibleRequests.map(
+                    (request) => (
                       <div
+                        key={
+                          request._id
+                        }
                         className="
                           flex
-                          gap-2
+                          flex-col
+                          sm:flex-row
+                          sm:items-center
+                          justify-between
+                          bg-blue-50
+                          border
+                          border-blue-200
+                          rounded-xl
+                          p-4
+                          gap-3
                         "
                       >
-                        <button
-                          type="button"
-                          className="
-                            px-3
-                            py-1.5
-                            bg-green-600
-                            hover:bg-green-700
-                            text-white
-                            rounded-lg
-                            text-xs
-                            font-bold
-                          "
-                          onClick={() =>
-                            handleAcceptRequest(
-                              request._id,
-                              request.firstName ||
-                                request.username
-                            )
-                          }
-                        >
-                          Approve
-                        </button>
+                        <div>
+                          <p
+                            className="
+                              font-bold
+                              text-gray-900
+                              text-sm
+                            "
+                          >
+                            {request.firstName
+                              ? `${request.firstName} ${request.lastName || ""}`
+                              : request.username}
+                          </p>
 
-                        <button
-                          type="button"
+                          <p
+                            className="
+                              text-xs
+                              text-gray-500
+                              font-mono
+                            "
+                          >
+                            {request.email}
+                          </p>
+
+                          {request.createdAt && (
+                            <p
+                              className="
+                                text-[10px]
+                                text-gray-400
+                                mt-1
+                                font-medium
+                              "
+                            >
+                              {new Date(
+                                request.createdAt
+                              ).toLocaleDateString(
+                                undefined,
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </p>
+                          )}
+                        </div>
+
+                        <div
                           className="
-                            px-3
-                            py-1.5
-                            bg-red-600
-                            hover:bg-red-700
-                            text-white
-                            rounded-lg
-                            text-xs
-                            font-bold
+                            flex
+                            gap-2
                           "
-                          onClick={() =>
-                            handleRejectRequest(
-                              request._id,
-                              request.firstName ||
-                                request.username
-                            )
-                          }
                         >
-                          Reject
-                        </button>
+                          <button
+                            type="button"
+                            className="
+                              px-3
+                              py-1.5
+                              bg-green-600
+                              hover:bg-green-700
+                              text-white
+                              rounded-lg
+                              text-xs
+                              font-bold
+                            "
+                            onClick={() =>
+                              handleAcceptRequest(
+                                request._id,
+                                request.firstName ||
+                                  request.username
+                              )
+                            }
+                          >
+                            Approve
+                          </button>
+
+                          <button
+                            type="button"
+                            className="
+                              px-3
+                              py-1.5
+                              bg-red-600
+                              hover:bg-red-700
+                              text-white
+                              rounded-lg
+                              text-xs
+                              font-bold
+                            "
+                            onClick={() =>
+                              handleRejectRequest(
+                                request._id,
+                                request.firstName ||
+                                  request.username
+                              )
+                            }
+                          >
+                            Reject
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )
+                    )
+                  )}
+                </div>
+
+                {/* =========================================
+                    REQUEST PAGINATION
+                ========================================= */}
+
+                {requests.length >
+                  requestPageSize && (
+                  <div className="pt-4 mt-4 border-t border-gray-100">
+                    <Pagination
+                      currentPage={
+                        safeRequestPage
+                      }
+                      totalItems={
+                        sortedRequests.length
+                      }
+                      pageSize={
+                        requestPageSize
+                      }
+                      onPageChange={
+                        setRequestPage
+                      }
+                    />
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -1726,17 +2037,39 @@ export default function Admin_Faculty_Page() {
           GROUPED BY DEPARTMENT
       =================================================== */}
 
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter faculty by department">
-        {[{ id: "all", name: "All Departments" }, ...availableDepartments].map((department) => (
+      <div
+        className="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Filter faculty by department"
+      >
+        {[
+          {
+            id: "all",
+            name: "All Departments",
+          },
+          ...availableDepartments,
+        ].map((department) => (
           <button
-            key={department.id}
+            key={
+              department.id
+            }
             type="button"
             onClick={() => {
-              setSelectedDepartment(department.id);
+              setSelectedDepartment(
+                department.id
+              );
               setFacultyPage(1);
             }}
-            aria-pressed={selectedDepartment === department.id}
-            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${selectedDepartment === department.id ? "border-cyan-700 bg-cyan-700 text-white" : "border-gray-200 bg-white text-gray-700 hover:bg-cyan-50"}`}
+            aria-pressed={
+              selectedDepartment ===
+              department.id
+            }
+            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+              selectedDepartment ===
+              department.id
+                ? "border-cyan-700 bg-cyan-700 text-white"
+                : "border-gray-200 bg-white text-gray-700 hover:bg-cyan-50"
+            }`}
           >
             {department.name}
           </button>
@@ -1771,12 +2104,25 @@ export default function Admin_Faculty_Page() {
         </div>
       ) : (
         <div className="space-y-10">
-          {[ { department: selectedDepartment === "all" ? null : selectedGroup?.[1].department || null, faculty: visibleFaculty } ].map(
+          {[
+            {
+              department:
+                selectedDepartment ===
+                "all"
+                  ? null
+                  : selectedGroup?.[1]
+                      .department ||
+                    null,
+              faculty:
+                visibleFaculty,
+            },
+          ].map(
             (
               group,
               departmentIndex
             ) => {
-              const departmentName = selectedDepartmentName;
+              const departmentName =
+                selectedDepartmentName;
 
               return (
                 <section
@@ -1788,10 +2134,6 @@ export default function Admin_Faculty_Page() {
                     space-y-5
                   "
                 >
-                  {/* ==========================================
-                      DEPARTMENT HEADER
-                  ========================================== */}
-
                   <div
                     className="
                       flex
@@ -1833,7 +2175,9 @@ export default function Admin_Faculty_Page() {
                           mt-0.5
                         "
                       >
-                        {departmentFaculty.length}{" "}
+                        {
+                          departmentFaculty.length
+                        }{" "}
                         faculty member
                         {departmentFaculty.length !==
                         1
@@ -1842,10 +2186,6 @@ export default function Admin_Faculty_Page() {
                       </p>
                     </div>
                   </div>
-
-                  {/* ==========================================
-                      DEPARTMENT FACULTY
-                  ========================================== */}
 
                   <div
                     className="
@@ -1863,10 +2203,6 @@ export default function Admin_Faculty_Page() {
                             teacher
                           );
 
-                        /*
-                         * ORIGINAL PHOTO LOGIC
-                         * LEFT UNCHANGED
-                         */
                         const photoSrc =
                           teacher.photoId
                             ? `${API_BASE_URL}/uploads/faculty/${teacher.photoId}`
@@ -1895,12 +2231,6 @@ export default function Admin_Faculty_Page() {
                               border-gray-200
                             "
                           >
-                            {/* ==========================================
-                                CLICKABLE TEACHER PROFILE AREA
-
-                                ONLY FACULTY CLICK REDIRECT
-                            ========================================== */}
-
                             <button
                               type="button"
                               onClick={() =>
@@ -1968,11 +2298,6 @@ export default function Admin_Faculty_Page() {
                                     {fullName}
                                   </h3>
 
-                                  {/* =====================================
-                                      HOD BADGE
-                                      ONLY ADDITION
-                                  ===================================== */}
-
                                   {teacher.hod && (
                                     <span
                                       className="
@@ -2032,10 +2357,6 @@ export default function Admin_Faculty_Page() {
                                 )}
                               </div>
                             </button>
-
-                            {/* ==========================================
-                                FACULTY ACTIONS
-                            ========================================== */}
 
                             <div
                               className="
@@ -2169,10 +2490,6 @@ export default function Admin_Faculty_Page() {
                                 </button>
                               </div>
                             </div>
-
-                            {/* ==========================================
-                                PAPERS PREVIEW
-                            ========================================== */}
 
                             <div
                               className="
@@ -2496,14 +2813,23 @@ export default function Admin_Faculty_Page() {
         </div>
       )}
 
-      {!loading && departmentFaculty.length > 0 && (
-        <Pagination
-          currentPage={safeFacultyPage}
-          totalItems={departmentFaculty.length}
-          pageSize={facultyPageSize}
-          onPageChange={setFacultyPage}
-        />
-      )}
+      {!loading &&
+        departmentFaculty.length > 0 && (
+          <Pagination
+            currentPage={
+              safeFacultyPage
+            }
+            totalItems={
+              sortedDepartmentFaculty.length
+            }
+            pageSize={
+              facultyPageSize
+            }
+            onPageChange={
+              setFacultyPage
+            }
+          />
+        )}
 
       {/* ===================================================
           FACULTY EDIT MODAL
@@ -2849,6 +3175,9 @@ export default function Admin_Faculty_Page() {
                     </option>
                     <option value="professor">
                       Professor
+                    </option>
+                    <option value="guest faculty">
+                      Guest Faculty
                     </option>
                     <option value="head of department">
                       Head of Department

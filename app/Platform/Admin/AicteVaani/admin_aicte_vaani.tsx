@@ -112,6 +112,56 @@ const ALLOWED_FILE_TYPES =
   ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp";
 
 // ============================================================
+// CREATED TIME HELPER
+// ============================================================
+
+// Uses createdAt when available.
+// Falls back to MongoDB ObjectId timestamp when createdAt
+// is not available.
+const getAicteVaaniCreatedTime = (
+  item: AicteVaaniItem
+): number => {
+  if (item.createdAt) {
+    const createdTime =
+      new Date(item.createdAt).getTime();
+
+    if (!Number.isNaN(createdTime)) {
+      return createdTime;
+    }
+  }
+
+  // MongoDB ObjectId contains the creation timestamp
+  if (
+    /^[0-9a-fA-F]{24}$/.test(
+      item._id
+    )
+  ) {
+    return (
+      parseInt(
+        item._id.substring(0, 8),
+        16
+      ) * 1000
+    );
+  }
+
+  return 0;
+};
+
+// ============================================================
+// SORT NEWEST FIRST
+// ============================================================
+
+const sortAicteVaaniNewestFirst = (
+  list: AicteVaaniItem[]
+): AicteVaaniItem[] => {
+  return [...list].sort(
+    (a, b) =>
+      getAicteVaaniCreatedTime(b) -
+      getAicteVaaniCreatedTime(a)
+  );
+};
+
+// ============================================================
 // COMPONENT
 // ============================================================
 
@@ -122,57 +172,129 @@ export default function Admin_AICTE_VAANI() {
   // DATA
   // ==========================================================
 
-  const [items, setItems] = useState<AicteVaaniItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [aicteFilter, setAicteFilter] = useState<"Active" | "Inactive">("Active");
-  const [activeAictePage, setActiveAictePage] = useState(1);
-  const [inactiveAictePage, setInactiveAictePage] = useState(1);
+  const [items, setItems] = useState<
+    AicteVaaniItem[]
+  >([]);
+
+  const [isLoading, setIsLoading] =
+    useState(false);
+
+  const [aicteFilter, setAicteFilter] =
+    useState<"Active" | "Inactive">(
+      "Active"
+    );
+
+  const [
+    activeAictePage,
+    setActiveAictePage,
+  ] = useState(1);
+
+  const [
+    inactiveAictePage,
+    setInactiveAictePage,
+  ] = useState(1);
+
   const aictePageSize = 10;
-  const activeItems = items.filter((item) => item.status !== "Inactive");
-  const inactiveItems = items.filter((item) => item.status === "Inactive");
-  const selectedItems = aicteFilter === "Active" ? activeItems : inactiveItems;
-  const selectedPage = aicteFilter === "Active" ? activeAictePage : inactiveAictePage;
-  const safeAictePage = Math.min(selectedPage, Math.max(1, Math.ceil(selectedItems.length / aictePageSize)));
-  const visibleAicteItems = selectedItems.slice((safeAictePage - 1) * aictePageSize, safeAictePage * aictePageSize);
+
+  const activeItems = items.filter(
+    (item) =>
+      item.status !== "Inactive"
+  );
+
+  const inactiveItems = items.filter(
+    (item) =>
+      item.status === "Inactive"
+  );
+
+  const selectedItems =
+    aicteFilter === "Active"
+      ? activeItems
+      : inactiveItems;
+
+  const selectedPage =
+    aicteFilter === "Active"
+      ? activeAictePage
+      : inactiveAictePage;
+
+  const safeAictePage = Math.min(
+    selectedPage,
+    Math.max(
+      1,
+      Math.ceil(
+        selectedItems.length /
+          aictePageSize
+      )
+    )
+  );
+
+  const visibleAicteItems =
+    selectedItems.slice(
+      (safeAictePage - 1) *
+        aictePageSize,
+      safeAictePage *
+        aictePageSize
+    );
 
   // ==========================================================
   // MODAL
   // ==========================================================
 
-  const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showModal, setShowModal] =
+    useState(false);
+
+  const [editingId, setEditingId] =
+    useState<string | null>(null);
 
   // ==========================================================
   // FORM
   // ==========================================================
 
-  const [header, setHeader] = useState(
-    "AICTE-VAANI WORKSHOP (2 Days)"
-  );
+  const [header, setHeader] =
+    useState(
+      "AICTE-VAANI WORKSHOP (2 Days)"
+    );
 
-  const [topic, setTopic] = useState("");
-  const [dates, setDates] = useState("");
-  const [time, setTime] = useState("9:00 AM – 5:00 PM");
-  const [venue, setVenue] = useState("MIT, MU Campus");
-  const [information, setInformation] = useState("");
+  const [topic, setTopic] =
+    useState("");
+
+  const [dates, setDates] =
+    useState("");
+
+  const [time, setTime] =
+    useState("9:00 AM – 5:00 PM");
+
+  const [venue, setVenue] =
+    useState("MIT, MU Campus");
+
+  const [information, setInformation] =
+    useState("");
 
   const [status, setStatus] =
-    useState<"Active" | "Inactive">("Active");
+    useState<
+      "Active" | "Inactive"
+    >("Active");
 
   const [contact, setContact] =
-    useState<AicteVaaniContact>(emptyContact);
+    useState<AicteVaaniContact>(
+      emptyContact
+    );
 
   const [attachments, setAttachments] =
-    useState<AicteVaaniAttachment[]>([]);
+    useState<
+      AicteVaaniAttachment[]
+    >([]);
 
   const [extraLinks, setExtraLinks] =
-    useState<AicteVaaniLink[]>([]);
+    useState<AicteVaaniLink[]>(
+      []
+    );
 
   // ==========================================================
   // SUBMIT
   // ==========================================================
 
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] =
+    useState(false);
 
   // ==========================================================
   // FETCH
@@ -183,19 +305,37 @@ export default function Admin_AICTE_VAANI() {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.get("/aicte-vaani");
+      const response =
+        await apiClient.get(
+          "/aicte-vaani"
+        );
 
       const data: AicteVaaniItem[] =
         response.data?.data ??
-        (Array.isArray(response.data)
+        (Array.isArray(
+          response.data
+        )
           ? response.data
           : []);
 
-      setItems(Array.isArray(data) ? data : []);
+      // ======================================================
+      // NEWEST FIRST
+      // ======================================================
+
+      const sortedData =
+        sortAicteVaaniNewestFirst(
+          Array.isArray(data)
+            ? data
+            : []
+        );
+
+      setItems(sortedData);
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message ||
-          error?.response?.data?.error ||
+        error?.response?.data
+          ?.message ||
+          error?.response?.data
+            ?.error ||
           error?.message ||
           "Failed to load AICTE-VAANI records."
       );
@@ -211,7 +351,10 @@ export default function Admin_AICTE_VAANI() {
   // ==========================================================
 
   useEffect(() => {
-    if (token && role === "admin") {
+    if (
+      token &&
+      role === "admin"
+    ) {
       fetchData();
     }
   }, [token, role]);
@@ -223,15 +366,25 @@ export default function Admin_AICTE_VAANI() {
   const resetForm = () => {
     setEditingId(null);
 
-    setHeader("AICTE-VAANI WORKSHOP (2 Days)");
+    setHeader(
+      "AICTE-VAANI WORKSHOP (2 Days)"
+    );
+
     setTopic("");
     setDates("");
-    setTime("9:00 AM – 5:00 PM");
-    setVenue("MIT, MU Campus");
+    setTime(
+      "9:00 AM – 5:00 PM"
+    );
+    setVenue(
+      "MIT, MU Campus"
+    );
     setInformation("");
     setStatus("Active");
 
-    setContact({ ...emptyContact });
+    setContact({
+      ...emptyContact,
+    });
+
     setAttachments([]);
     setExtraLinks([]);
   };
@@ -249,57 +402,117 @@ export default function Admin_AICTE_VAANI() {
   // OPEN EDIT MODAL
   // ==========================================================
 
-  const openEditModal = (item: AicteVaaniItem) => {
+  const openEditModal = (
+    item: AicteVaaniItem
+  ) => {
     setEditingId(item._id);
 
-    setHeader(item.header || "");
-    setTopic(item.topic || "");
-    setDates(item.dates || "");
-    setTime(item.time || "9:00 AM – 5:00 PM");
-    setVenue(item.venue || "MIT, MU Campus");
-    setInformation(item.information || "");
+    setHeader(
+      item.header || ""
+    );
+
+    setTopic(
+      item.topic || ""
+    );
+
+    setDates(
+      item.dates || ""
+    );
+
+    setTime(
+      item.time ||
+        "9:00 AM – 5:00 PM"
+    );
+
+    setVenue(
+      item.venue ||
+        "MIT, MU Campus"
+    );
+
+    setInformation(
+      item.information || ""
+    );
+
     setStatus(
-      item.status === "Inactive"
+      item.status ===
+        "Inactive"
         ? "Inactive"
         : "Active"
     );
 
     setContact({
-      coordinator: item.contact?.coordinator || "",
-      coCoordinator: item.contact?.coCoordinator || "",
-      department: item.contact?.department || "",
-      website: item.contact?.website || "",
-      email: item.contact?.email || "",
-      phone: item.contact?.phone || "",
+      coordinator:
+        item.contact
+          ?.coordinator || "",
+
+      coCoordinator:
+        item.contact
+          ?.coCoordinator || "",
+
+      department:
+        item.contact
+          ?.department || "",
+
+      website:
+        item.contact
+          ?.website || "",
+
+      email:
+        item.contact
+          ?.email || "",
+
+      phone:
+        item.contact
+          ?.phone || "",
     });
 
-    // Existing uploaded attachments
     setAttachments(
-      Array.isArray(item.attachments)
-        ? item.attachments.map((attachment) => ({
-            id: attachment.id,
-            title: attachment.title || "",
-            url: attachment.url || "",
-            originalName:
-              attachment.originalName || "",
-            mimeType: attachment.mimeType || "",
-            size: attachment.size || 0,
-          }))
+      Array.isArray(
+        item.attachments
+      )
+        ? item.attachments.map(
+            (attachment) => ({
+              id: attachment.id,
+              title:
+                attachment.title ||
+                "",
+              url:
+                attachment.url ||
+                "",
+              originalName:
+                attachment.originalName ||
+                "",
+              mimeType:
+                attachment.mimeType ||
+                "",
+              size:
+                attachment.size ||
+                0,
+            })
+          )
         : []
     );
 
-    // Existing uploaded extra-link files
     setExtraLinks(
-      Array.isArray(item.extraLinks)
-        ? item.extraLinks.map((link) => ({
-            id: link.id,
-            title: link.title || "",
-            url: link.url || "",
-            originalName:
-              link.originalName || "",
-            mimeType: link.mimeType || "",
-            size: link.size || 0,
-          }))
+      Array.isArray(
+        item.extraLinks
+      )
+        ? item.extraLinks.map(
+            (link) => ({
+              id: link.id,
+              title:
+                link.title || "",
+              url:
+                link.url || "",
+              originalName:
+                link.originalName ||
+                "",
+              mimeType:
+                link.mimeType || "",
+              size:
+                link.size || 0,
+            })
+          )
         : []
     );
 
@@ -342,10 +555,13 @@ export default function Admin_AICTE_VAANI() {
     ]);
   };
 
-  const removeAttachment = (index: number) => {
+  const removeAttachment = (
+    index: number
+  ) => {
     setAttachments((prev) =>
       prev.filter(
-        (_, itemIndex) => itemIndex !== index
+        (_, itemIndex) =>
+          itemIndex !== index
       )
     );
   };
@@ -355,13 +571,14 @@ export default function Admin_AICTE_VAANI() {
     value: string
   ) => {
     setAttachments((prev) =>
-      prev.map((item, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...item,
-              title: value,
-            }
-          : item
+      prev.map(
+        (item, itemIndex) =>
+          itemIndex === index
+            ? {
+                ...item,
+                title: value,
+              }
+            : item
       )
     );
   };
@@ -372,7 +589,10 @@ export default function Admin_AICTE_VAANI() {
   ) => {
     if (!file) return;
 
-    if (file.size > MAX_ATTACHMENT_SIZE) {
+    if (
+      file.size >
+      MAX_ATTACHMENT_SIZE
+    ) {
       toast.error(
         `File exceeds the 10 MB limit: ${file.name}`
       );
@@ -380,15 +600,17 @@ export default function Admin_AICTE_VAANI() {
     }
 
     setAttachments((prev) =>
-      prev.map((item, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...item,
-              file,
-              title:
-                item.title.trim() || file.name,
-            }
-          : item
+      prev.map(
+        (item, itemIndex) =>
+          itemIndex === index
+            ? {
+                ...item,
+                file,
+                title:
+                  item.title.trim() ||
+                  file.name,
+              }
+            : item
       )
     );
   };
@@ -404,10 +626,13 @@ export default function Admin_AICTE_VAANI() {
     ]);
   };
 
-  const removeExtraLink = (index: number) => {
+  const removeExtraLink = (
+    index: number
+  ) => {
     setExtraLinks((prev) =>
       prev.filter(
-        (_, itemIndex) => itemIndex !== index
+        (_, itemIndex) =>
+          itemIndex !== index
       )
     );
   };
@@ -417,13 +642,14 @@ export default function Admin_AICTE_VAANI() {
     value: string
   ) => {
     setExtraLinks((prev) =>
-      prev.map((item, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...item,
-              title: value,
-            }
-          : item
+      prev.map(
+        (item, itemIndex) =>
+          itemIndex === index
+            ? {
+                ...item,
+                title: value,
+              }
+            : item
       )
     );
   };
@@ -434,7 +660,10 @@ export default function Admin_AICTE_VAANI() {
   ) => {
     if (!file) return;
 
-    if (file.size > MAX_ATTACHMENT_SIZE) {
+    if (
+      file.size >
+      MAX_ATTACHMENT_SIZE
+    ) {
       toast.error(
         `File exceeds the 10 MB limit: ${file.name}`
       );
@@ -442,15 +671,17 @@ export default function Admin_AICTE_VAANI() {
     }
 
     setExtraLinks((prev) =>
-      prev.map((item, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...item,
-              file,
-              title:
-                item.title.trim() || file.name,
-            }
-          : item
+      prev.map(
+        (item, itemIndex) =>
+          itemIndex === index
+            ? {
+                ...item,
+                file,
+                title:
+                  item.title.trim() ||
+                  file.name,
+              }
+            : item
       )
     );
   };
@@ -460,7 +691,8 @@ export default function Admin_AICTE_VAANI() {
   // ==========================================================
 
   const buildFormData = () => {
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
     formData.append(
       "header",
@@ -527,7 +759,9 @@ export default function Admin_AICTE_VAANI() {
     const newAttachments =
       attachments.filter(
         (attachment) =>
-          Boolean(attachment.file)
+          Boolean(
+            attachment.file
+          )
       );
 
     const existingAttachments =
@@ -535,7 +769,9 @@ export default function Admin_AICTE_VAANI() {
         .filter(
           (attachment) =>
             !attachment.file &&
-            Boolean(attachment.url)
+            Boolean(
+              attachment.url
+            )
         )
         .map((attachment) => ({
           id: attachment.id,
@@ -543,9 +779,11 @@ export default function Admin_AICTE_VAANI() {
             attachment.title.trim(),
           url: attachment.url,
           originalName:
-            attachment.originalName || "",
+            attachment.originalName ||
+            "",
           mimeType:
-            attachment.mimeType || "",
+            attachment.mimeType ||
+            "",
           size:
             attachment.size || 0,
         }));
@@ -584,7 +822,8 @@ export default function Admin_AICTE_VAANI() {
 
     const newExtraLinks =
       extraLinks.filter(
-        (item) => Boolean(item.file)
+        (item) =>
+          Boolean(item.file)
       );
 
     const existingExtraLinks =
@@ -596,12 +835,15 @@ export default function Admin_AICTE_VAANI() {
         )
         .map((item) => ({
           id: item.id,
-          title: item.title.trim(),
+          title:
+            item.title.trim(),
           url: item.url,
           originalName:
-            item.originalName || "",
+            item.originalName ||
+            "",
           mimeType:
-            item.mimeType || "",
+            item.mimeType ||
+            "",
           size:
             item.size || 0,
         }));
@@ -623,14 +865,16 @@ export default function Admin_AICTE_VAANI() {
       )
     );
 
-    newExtraLinks.forEach((item) => {
-      if (item.file) {
-        formData.append(
-          "extraLinks",
-          item.file
-        );
+    newExtraLinks.forEach(
+      (item) => {
+        if (item.file) {
+          formData.append(
+            "extraLinks",
+            item.file
+          );
+        }
       }
-    });
+    );
 
     return formData;
   };
@@ -695,10 +939,13 @@ export default function Admin_AICTE_VAANI() {
         }
 
         setItems((prev) =>
-          prev.map((item) =>
-            item._id === editingId
-              ? updatedItem
-              : item
+          sortAicteVaaniNewestFirst(
+            prev.map((item) =>
+              item._id ===
+              editingId
+                ? updatedItem
+                : item
+            )
           )
         );
 
@@ -741,10 +988,14 @@ export default function Admin_AICTE_VAANI() {
           );
         }
 
-        setItems((prev) => [
-          createdItem,
-          ...prev,
-        ]);
+        setItems((prev) =>
+          sortAicteVaaniNewestFirst(
+            [
+              createdItem,
+              ...prev,
+            ]
+          )
+        );
 
         await showAlert({
           title: "Added!",
@@ -789,26 +1040,30 @@ export default function Admin_AICTE_VAANI() {
     id: string,
     topicName: string
   ) => {
-    const result = await showAlert({
-      title:
-        "Delete AICTE-VAANI Event?",
+    const result =
+      await showAlert({
+        title:
+          "Delete AICTE-VAANI Event?",
 
-      text:
-        `"${topicName}" will be permanently deleted.`,
+        text:
+          `"${topicName}" will be permanently deleted.`,
 
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#be123c",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText:
-        "Yes, Delete",
-      cancelButtonText:
-        "Cancel",
-      reverseButtons: true,
-      focusCancel: true,
-    });
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor:
+          "#be123c",
+        cancelButtonColor:
+          "#6b7280",
+        confirmButtonText:
+          "Yes, Delete",
+        cancelButtonText:
+          "Cancel",
+        reverseButtons: true,
+        focusCancel: true,
+      });
 
-    if (!result.isConfirmed) return;
+    if (!result.isConfirmed)
+      return;
 
     try {
       showLoadingAlert({
@@ -836,7 +1091,8 @@ export default function Admin_AICTE_VAANI() {
 
       setItems((prev) =>
         prev.filter(
-          (item) => item._id !== id
+          (item) =>
+            item._id !== id
         )
       );
 
@@ -872,10 +1128,15 @@ export default function Admin_AICTE_VAANI() {
   // AUTH
   // ==========================================================
 
-  if (!token || role !== "admin") {
+  if (
+    !token ||
+    role !== "admin"
+  ) {
     return (
       <div className="p-4">
-        <SignIn_SignUP role="admin" />
+        <SignIn_SignUP
+          role="admin"
+        />
       </div>
     );
   }
@@ -974,11 +1235,41 @@ export default function Admin_AICTE_VAANI() {
         </div>
 
         <div className="flex gap-2 border-b border-gray-200 p-3">
-          <button type="button" onClick={() => setAicteFilter("Active")} className={`rounded-xl px-4 py-2 text-sm font-semibold ${aicteFilter === "Active" ? "bg-emerald-600 text-white" : "bg-gray-50 text-gray-600 hover:bg-gray-100"}`}>
-            ACTIVE <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">{activeItems.length}</span>
+          <button
+            type="button"
+            onClick={() =>
+              setAicteFilter("Active")
+            }
+            className={`rounded-xl px-4 py-2 text-sm font-semibold ${
+              aicteFilter === "Active"
+                ? "bg-emerald-600 text-white"
+                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            ACTIVE{" "}
+            <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">
+              {activeItems.length}
+            </span>
           </button>
-          <button type="button" onClick={() => setAicteFilter("Inactive")} className={`rounded-xl px-4 py-2 text-sm font-semibold ${aicteFilter === "Inactive" ? "bg-gray-700 text-white" : "bg-gray-50 text-gray-600 hover:bg-gray-100"}`}>
-            INACTIVE <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">{inactiveItems.length}</span>
+
+          <button
+            type="button"
+            onClick={() =>
+              setAicteFilter(
+                "Inactive"
+              )
+            }
+            className={`rounded-xl px-4 py-2 text-sm font-semibold ${
+              aicteFilter ===
+              "Inactive"
+                ? "bg-gray-700 text-white"
+                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            INACTIVE{" "}
+            <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">
+              {inactiveItems.length}
+            </span>
           </button>
         </div>
 
@@ -990,22 +1281,27 @@ export default function Admin_AICTE_VAANI() {
               Loading AICTE-VAANI events...
             </p>
           </div>
-        ) : selectedItems.length === 0 ? (
+        ) : selectedItems.length ===
+          0 ? (
           <div className="p-16 text-center">
             <FileText className="w-12 h-12 mx-auto text-gray-300 mb-4" />
 
             <p className="font-semibold text-gray-600">
-              No AICTE-VAANI events found.
+              No AICTE-VAANI events
+              found.
             </p>
 
             <p className="text-sm text-gray-400 mt-1">
-              Click "Add AICTE-VAANI" to create
-              the first event.
+              Click "Add AICTE-VAANI"
+              to create the first
+              event.
             </p>
 
             <button
               type="button"
-              onClick={openAddModal}
+              onClick={
+                openAddModal
+              }
               className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white text-sm font-semibold rounded-lg"
             >
               <Plus className="w-4 h-4" />
@@ -1048,320 +1344,335 @@ export default function Admin_AICTE_VAANI() {
               </thead>
 
               <tbody className="divide-y divide-gray-200">
-                {visibleAicteItems.map((item) => (
-                  <tr
-                    key={item._id}
-                    className="hover:bg-gray-50 transition"
-                  >
+                {visibleAicteItems.map(
+                  (item) => (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-gray-50 transition"
+                    >
 
-                    {/* STATUS */}
+                      {/* STATUS */}
 
-                    <td className="px-5 py-4 align-top">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${
-                          item.status ===
-                          "Active"
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-200"
-                            : "bg-gray-100 text-gray-600 border-gray-200"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
+                      <td className="px-5 py-4 align-top">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${
+                            item.status ===
+                            "Active"
+                              ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                              : "bg-gray-100 text-gray-600 border-gray-200"
+                          }`}
+                        >
+                          {
+                            item.status
+                          }
+                        </span>
+                      </td>
 
-                    {/* TOPIC */}
+                      {/* TOPIC */}
 
-                    <td className="px-5 py-4 align-top">
-                      <div className="max-w-[300px]">
-                        <p className="text-xs font-semibold text-rose-700 mb-1">
-                          {item.header ||
-                            "AICTE-VAANI WORKSHOP"}
-                        </p>
-
-                        <p className="font-semibold text-gray-900 break-words">
-                          {item.topic ||
-                            "-"}
-                        </p>
-
-                        {item.information && (
-                          <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                            {item.information}
+                      <td className="px-5 py-4 align-top">
+                        <div className="max-w-[300px]">
+                          <p className="text-xs font-semibold text-rose-700 mb-1">
+                            {item.header ||
+                              "AICTE-VAANI WORKSHOP"}
                           </p>
-                        )}
-                      </div>
-                    </td>
 
-                    {/* DATES */}
-
-                    <td className="px-5 py-4 align-top">
-                      <span className="inline-flex items-center gap-1.5 bg-cyan-100 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-full text-xs font-bold">
-                        <Calendar className="w-3.5 h-3.5" />
-
-                        {item.dates ||
-                          "-"}
-                      </span>
-                    </td>
-
-                    {/* TIME / VENUE */}
-
-                    <td className="px-5 py-4 align-top">
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-start gap-2 text-gray-700">
-                          <Clock className="w-4 h-4 mt-0.5 text-gray-400 flex-shrink-0" />
-
-                          <span>
-                            {item.time ||
+                          <p className="font-semibold text-gray-900 break-words">
+                            {item.topic ||
                               "-"}
-                          </span>
-                        </div>
+                          </p>
 
-                        <div className="flex items-start gap-2 text-gray-600">
-                          <MapPin className="w-4 h-4 mt-0.5 text-gray-400 flex-shrink-0" />
-
-                          <span className="max-w-[220px]">
-                            {item.venue ||
-                              "-"}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* CONTACT */}
-
-                    <td className="px-5 py-4 align-top">
-                      <div className="space-y-1 text-xs text-gray-600 max-w-[220px]">
-
-                        {item.contact
-                          ?.coordinator && (
-                          <div className="flex gap-2">
-                            <UserRound className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
-
-                            <span>
+                          {item.information && (
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                               {
-                                item
-                                  .contact
-                                  .coordinator
+                                item.information
                               }
-                            </span>
-                          </div>
-                        )}
-
-                        {item.contact
-                          ?.department && (
-                          <div className="flex gap-2">
-                            <Building2 className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
-
-                            <span>
-                              {
-                                item
-                                  .contact
-                                  .department
-                              }
-                            </span>
-                          </div>
-                        )}
-
-                        {item.contact
-                          ?.email && (
-                          <div className="flex gap-2">
-                            <Mail className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
-
-                            <span className="break-all">
-                              {
-                                item
-                                  .contact
-                                  .email
-                              }
-                            </span>
-                          </div>
-                        )}
-
-                        {item.contact
-                          ?.phone && (
-                          <div className="flex gap-2">
-                            <Phone className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
-
-                            <span>
-                              {
-                                item
-                                  .contact
-                                  .phone
-                              }
-                            </span>
-                          </div>
-                        )}
-
-                        {item.contact
-                          ?.website && (
-                          <a
-                            href={
-                              item
-                                .contact
-                                .website
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex gap-2 text-rose-700 hover:text-rose-900 font-semibold"
-                          >
-                            <Globe className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-
-                            <span>
-                              Website
-                            </span>
-
-                            <ExternalLink className="w-3 h-3 mt-0.5" />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* RESOURCES */}
-
-                    <td className="px-5 py-4 align-top">
-                      <div className="space-y-2 max-w-[240px]">
-
-                        {/* ATTACHMENTS */}
-
-                        {item.attachments
-                          ?.length > 0 && (
-                          <div>
-                            <p className="text-xs font-semibold text-gray-500 mb-1">
-                              Attachments
                             </p>
-
-                            <div className="space-y-1">
-                              {item.attachments.map(
-                                (
-                                  link,
-                                  index
-                                ) =>
-                                  link.url && (
-                                    <a
-                                      key={
-                                        link.id ??
-                                        index
-                                      }
-                                      href={
-                                        link.url
-                                      }
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center gap-1.5 text-sm text-rose-700 hover:text-rose-900 font-semibold"
-                                    >
-                                      <FileText className="w-3.5 h-3.5 flex-shrink-0" />
-
-                                      <span className="truncate">
-                                        {link.title ||
-                                          "Attachment"}
-                                      </span>
-
-                                      <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                                    </a>
-                                  )
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* EXTRA LINKS */}
-
-                        {item.extraLinks
-                          ?.length > 0 && (
-                          <div>
-                            <p className="text-xs font-semibold text-gray-500 mb-1">
-                              Extra Links
-                            </p>
-
-                            <div className="space-y-1">
-                              {item.extraLinks.map(
-                                (
-                                  link,
-                                  index
-                                ) =>
-                                  link.url && (
-                                    <a
-                                      key={
-                                        link.id ??
-                                        index
-                                      }
-                                      href={
-                                        link.url
-                                      }
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center gap-1.5 text-sm text-blue-700 hover:text-blue-900 font-semibold"
-                                    >
-                                      <LinkIcon className="w-3.5 h-3.5 flex-shrink-0" />
-
-                                      <span className="truncate">
-                                        {link.title ||
-                                          link.originalName ||
-                                          "Extra Link"}
-                                      </span>
-
-                                      <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                                    </a>
-                                  )
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {!item.attachments
-                          ?.length &&
-                          !item.extraLinks
-                            ?.length && (
-                            <span className="text-xs text-gray-400">
-                              No resources
-                            </span>
                           )}
-                      </div>
-                    </td>
+                        </div>
+                      </td>
 
-                    {/* ACTIONS */}
+                      {/* DATES */}
 
-                    <td className="px-5 py-4 align-top">
-                      <div className="flex justify-end items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            openEditModal(
-                              item
-                            )
-                          }
-                          className="p-2 bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-700 rounded-lg border border-gray-200 transition"
-                          title="Edit AICTE-VAANI"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
+                      <td className="px-5 py-4 align-top">
+                        <span className="inline-flex items-center gap-1.5 bg-cyan-100 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-full text-xs font-bold">
+                          <Calendar className="w-3.5 h-3.5" />
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleDelete(
-                              item._id,
-                              item.topic
-                            )
-                          }
-                          className="p-2 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 rounded-lg border border-gray-200 transition"
-                          title="Delete AICTE-VAANI"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                          {item.dates ||
+                            "-"}
+                        </span>
+                      </td>
 
-                  </tr>
-                ))}
+                      {/* TIME / VENUE */}
+
+                      <td className="px-5 py-4 align-top">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-start gap-2 text-gray-700">
+                            <Clock className="w-4 h-4 mt-0.5 text-gray-400 flex-shrink-0" />
+
+                            <span>
+                              {item.time ||
+                                "-"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-start gap-2 text-gray-600">
+                            <MapPin className="w-4 h-4 mt-0.5 text-gray-400 flex-shrink-0" />
+
+                            <span className="max-w-[220px]">
+                              {item.venue ||
+                                "-"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* CONTACT */}
+
+                      <td className="px-5 py-4 align-top">
+                        <div className="space-y-1 text-xs text-gray-600 max-w-[220px]">
+
+                          {item.contact
+                            ?.coordinator && (
+                            <div className="flex gap-2">
+                              <UserRound className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
+
+                              <span>
+                                {
+                                  item
+                                    .contact
+                                    .coordinator
+                                }
+                              </span>
+                            </div>
+                          )}
+
+                          {item.contact
+                            ?.department && (
+                            <div className="flex gap-2">
+                              <Building2 className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
+
+                              <span>
+                                {
+                                  item
+                                    .contact
+                                    .department
+                                }
+                              </span>
+                            </div>
+                          )}
+
+                          {item.contact
+                            ?.email && (
+                            <div className="flex gap-2">
+                              <Mail className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
+
+                              <span className="break-all">
+                                {
+                                  item
+                                    .contact
+                                    .email
+                                }
+                              </span>
+                            </div>
+                          )}
+
+                          {item.contact
+                            ?.phone && (
+                            <div className="flex gap-2">
+                              <Phone className="w-3.5 h-3.5 mt-0.5 text-gray-400 flex-shrink-0" />
+
+                              <span>
+                                {
+                                  item
+                                    .contact
+                                    .phone
+                                }
+                              </span>
+                            </div>
+                          )}
+
+                          {item.contact
+                            ?.website && (
+                            <a
+                              href={
+                                item
+                                  .contact
+                                  .website
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex gap-2 text-rose-700 hover:text-rose-900 font-semibold"
+                            >
+                              <Globe className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+
+                              <span>
+                                Website
+                              </span>
+
+                              <ExternalLink className="w-3 h-3 mt-0.5" />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* RESOURCES */}
+
+                      <td className="px-5 py-4 align-top">
+                        <div className="space-y-2 max-w-[240px]">
+
+                          {item.attachments
+                            ?.length >
+                            0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-gray-500 mb-1">
+                                Attachments
+                              </p>
+
+                              <div className="space-y-1">
+                                {item.attachments.map(
+                                  (
+                                    link,
+                                    index
+                                  ) =>
+                                    link.url && (
+                                      <a
+                                        key={
+                                          link.id ??
+                                          index
+                                        }
+                                        href={
+                                          link.url
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 text-sm text-rose-700 hover:text-rose-900 font-semibold"
+                                      >
+                                        <FileText className="w-3.5 h-3.5 flex-shrink-0" />
+
+                                        <span className="truncate">
+                                          {link.title ||
+                                            "Attachment"}
+                                        </span>
+
+                                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                      </a>
+                                    )
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {item.extraLinks
+                            ?.length >
+                            0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-gray-500 mb-1">
+                                Extra Links
+                              </p>
+
+                              <div className="space-y-1">
+                                {item.extraLinks.map(
+                                  (
+                                    link,
+                                    index
+                                  ) =>
+                                    link.url && (
+                                      <a
+                                        key={
+                                          link.id ??
+                                          index
+                                        }
+                                        href={
+                                          link.url
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 text-sm text-blue-700 hover:text-blue-900 font-semibold"
+                                      >
+                                        <LinkIcon className="w-3.5 h-3.5 flex-shrink-0" />
+
+                                        <span className="truncate">
+                                          {link.title ||
+                                            link.originalName ||
+                                            "Extra Link"}
+                                        </span>
+
+                                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                      </a>
+                                    )
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {!item.attachments
+                            ?.length &&
+                            !item.extraLinks
+                              ?.length && (
+                              <span className="text-xs text-gray-400">
+                                No resources
+                              </span>
+                            )}
+                        </div>
+                      </td>
+
+                      {/* ACTIONS */}
+
+                      <td className="px-5 py-4 align-top">
+                        <div className="flex justify-end items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openEditModal(
+                                item
+                              )
+                            }
+                            className="p-2 bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-700 rounded-lg border border-gray-200 transition"
+                            title="Edit AICTE-VAANI"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDelete(
+                                item._id,
+                                item.topic
+                              )
+                            }
+                            className="p-2 bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-700 rounded-lg border border-gray-200 transition"
+                            title="Delete AICTE-VAANI"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>
         )}
+
         <Pagination
-          currentPage={safeAictePage}
-          totalItems={selectedItems.length}
-          pageSize={aictePageSize}
-          onPageChange={aicteFilter === "Active" ? setActiveAictePage : setInactiveAictePage}
+          currentPage={
+            safeAictePage
+          }
+          totalItems={
+            selectedItems.length
+          }
+          pageSize={
+            aictePageSize
+          }
+          onPageChange={
+            aicteFilter === "Active"
+              ? setActiveAictePage
+              : setInactiveAictePage
+          }
         />
       </div>
 
@@ -1370,7 +1681,9 @@ export default function Admin_AICTE_VAANI() {
       {showModal && (
         <div
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-          onMouseDown={closeModal}
+          onMouseDown={
+            closeModal
+          }
         >
           <div
             className="bg-white w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl"
@@ -1397,8 +1710,12 @@ export default function Admin_AICTE_VAANI() {
 
               <button
                 type="button"
-                onClick={closeModal}
-                disabled={submitting}
+                onClick={
+                  closeModal
+                }
+                disabled={
+                  submitting
+                }
                 className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
               >
                 <X className="w-5 h-5" />
@@ -1408,7 +1725,9 @@ export default function Admin_AICTE_VAANI() {
             {/* FORM */}
 
             <form
-              onSubmit={handleSubmit}
+              onSubmit={
+                handleSubmit
+              }
               className="p-6 space-y-7"
             >
 
@@ -1428,10 +1747,15 @@ export default function Admin_AICTE_VAANI() {
 
                     <input
                       type="text"
-                      value={header}
-                      onChange={(e) =>
+                      value={
+                        header
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setHeader(
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1445,10 +1769,15 @@ export default function Admin_AICTE_VAANI() {
                     </label>
 
                     <select
-                      value={status}
-                      onChange={(e) =>
+                      value={
+                        status
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setStatus(
-                          e.target.value ===
+                          e.target
+                            .value ===
                             "Inactive"
                             ? "Inactive"
                             : "Active"
@@ -1475,10 +1804,15 @@ export default function Admin_AICTE_VAANI() {
 
                   <input
                     type="text"
-                    value={topic}
-                    onChange={(e) =>
+                    value={
+                      topic
+                    }
+                    onChange={(
+                      e
+                    ) =>
                       setTopic(
-                        e.target.value
+                        e.target
+                          .value
                       )
                     }
                     className="input"
@@ -1496,10 +1830,15 @@ export default function Admin_AICTE_VAANI() {
 
                     <input
                       type="text"
-                      value={dates}
-                      onChange={(e) =>
+                      value={
+                        dates
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setDates(
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1515,10 +1854,15 @@ export default function Admin_AICTE_VAANI() {
 
                     <input
                       type="text"
-                      value={time}
-                      onChange={(e) =>
+                      value={
+                        time
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setTime(
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1533,10 +1877,15 @@ export default function Admin_AICTE_VAANI() {
 
                     <input
                       type="text"
-                      value={venue}
-                      onChange={(e) =>
+                      value={
+                        venue
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setVenue(
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1552,10 +1901,15 @@ export default function Admin_AICTE_VAANI() {
                   </label>
 
                   <textarea
-                    value={information}
-                    onChange={(e) =>
+                    value={
+                      information
+                    }
+                    onChange={(
+                      e
+                    ) =>
                       setInformation(
-                        e.target.value
+                        e.target
+                          .value
                       )
                     }
                     className="input min-h-[120px] resize-y"
@@ -1583,10 +1937,13 @@ export default function Admin_AICTE_VAANI() {
                       value={
                         contact.coordinator
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateContact(
                           "coordinator",
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1604,10 +1961,13 @@ export default function Admin_AICTE_VAANI() {
                       value={
                         contact.coCoordinator
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateContact(
                           "coCoordinator",
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1625,10 +1985,13 @@ export default function Admin_AICTE_VAANI() {
                       value={
                         contact.department
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateContact(
                           "department",
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1646,10 +2009,13 @@ export default function Admin_AICTE_VAANI() {
                       value={
                         contact.website
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateContact(
                           "website",
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1667,10 +2033,13 @@ export default function Admin_AICTE_VAANI() {
                       value={
                         contact.email
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateContact(
                           "email",
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -1688,10 +2057,13 @@ export default function Admin_AICTE_VAANI() {
                       value={
                         contact.phone
                       }
-                      onChange={(e) =>
+                      onChange={(
+                        e
+                      ) =>
                         updateContact(
                           "phone",
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
                       className="input"
@@ -2002,8 +2374,6 @@ export default function Admin_AICTE_VAANI() {
                                 className="input file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-blue-700"
                               />
 
-                              {/* NEW FILE */}
-
                               {item.file ? (
                                 <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
                                   <LinkIcon className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
@@ -2031,8 +2401,6 @@ export default function Admin_AICTE_VAANI() {
                                   </span>
                                 </div>
                               ) : item.url ? (
-                                /* EXISTING FILE */
-
                                 <div className="mt-2 flex items-center gap-2">
                                   <LinkIcon className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
 
@@ -2086,8 +2454,12 @@ export default function Admin_AICTE_VAANI() {
 
                 <button
                   type="button"
-                  onClick={closeModal}
-                  disabled={submitting}
+                  onClick={
+                    closeModal
+                  }
+                  disabled={
+                    submitting
+                  }
                   className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 disabled:opacity-60 text-gray-700 rounded-lg text-sm font-semibold"
                 >
                   Cancel
@@ -2095,7 +2467,9 @@ export default function Admin_AICTE_VAANI() {
 
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={
+                    submitting
+                  }
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-rose-700 hover:bg-rose-800 disabled:opacity-60 text-white rounded-lg text-sm font-semibold shadow"
                 >
                   {submitting ? (

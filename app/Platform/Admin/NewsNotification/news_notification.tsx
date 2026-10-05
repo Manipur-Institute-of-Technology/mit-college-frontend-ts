@@ -196,10 +196,18 @@ export default function Admin_News_Notification() {
   const [isLoading, setIsLoading] =
     useState(false);
 
-  const [activeNewsPage, setActiveNewsPage] = useState(1);
-  const [inactiveNewsPage, setInactiveNewsPage] = useState(1);
-  const [informationPage, setInformationPage] = useState(1);
-  const [downloadsPage, setDownloadsPage] = useState(1);
+  const [activeNewsPage, setActiveNewsPage] =
+    useState(1);
+
+  const [inactiveNewsPage, setInactiveNewsPage] =
+    useState(1);
+
+  const [informationPage, setInformationPage] =
+    useState(1);
+
+  const [downloadsPage, setDownloadsPage] =
+    useState(1);
+
   const listPageSize = 10;
 
   /* ------------------------------------------------------------------------
@@ -280,34 +288,116 @@ export default function Admin_News_Notification() {
         downloadResponse.data ??
         [];
 
-      setNotifications(
-        Array.isArray(
+      /* ================================================================
+         SORT NEWEST FIRST
+      ================================================================ */
+
+      const sortedActiveNotifications = [
+        ...(Array.isArray(
           activeNotificationData
         )
           ? activeNotificationData
-          : []
-      );
+          : []),
+      ].sort((a, b) => {
+        const dateA = a.createdAt
+          ? new Date(
+              a.createdAt
+            ).getTime()
+          : 0;
 
-      setInactiveNotifications(
-        Array.isArray(
+        const dateB = b.createdAt
+          ? new Date(
+              b.createdAt
+            ).getTime()
+          : 0;
+
+        return dateB - dateA;
+      });
+
+      const sortedInactiveNotifications = [
+        ...(Array.isArray(
           inactiveNotificationData
         )
           ? inactiveNotificationData
-          : []
-      );
+          : []),
+      ].sort((a, b) => {
+        const dateA = a.createdAt
+          ? new Date(
+              a.createdAt
+            ).getTime()
+          : 0;
 
-      setInformations(
-        Array.isArray(
+        const dateB = b.createdAt
+          ? new Date(
+              b.createdAt
+            ).getTime()
+          : 0;
+
+        return dateB - dateA;
+      });
+
+      const sortedInformations = [
+        ...(Array.isArray(
           informationData
         )
           ? informationData
-          : []
+          : []),
+      ].sort((a, b) => {
+        const dateA = a.createdAt
+          ? new Date(
+              a.createdAt
+            ).getTime()
+          : 0;
+
+        const dateB = b.createdAt
+          ? new Date(
+              b.createdAt
+            ).getTime()
+          : 0;
+
+        return dateB - dateA;
+      });
+
+      const sortedDownloads = [
+        ...(Array.isArray(
+          downloadData
+        )
+          ? downloadData
+          : []),
+      ].sort((a, b) => {
+        const dateA = a.createdAt
+          ? new Date(
+              a.createdAt
+            ).getTime()
+          : 0;
+
+        const dateB = b.createdAt
+          ? new Date(
+              b.createdAt
+            ).getTime()
+          : 0;
+
+        return dateB - dateA;
+      });
+
+      /* ================================================================
+         SET SORTED DATA
+      ================================================================ */
+
+      setNotifications(
+        sortedActiveNotifications
+      );
+
+      setInactiveNotifications(
+        sortedInactiveNotifications
+      );
+
+      setInformations(
+        sortedInformations
       );
 
       setDownloads(
-        Array.isArray(downloadData)
-          ? downloadData
-          : []
+        sortedDownloads
       );
     } catch (error) {
       showErrorAlert(
@@ -324,7 +414,10 @@ export default function Admin_News_Notification() {
   ========================================================================== */
 
   useEffect(() => {
-    if (token && role === "admin") {
+    if (
+      token &&
+      role === "admin"
+    ) {
       fetchData();
     }
   }, [token, role]);
@@ -465,11 +558,13 @@ export default function Admin_News_Notification() {
     let folder = "";
 
     if (
-      tab === "notifications"
+      tab ===
+      "notifications"
     ) {
       folder = "notifications";
     } else if (
-      tab === "information"
+      tab ===
+      "information"
     ) {
       folder = "informations";
     } else {
@@ -880,17 +975,69 @@ export default function Admin_News_Notification() {
       downloads,
     ]);
 
-  const activeListPage = activeTab === "notifications"
-    ? notificationFilter === "active" ? activeNewsPage : inactiveNewsPage
-    : activeTab === "information" ? informationPage : downloadsPage;
-  const safeListPage = Math.min(activeListPage, Math.max(1, Math.ceil(currentList.length / listPageSize)));
-  const pagedCurrentList = currentList.slice((safeListPage - 1) * listPageSize, safeListPage * listPageSize);
-  const changeListPage = (page: number) => {
-    if (activeTab === "notifications") {
-      if (notificationFilter === "active") setActiveNewsPage(page);
-      else setInactiveNewsPage(page);
-    } else if (activeTab === "information") setInformationPage(page);
-    else setDownloadsPage(page);
+  const activeListPage =
+    activeTab ===
+    "notifications"
+      ? notificationFilter ===
+        "active"
+        ? activeNewsPage
+        : inactiveNewsPage
+      : activeTab ===
+        "information"
+      ? informationPage
+      : downloadsPage;
+
+  const safeListPage =
+    Math.min(
+      activeListPage,
+      Math.max(
+        1,
+        Math.ceil(
+          currentList.length /
+            listPageSize
+        )
+      )
+    );
+
+  const pagedCurrentList =
+    currentList.slice(
+      (safeListPage - 1) *
+        listPageSize,
+      safeListPage *
+        listPageSize
+    );
+
+  const changeListPage = (
+    page: number
+  ) => {
+    if (
+      activeTab ===
+      "notifications"
+    ) {
+      if (
+        notificationFilter ===
+        "active"
+      ) {
+        setActiveNewsPage(
+          page
+        );
+      } else {
+        setInactiveNewsPage(
+          page
+        );
+      }
+    } else if (
+      activeTab ===
+      "information"
+    ) {
+      setInformationPage(
+        page
+      );
+    } else {
+      setDownloadsPage(
+        page
+      );
+    }
   };
 
   /* ==========================================================================
@@ -969,8 +1116,12 @@ export default function Admin_News_Notification() {
 
               <button
                 type="button"
-                onClick={fetchData}
-                disabled={isLoading}
+                onClick={
+                  fetchData
+                }
+                disabled={
+                  isLoading
+                }
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-sm disabled:opacity-50"
               >
 
@@ -1516,7 +1667,21 @@ export default function Admin_News_Notification() {
 
             </div>
           )}
-          <Pagination currentPage={safeListPage} totalItems={currentList.length} pageSize={listPageSize} onPageChange={changeListPage} />
+
+          <Pagination
+            currentPage={
+              safeListPage
+            }
+            totalItems={
+              currentList.length
+            }
+            pageSize={
+              listPageSize
+            }
+            onPageChange={
+              changeListPage
+            }
+          />
 
         </div>
 
@@ -1529,7 +1694,9 @@ export default function Admin_News_Notification() {
       {showModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          onClick={closeModal}
+          onClick={
+            closeModal
+          }
         >
 
           <div
@@ -1577,7 +1744,9 @@ export default function Admin_News_Notification() {
 
               <button
                 type="button"
-                onClick={closeModal}
+                onClick={
+                  closeModal
+                }
                 disabled={
                   isSubmitting
                 }
@@ -1609,10 +1778,13 @@ export default function Admin_News_Notification() {
 
                 <input
                   type="text"
-                  value={formTitle}
+                  value={
+                    formTitle
+                  }
                   onChange={(e) =>
                     setFormTitle(
-                      e.target.value
+                      e.target
+                        .value
                     )
                   }
                   placeholder="Enter title or heading"
@@ -1622,7 +1794,10 @@ export default function Admin_News_Notification() {
                 />
 
                 <p className="text-[11px] text-gray-400 mt-1 text-right">
-                  {formTitle.length}/100
+                  {
+                    formTitle.length
+                  }
+                  /100
                 </p>
 
               </div>
@@ -1818,7 +1993,9 @@ export default function Admin_News_Notification() {
 
                 <button
                   type="button"
-                  onClick={closeModal}
+                  onClick={
+                    closeModal
+                  }
                   disabled={
                     isSubmitting
                   }
