@@ -123,6 +123,35 @@ type PaperForm = {
 // HELPERS
 // =========================================================
 
+const normalizeFacultyRole = (
+  role?: string | string[]
+) => {
+  const value = Array.isArray(role)
+    ? role[0] || ""
+    : role || "";
+
+  const normalized = value
+    .trim()
+    .toLowerCase();
+
+  switch (normalized) {
+    case "professor":
+      return "Professor";
+
+    case "associate professor":
+      return "Associate Professor";
+
+    case "assistant professor":
+      return "Assistant Professor";
+
+    case "guest faculty":
+      return "Guest Faculty";
+
+    default:
+      return "";
+  }
+};
+
 const getApiErrorMessage = (
   error: any,
   fallback: string
@@ -780,12 +809,12 @@ export default function Admin_Faculty_Page() {
         bios:
           faculty.bios || "",
 
+        // Get CURRENT ROLE directly
+        // from the database faculty data
         roles:
-          Array.isArray(
+          normalizeFacultyRole(
             faculty.roles
-          )
-            ? faculty.roles[0] || ""
-            : faculty.roles || "",
+          ),
 
         departmentId:
           faculty.departmentId ||
@@ -880,6 +909,42 @@ export default function Admin_Faculty_Page() {
         return;
       }
 
+      // =====================================================
+      // HOD VALIDATION
+      // =====================================================
+      //
+      // Only one faculty member can have hod: true.
+      //
+      // If the current faculty is already the HOD,
+      // allow them to remain HOD.
+      //
+      // If another faculty member is already HOD and
+      // this faculty is being changed to HOD, stop here.
+      // =====================================================
+
+      if (facultyForm.hod) {
+        const existingHOD = facultyList.find(
+          (faculty) =>
+            faculty.hod === true &&
+            faculty._id !== editingFacultyId &&
+            (
+              faculty.departmentId ||
+              faculty.department?._id
+            ) === facultyForm.departmentId
+        );
+
+        if (existingHOD) {
+          const existingHODName =
+            getFacultyName(existingHOD);
+
+          toast.error(
+            `There cannot be two Faculty Heads in the same department. ${existingHODName} is already the Faculty Head.`
+          );
+
+          return;
+        }
+      }
+
       try {
         setSavingFaculty(true);
 
@@ -900,7 +965,8 @@ export default function Admin_Faculty_Page() {
             facultyForm.phoneNumber.trim(),
 
           sex:
-            facultyForm.sex || undefined,
+            facultyForm.sex ||
+            undefined,
 
           highestDegree:
             facultyForm.highestDegree.trim(),
@@ -3150,9 +3216,7 @@ export default function Admin_Faculty_Page() {
                   </label>
 
                   <select
-                    value={
-                      facultyForm.roles
-                    }
+                    value={facultyForm.roles}
                     onChange={(e) =>
                       handleFacultyChange(
                         "roles",
@@ -3164,16 +3228,20 @@ export default function Admin_Faculty_Page() {
                     <option value="">
                       Select Role
                     </option>
-                    <option value="professor">
+
+                    <option value="Professor">
                       Professor
                     </option>
-                    <option value="associate professor">
+
+                    <option value="Associate Professor">
                       Associate Professor
                     </option>
-                    <option value="assistant professor">
+
+                    <option value="Assistant Professor">
                       Assistant Professor
                     </option>
-                    <option value="guest faculty">
+
+                    <option value="Guest Faculty">
                       Guest Faculty
                     </option>
                   </select>

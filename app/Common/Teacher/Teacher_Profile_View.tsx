@@ -60,6 +60,12 @@ const Teacher_Profile_View: React.FC<
   // SAFE ROLE CONVERTER
   // ======================================================
 
+  const capitalizeWords = (text: string): string => {
+    return text
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   const getRolesText = (
     roles: any
   ): string => {
@@ -395,10 +401,9 @@ const Teacher_Profile_View: React.FC<
           // ROLE
           // =================================================
 
-          const position =
-            getRolesText(
-              teacher.roles
-            );
+          const position = capitalizeWords(
+            getRolesText(teacher.roles)
+          );
 
           // =================================================
           // HOD

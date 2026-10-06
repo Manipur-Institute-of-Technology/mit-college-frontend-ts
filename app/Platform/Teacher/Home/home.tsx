@@ -1731,17 +1731,29 @@ const handleLogout = async () => {
   } catch (error) {
     // Even if the API logout fails, clear local authentication.
   } finally {
-    // Clear authentication locally
+    // Clear authentication locally.
+    // Do NOT hard-redirect to /faculty here.
+    // The /faculty path may be mapped to a legacy/public
+    // faculty profile page, which is what caused the old
+    // skeleton-like profile page to appear after logout.
     setToken("");
     setRole("");
     setUser(null);
 
-    // Remove stored authentication
+    // Remove stored authentication.
     sessionStorage.removeItem("token");
     localStorage.removeItem("token");
 
-    // Redirect
-    window.location.href = "/faculty";
+    // Clear other common auth keys if AuthContext persists them.
+    sessionStorage.removeItem("role");
+    localStorage.removeItem("role");
+    sessionStorage.removeItem("user");
+    localStorage.removeItem("user");
+
+    // Stay on the current TeacherHomePage route.
+    // isAuthenticated becomes false and the existing
+    // SignIn_SignUP role="faculty" fallback is rendered.
+    setSidebarOpen(false);
   }
 };
 
