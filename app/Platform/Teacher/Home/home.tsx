@@ -534,13 +534,10 @@ export default function TeacherHomePage() {
   // =======================================================
 
   const facultyRoleOptions = [
-    "faculty",
-    "assistant professor",
-    "associate professor",
-    "professor",
-    "guest faculty",
-    "lecturer",
-    "head of department",
+    "Professor",
+    "Associate Professor",
+    "Assistant Professor",
+    "Guest Faculty",
   ];
 
   // =======================================================

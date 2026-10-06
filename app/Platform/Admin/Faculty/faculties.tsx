@@ -3164,29 +3164,17 @@ export default function Admin_Faculty_Page() {
                     <option value="">
                       Select Role
                     </option>
-                    <option value="faculty">
-                      Faculty
-                    </option>
-                    <option value="assistant professor">
-                      Assistant Professor
+                    <option value="professor">
+                      Professor
                     </option>
                     <option value="associate professor">
                       Associate Professor
                     </option>
-                    <option value="professor">
-                      Professor
+                    <option value="assistant professor">
+                      Assistant Professor
                     </option>
                     <option value="guest faculty">
                       Guest Faculty
-                    </option>
-                    <option value="head of department">
-                      Head of Department
-                    </option>
-                    <option value="dean">
-                      Dean
-                    </option>
-                    <option value="principal">
-                      Principal
                     </option>
                   </select>
                 </div>

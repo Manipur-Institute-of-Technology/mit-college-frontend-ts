@@ -604,10 +604,20 @@ export default function DepartmentData({
             // EXPERTISE
             // =============================================
 
-            const expertFields =
-              getExpertFieldsText(
-                teacher.expertFields
-              );
+            const expertFields = Array.isArray(teacher.expertFields)
+              ? teacher.expertFields
+                  .flatMap((field) => {
+                    if (typeof field !== "string") return [field];
+
+                    try {
+                      const parsed = JSON.parse(field);
+                      return Array.isArray(parsed) ? parsed : [field];
+                    } catch {
+                      return [field];
+                    }
+                  })
+                  .join(", ")
+              : "";
 
             return (
               <button
