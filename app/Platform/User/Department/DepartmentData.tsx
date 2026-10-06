@@ -780,7 +780,6 @@ export default function DepartmentData({
                         line-clamp-2
                       "
                     >
-                      Expertise:{" "}
                       {expertFields}
                     </p>
                   )}
