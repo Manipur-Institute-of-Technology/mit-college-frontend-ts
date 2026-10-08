@@ -1,4 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
+import { createPortal } from "react-dom";
 import Informations from "~/Common/Informations/Informations";
 import { IoCloseSharp } from "react-icons/io5";
 import { Dialog, Transition } from "@headlessui/react";
@@ -30,6 +31,97 @@ type GalleryFolder = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// IMAGE LIGHTBOX
+// Completely independent from GalleryModal
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ImageLightbox({
+  imageUrl,
+  closeImage,
+}: {
+  imageUrl: string | null;
+  closeImage: () => void;
+}) {
+  if (!imageUrl) return null;
+
+  const lightbox = (
+    <div
+      className="
+        fixed
+        inset-0
+        z-[99999]
+        flex
+        items-center
+        justify-center
+        bg-black/90
+        backdrop-blur-md
+        p-4
+      "
+      onClick={closeImage}
+    >
+      {/* ─────────────────────────────────────────────────────────────────────
+          CLOSE IMAGE BUTTON
+      ───────────────────────────────────────────────────────────────────── */}
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          closeImage();
+        }}
+        className="
+          absolute
+          top-5
+          right-5
+          z-[100000]
+          w-10
+          h-10
+          rounded-full
+          bg-white/10
+          hover:bg-white/20
+          text-white
+          flex
+          items-center
+          justify-center
+          transition-colors
+        "
+        aria-label="Close image"
+      >
+        <IoCloseSharp className="text-2xl" />
+      </button>
+
+      {/* ─────────────────────────────────────────────────────────────────────
+          IMAGE
+      ───────────────────────────────────────────────────────────────────── */}
+
+      <img
+        src={imageUrl}
+        alt="Full view"
+        className="
+          relative
+          z-[100000]
+          max-h-[90vh]
+          max-w-full
+          object-contain
+          rounded-xl
+          shadow-2xl
+        "
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      />
+    </div>
+  );
+
+  // Render outside the GalleryModal / Headless UI Dialog
+  if (typeof document !== "undefined") {
+    return createPortal(lightbox, document.body);
+  }
+
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GALLERY MODAL
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -37,14 +129,13 @@ function GalleryModal({
   isOpen,
   closeModal,
   folder,
+  openImage,
 }: {
   isOpen: boolean;
   closeModal: () => void;
   folder: GalleryFolder | null;
+  openImage: (imageUrl: string) => void;
 }) {
-  const [lightbox, setLightbox] =
-    useState<string | null>(null);
-
   if (!folder) return null;
 
   return (
@@ -72,8 +163,19 @@ function GalleryModal({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center overflow-auto p-4">
-
+            <div
+              className="
+                fixed
+                inset-0
+                bg-black/40
+                backdrop-blur-sm
+                flex
+                items-center
+                justify-center
+                overflow-auto
+                p-4
+              "
+            >
               <Dialog.Panel
                 className="
                   w-full
@@ -93,7 +195,6 @@ function GalleryModal({
                   flex-col
                 "
               >
-
                 {/* ───────────────────────────────────────────────────────────
                     MODAL HEADER
                 ─────────────────────────────────────────────────────────── */}
@@ -114,7 +215,6 @@ function GalleryModal({
                   "
                 >
                   <div className="flex items-center gap-3 min-w-0">
-
                     <div
                       className="
                         w-10
@@ -143,7 +243,6 @@ function GalleryModal({
                     >
                       {folder.galleryName}
                     </span>
-
                   </div>
 
                   <button
@@ -168,7 +267,6 @@ function GalleryModal({
                       className="text-2xl"
                     />
                   </button>
-
                 </Dialog.Title>
 
                 {/* ───────────────────────────────────────────────────────────
@@ -176,7 +274,6 @@ function GalleryModal({
                 ─────────────────────────────────────────────────────────── */}
 
                 <div className="flex items-center gap-2 mb-4">
-
                   <div
                     className="
                       flex
@@ -200,21 +297,33 @@ function GalleryModal({
                         ? "Photo"
                         : "Photos"}
                     </span>
-
                   </div>
-
                 </div>
 
                 {/* ───────────────────────────────────────────────────────────
                     IMAGES
                 ─────────────────────────────────────────────────────────── */}
 
-                <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar pr-1">
-
+                <div
+                  className="
+                    flex-1
+                    min-h-0
+                    overflow-y-auto
+                    hide-scrollbar
+                    pr-1
+                  "
+                >
                   {folder.images.length === 0 ? (
-
-                    <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
-
+                    <div
+                      className="
+                        flex
+                        flex-col
+                        items-center
+                        justify-center
+                        min-h-[40vh]
+                        text-center
+                      "
+                    >
                       <div
                         className="
                           w-16
@@ -235,11 +344,8 @@ function GalleryModal({
                       <p className="text-sm font-semibold text-gray-500">
                         No images in this gallery yet.
                       </p>
-
                     </div>
-
                   ) : (
-
                     <div
                       className="
                         grid
@@ -249,86 +355,83 @@ function GalleryModal({
                         gap-3
                       "
                     >
-
-                      {folder.images.map(
-                        (img) => (
-                          <div
-                            key={
-                              img._id ||
+                      {folder.images.map((img) => (
+                        <div
+                          key={
+                            img._id ||
+                            img.imageUrl
+                          }
+                          className="
+                            relative
+                            aspect-square
+                            overflow-hidden
+                            rounded-xl
+                            bg-gray-100
+                            border
+                            border-gray-200
+                            cursor-pointer
+                            group
+                          "
+                          onClick={() =>
+                            openImage(
                               img.imageUrl
+                            )
+                          }
+                        >
+                          <img
+                            src={img.imageUrl}
+                            alt={
+                              img.caption ||
+                              img.filename ||
+                              "Gallery image"
                             }
                             className="
-                              relative
-                              aspect-square
-                              overflow-hidden
-                              rounded-xl
-                              bg-gray-100
-                              border
-                              border-gray-200
-                              cursor-pointer
-                              group
+                              w-full
+                              h-full
+                              object-cover
+                              transition-transform
+                              duration-300
+                              group-hover:scale-110
                             "
-                            onClick={() =>
-                              setLightbox(
-                                img.imageUrl
-                              )
-                            }
-                          >
+                            onError={(e) => {
+                              (
+                                e.currentTarget as HTMLImageElement
+                              ).style.opacity = "0.3";
+                            }}
+                          />
 
-                            <img
-                              src={
-                                img.imageUrl
-                              }
-                              alt={
-                                img.caption ||
-                                img.filename ||
-                                "Gallery image"
-                              }
-                              className="
-                                w-full
-                                h-full
-                                object-cover
-                                transition-transform
-                                duration-300
-                                group-hover:scale-110
-                              "
-                              onError={(e) => {
-                                (
-                                  e.currentTarget as HTMLImageElement
-                                ).style.opacity =
-                                  "0.3";
-                              }}
-                            />
+                          {/* Hover overlay */}
 
-                            {/* Hover overlay */}
-
-                            <div
-                              className="
-                                absolute
-                                inset-0
-                                bg-black/0
-                                group-hover:bg-black/20
-                                transition-colors
-                                duration-300
-                              "
-                            />
-
-                          </div>
-                        )
-                      )}
-
+                          <div
+                            className="
+                              absolute
+                              inset-0
+                              bg-black/0
+                              group-hover:bg-black/20
+                              transition-colors
+                              duration-300
+                            "
+                          />
+                        </div>
+                      ))}
                     </div>
-
                   )}
-
                 </div>
 
                 {/* ───────────────────────────────────────────────────────────
                     CLOSE BUTTON
                 ─────────────────────────────────────────────────────────── */}
 
-                <div className="mt-5 pt-4 border-t border-gray-200 flex justify-end">
-
+                <div
+                  className="
+                    mt-5
+                    pt-4
+                    border-t
+                    border-gray-200
+                    flex
+                    justify-end
+                  "
+                >
                   <button
                     type="button"
                     className="
@@ -348,88 +451,12 @@ function GalleryModal({
                   >
                     Close
                   </button>
-
                 </div>
-
               </Dialog.Panel>
-
             </div>
           </Transition.Child>
         </Dialog>
       </Transition>
-
-      {/* ─────────────────────────────────────────────────────────────────────
-          LIGHTBOX
-      ───────────────────────────────────────────────────────────────────── */}
-
-      {lightbox && (
-
-        <div
-          className="
-            fixed
-            inset-0
-            z-[9999]
-            flex
-            items-center
-            justify-center
-            bg-black/90
-            backdrop-blur-md
-            p-4
-          "
-          onClick={() =>
-            setLightbox(null)
-          }
-        >
-
-          {/* Close */}
-
-          <button
-            type="button"
-            onClick={() =>
-              setLightbox(null)
-            }
-            className="
-              absolute
-              top-5
-              right-5
-              z-[10000]
-              w-10
-              h-10
-              rounded-full
-              bg-white/10
-              hover:bg-white/20
-              text-white
-              flex
-              items-center
-              justify-center
-              transition-colors
-            "
-            aria-label="Close image"
-          >
-            <IoCloseSharp className="text-2xl" />
-          </button>
-
-          <img
-            src={lightbox}
-            alt="Full view"
-            className="
-              relative
-              z-[10000]
-              max-h-[90vh]
-              max-w-full
-              object-contain
-              rounded-xl
-              shadow-2xl
-            "
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          />
-
-        </div>
-
-      )}
-
     </>
   );
 }
@@ -445,11 +472,23 @@ export default function Gallery() {
   const [isLoading, setIsLoading] =
     useState(true);
 
+  // ───────────────────────────────────────────────────────────────────────────
+  // GALLERY MODAL STATE
+  // ───────────────────────────────────────────────────────────────────────────
+
   const [selectedFolder, setSelectedFolder] =
     useState<GalleryFolder | null>(null);
 
   const [isModalOpen, setIsModalOpen] =
     useState(false);
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // IMAGE LIGHTBOX STATE
+  // Completely independent from modal state
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const [selectedImage, setSelectedImage] =
+    useState<string | null>(null);
 
   // ───────────────────────────────────────────────────────────────────────────
   // FETCH GALLERIES
@@ -526,11 +565,13 @@ export default function Gallery() {
         }));
 
       setFolders(formatted);
-
     } catch (error) {
+      console.error(
+        "Failed to fetch galleries:",
+        error
+      );
 
       setFolders([]);
-
     } finally {
       setIsLoading(false);
     }
@@ -551,7 +592,15 @@ export default function Gallery() {
   const openModal = (
     folder: GalleryFolder
   ) => {
+    // Set folder
     setSelectedFolder(folder);
+
+    // IMPORTANT:
+    // Every time a gallery is opened, make sure
+    // no previously opened image is active.
+    setSelectedImage(null);
+
+    // Open gallery modal
     setIsModalOpen(true);
   };
 
@@ -565,18 +614,65 @@ export default function Gallery() {
   };
 
   // ───────────────────────────────────────────────────────────────────────────
+  // OPEN IMAGE
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const openImage = (
+    imageUrl: string
+  ) => {
+    setSelectedImage(imageUrl);
+  };
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // CLOSE IMAGE
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const closeImage = () => {
+    setSelectedImage(null);
+  };
+
+  // ───────────────────────────────────────────────────────────────────────────
   // RENDER
   // ───────────────────────────────────────────────────────────────────────────
 
   return (
     <>
-      <div className="min-h-dvh space-y-6 sm:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
-
+      <div
+        className="
+          min-h-dvh
+          space-y-6
+          sm:space-y-8
+          px-3
+          sm:px-5
+          md:px-8
+          lg:px-10
+        "
+      >
         {/* ───────────────────────────────────────────────────────────────────
             HEADER
         ─────────────────────────────────────────────────────────────────── */}
 
-        <div className="uppercase text-center text-lg sm:text-xl md:text-2xl font-bold tracking-[0.12em] sm:tracking-widest p-3 sm:p-4 md:p-5 bg-cyan-500 border-2 border-gray-300 rounded shadow-sm text-white">
+        <div
+          className="
+            uppercase
+            text-center
+            text-lg
+            sm:text-xl
+            md:text-2xl
+            font-bold
+            tracking-[0.12em]
+            sm:tracking-widest
+            p-3
+            sm:p-4
+            md:p-5
+            bg-cyan-500
+            border-2
+            border-gray-300
+            rounded
+            shadow-sm
+            text-white
+          "
+        >
           Gallery
         </div>
 
@@ -585,15 +681,20 @@ export default function Gallery() {
         ─────────────────────────────────────────────────────────────────── */}
 
         <div className="max-w-7xl w-full mx-auto">
-
           {/* ─────────────────────────────────────────────────────────────────
               LOADING
           ───────────────────────────────────────────────────────────────── */}
 
           {isLoading ? (
-
-            <div className="flex flex-col items-center justify-center py-24">
-
+            <div
+              className="
+                flex
+                flex-col
+                items-center
+                justify-center
+                py-24
+              "
+            >
               <div
                 className="
                   w-10
@@ -610,17 +711,22 @@ export default function Gallery() {
               <p className="text-sm font-semibold text-gray-500">
                 Loading gallery...
               </p>
-
             </div>
-
           ) : folders.length === 0 ? (
-
             /* ───────────────────────────────────────────────────────────────
                 EMPTY STATE
             ─────────────────────────────────────────────────────────────── */
 
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-
+            <div
+              className="
+                flex
+                flex-col
+                items-center
+                justify-center
+                py-24
+                text-center
+              "
+            >
               <div
                 className="
                   w-20
@@ -648,17 +754,13 @@ export default function Gallery() {
               <p className="text-sm text-gray-400 mt-1">
                 No gallery albums are available at the moment.
               </p>
-
             </div>
-
           ) : (
-
             /* ───────────────────────────────────────────────────────────────
                 FOLDERS
             ─────────────────────────────────────────────────────────────── */
 
             <div className="p-4 sm:p-6">
-
               <div
                 className="
                   grid
@@ -671,10 +773,8 @@ export default function Gallery() {
                   sm:gap-5
                 "
               >
-
                 {folders.map(
                   (folder) => (
-
                     <button
                       key={folder._id}
                       type="button"
@@ -703,13 +803,19 @@ export default function Gallery() {
                         focus:ring-offset-2
                       "
                     >
-
                       {/* ─────────────────────────────────────────────────
                           FOLDER ICON
                       ───────────────────────────────────────────────── */}
 
-                      <div className="relative flex justify-center items-center pt-2">
-
+                      <div
+                        className="
+                          relative
+                          flex
+                          justify-center
+                          items-center
+                          pt-2
+                        "
+                      >
                         {/* Folder tab */}
 
                         <div
@@ -748,7 +854,6 @@ export default function Gallery() {
                             group-hover:scale-105
                           "
                         >
-
                           <FolderOpen
                             className="
                               w-10
@@ -760,9 +865,7 @@ export default function Gallery() {
                             "
                             strokeWidth={1.8}
                           />
-
                         </div>
-
                       </div>
 
                       {/* ─────────────────────────────────────────────────
@@ -770,7 +873,6 @@ export default function Gallery() {
                       ───────────────────────────────────────────────── */}
 
                       <div className="mt-5">
-
                         <h3
                           className="
                             text-sm
@@ -793,8 +895,14 @@ export default function Gallery() {
                             IMAGE COUNT
                         ─────────────────────────────────────────────── */}
 
-                        <div className="flex items-center gap-1.5 mt-1.5">
-
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-1.5
+                            mt-1.5
+                          "
+                        >
                           <ImageIcon
                             className="
                               w-3.5
@@ -804,43 +912,50 @@ export default function Gallery() {
                           />
 
                           <span className="text-xs text-gray-500">
-
                             {folder.images.length}{" "}
-
                             {folder.images.length ===
                             1
                               ? "photo"
                               : "photos"}
-
                           </span>
-
                         </div>
-
                       </div>
-
                     </button>
-
                   )
                 )}
-
               </div>
-
             </div>
-
           )}
-
         </div>
-
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────
           GALLERY MODAL
+
+          This has its own state:
+          isModalOpen / selectedFolder
       ───────────────────────────────────────────────────────────────────── */}
 
       <GalleryModal
         isOpen={isModalOpen}
         closeModal={closeModal}
         folder={selectedFolder}
+        openImage={openImage}
+      />
+
+      {/* ─────────────────────────────────────────────────────────────────────
+          IMAGE LIGHTBOX
+
+          This has completely separate state:
+          selectedImage
+
+          It is rendered through a portal directly into document.body,
+          so it is independent from Headless UI Dialog.
+      ───────────────────────────────────────────────────────────────────── */}
+
+      <ImageLightbox
+        imageUrl={selectedImage}
+        closeImage={closeImage}
       />
 
       {/* ─────────────────────────────────────────────────────────────────────
