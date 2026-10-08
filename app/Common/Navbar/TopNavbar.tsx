@@ -82,7 +82,7 @@ export default function TopNavbar() {
         <div className="flex flex-row flex-wrap text-center md:flex-nowrap justify-center items-center relative">
           <div className="select-none w-full min-w-0 md:w-max">
             <img
-              src="/MIT_logo.png"
+              src="/MIT_logo.png?v=2"
               alt="MIT full logo"
               className="mx-auto h-[clamp(3.5rem,8vw,5rem)] w-auto max-w-full"
             />

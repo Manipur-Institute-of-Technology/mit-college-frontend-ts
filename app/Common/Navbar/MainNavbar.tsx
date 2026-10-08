@@ -88,7 +88,7 @@ export default function Navbar({
           <Link to="/" className="hidden lg:block">
             <div className="bg-white border-8 border-rose-700/90 p-1 rounded-full hover:scale-105 transition">
               <img
-                src="/Manipur_University_Logo.png"
+                src="/Manipur_University_Logo.png?v=2"
                 alt="MU Logo"
                 width={60}
                 height={60}
