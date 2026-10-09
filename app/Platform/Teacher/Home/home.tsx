@@ -4993,7 +4993,7 @@ const handleLogout = async () => {
                     text-gray-400
                   "
                 >
-                  Password must be at least 6 characters.
+                  Password must be at least 6 characters, musn't contain password, 1 uppercase, 1 lowercase, 1 special character, 1 number
                 </p>
 
               </div>
