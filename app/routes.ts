@@ -29,7 +29,7 @@ export default [
     route("CE_dept", "./routes/ce.tsx"),
     route("ME_dept", "./routes/me.tsx"),
     route("Fire_Safety_Certificate", "./routes/fsc.tsx"),
-    route("Mandatory_Disclosures", "./routes/md.tsx"),
+    route("Mandatory_Disclosure", "./routes/md.tsx"),
     route("Ragging", "./routes/ragging.tsx"),
     route("Faculty_Development_Program", "./routes/fdp.tsx"),
     route("Placement", "./routes/placement.tsx"),

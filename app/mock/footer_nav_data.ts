@@ -68,8 +68,8 @@ export const footerNavigationData: FooterNavigationData[] = [
         href: "/Fire_Safety_Certificate",
       },
       {
-        name: "Mandatory Disclosures",
-        href: "/Mandatory_Disclosures",
+        name: "Mandatory Disclosure",
+        href: "/Mandatory_Disclosure",
       },
       {
         name: "Ragging",
