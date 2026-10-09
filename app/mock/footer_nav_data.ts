@@ -16,24 +16,24 @@ export const footerNavigationData: FooterNavigationData[] = [
         href: "/CE_dept",
       },
       {
-        name: "Department of Electronics & Communication Engineering",
-        href: "/ECE_dept",
-      },
-      {
         name: "Department of Computer Science & Engineering",
         href: "/CSE_dept",
       },
       {
-        name: "Department of Basic Sciences & Humanities",
-        href: "/BSH_dept",
+        name: "Department of Electrical Engineering",
+        href: "/EE_dept",
+      },
+      {
+        name: "Department of Electronics & Communication Engineering",
+        href: "/ECE_dept",
       },
       {
         name: "Department of Mechanical Engineering",
         href: "/ME_dept",
       },
       {
-        name: "Department of Electrical Engineering",
-        href: "/EE_dept",
+        name: "Department of Basic Sciences & Humanities",
+        href: "/BSH_dept",
       },
     ],
   },

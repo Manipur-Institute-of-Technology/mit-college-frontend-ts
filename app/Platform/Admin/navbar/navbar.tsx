@@ -319,9 +319,17 @@ export default function AdminNavbar() {
       return;
     }
 
-    if (newPassword.length < 6) {
+    
+    if (
+      newPassword.length < 7 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword) ||
+      !/[^A-Za-z0-9]/.test(newPassword) ||
+      /password/i.test(newPassword)
+    ) {
       setPasswordError(
-        "New password must be at least 6 characters long."
+        "Password must be at least 7 characters and contain at least 1 uppercase letter, 1 lowercase letter, 1 special character, and 1 number. It must not contain the word 'password'."
       );
       return;
     }

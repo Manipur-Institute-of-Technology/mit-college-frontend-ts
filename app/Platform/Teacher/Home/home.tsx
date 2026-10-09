@@ -1569,135 +1569,103 @@ export default function TeacherHomePage() {
   // SUBMIT CHANGE PASSWORD
   // =======================================================
 
-  const handleChangePassword =
-    async () => {
+  
+  const handleChangePassword = async () => {
+    if (changingPassword) {
+      return;
+    }
 
-      const {
-        oldPassword,
-        newPassword,
-        confirmPassword,
-      } = passwordForm;
+    const {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    } = passwordForm;
 
-      // Current password validation
-      if (!oldPassword.trim()) {
+    // Current password: required, but no new-password rules
+    if (!oldPassword.trim()) {
+      setPasswordError("Please enter your current password.");
+      return;
+    }
 
-        setPasswordError(
-          "Please enter your current password."
-        );
+    // New password: required
+    if (!newPassword.trim()) {
+      setPasswordError("Please enter your new password.");
+      return;
+    }
 
-        return;
-      }
+    // Validate new password format
+    if (
+      newPassword.length < 7 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword) ||
+      !/[^A-Za-z0-9]/.test(newPassword) ||
+      /password/i.test(newPassword)
+    ) {
+      setPasswordError(
+        "Password must be at least 7 characters and contain at least 1 uppercase letter, 1 lowercase letter, 1 special character, and 1 number. It must not contain the word 'password'."
+      );
+      return;
+    }
 
-      // New password validation
-      if (!newPassword.trim()) {
+    // Confirm password: required
+    if (!confirmPassword.trim()) {
+      setPasswordError("Please confirm your new password.");
+      return;
+    }
 
-        setPasswordError(
-          "Please enter your new password."
-        );
+    // Confirm password must match
+    if (newPassword !== confirmPassword) {
+      setPasswordError(
+        "New password and confirm password do not match."
+      );
+      return;
+    }
 
-        return;
-      }
+    // New password must differ from current password
+    if (oldPassword === newPassword) {
+      setPasswordError(
+        "New password must be different from your current password."
+      );
+      return;
+    }
 
-      // Password length validation
-      if (newPassword.length < 6) {
+    try {
+      setChangingPassword(true);
+      setPasswordError("");
 
-        setPasswordError(
-          "New password must be at least 6 characters long."
-        );
+      await apiClient.post(
+        "/account/changepassword",
+        {
+          oldPassword,
+          newPassword,
+        }
+      );
 
-        return;
-      }
+      setShowChangePassword(false);
+      resetPasswordForm();
 
-      // Confirm password validation
-      if (!confirmPassword.trim()) {
+      await showAlert({
+        title: "Password Changed!",
+        text: "Your password has been changed successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#22c55e",
+        customClass: {
+          popup: "rounded-xl",
+        },
+      });
+    } catch (err: any) {
+      const message = getApiErrorMessage(
+        err,
+        "Unable to change your password. Please check your current password and try again."
+      );
 
-        setPasswordError(
-          "Please confirm your new password."
-        );
-
-        return;
-      }
-
-      // Password match validation
-      if (
-        newPassword !==
-        confirmPassword
-      ) {
-
-        setPasswordError(
-          "New password and confirm password do not match."
-        );
-
-        return;
-      }
-
-      // Prevent using the same password
-      if (
-        oldPassword ===
-        newPassword
-      ) {
-
-        setPasswordError(
-          "New password must be different from your current password."
-        );
-
-        return;
-      }
-
-      try {
-
-        setChangingPassword(true);
-        setPasswordError("");
-
-        await apiClient.post(
-          "/account/changepassword",
-          {
-            oldPassword,
-            newPassword,
-          }
-        );
-
-        setShowChangePassword(false);
-
-        resetPasswordForm();
-
-        await showAlert({
-          title:
-            "Password Changed!",
-
-          text:
-            "Your password has been changed successfully.",
-
-          icon:
-            "success",
-
-          confirmButtonText:
-            "OK",
-
-          confirmButtonColor:
-            "#22c55e",
-
-          customClass: {
-            popup:
-              "rounded-xl",
-          },
-        });
-
-      } catch (err: any) {
-
-        const message =
-          getApiErrorMessage(
-            err,
-            "Unable to change your password."
-          );
-
-        setPasswordError(message);
-
-      } finally {
-
-        setChangingPassword(false);
-      }
-    };
+      setPasswordError(message);
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   // =======================================================
   // LOGOUT

@@ -22,8 +22,6 @@ export default function Home() {
         <li className="Home-List-Items">To produce good engineering professionals with social commitment.</li>
         </ul>
         <div className="font-bold text-base sm:text-lg md:text-xl uppercase border-l-4 border-cyan-500 pl-3">CAMPUS INFORMATION</div>
-        <div className="font-bold mt-4">Takyelpat Campus</div>
-        <div className="text-justify">MIT Takyelpat campus is located just adjacent to NH 37 (New Cachar Road) approximately 4 Kms. from the heart of Imphal City. It is about 6 Kms from Imphal International Airport, Tulihal, Imphal</div>
         <div className="font-bold mt-4">Manipur University Campus (Canchipur)</div>
         <div className="text-justify">MIT Manipur University Campus is located at Canchipur, Imphal, the capital city of Manipur. The University campus is spread over an area of 287 acres in the historic Canchipur which is the site of the old palace of Manipur “The Langthabal Konung (Palace)” which was established by Maharaja Ghambhir Singh in 1827 AD just after the liberation of Manipur from Burmese (Myanmar) occupation. Maharaja Gambhir Singh took his last breath at Canchipur. Canchipur is located along the National Highway (NH-2) at about 8 km. from the heart of the Imphal City and 12 km. from Imphal International Airport.</div>
 
