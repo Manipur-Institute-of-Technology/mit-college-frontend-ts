@@ -116,6 +116,7 @@
   text-decoration: none;
 
   animation: newPulse 1.5s ease-in-out infinite;
+  margin-right: 0.4rem;
 }
 
 /* ================================================================

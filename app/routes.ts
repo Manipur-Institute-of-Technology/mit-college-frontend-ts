@@ -42,6 +42,7 @@ export default [
     route("student-list", "./routes/student_list.tsx"),
     route("all-notifications", "./routes/all_notification.tsx"),
     route("faculty/:facultyName", "./routes/teacher_view_profile.tsx"),
+    route("all-downloads", "./routes/all_downloads.tsx"),
   ]),
   // CMS Route
   ...prefix("cms", [

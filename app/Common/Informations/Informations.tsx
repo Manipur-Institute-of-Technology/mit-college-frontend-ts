@@ -342,6 +342,13 @@ function Download({
   data: InfoItem[];
   loading: boolean;
 }) {
+  const sortedData = [...data].sort((a, b) =>
+    resolveItemTitle(a).localeCompare(resolveItemTitle(b), undefined, {
+      sensitivity: "base",
+      numeric: true,
+    })
+  );
+
   return (
     <div className="flex flex-col gap-4 p-4 border-2 border-gray-400 rounded-br-2xl rounded-tl-2xl h-96 w-5/6 max-w-3xl bg-white shadow-xs">
 
@@ -349,18 +356,18 @@ function Download({
         Download
       </div>
 
-      <div className="flex flex-col gap-4 overflow-y-auto hide-scrollbar">
+      <div className="flex flex-col gap-4 overflow-y-auto hide-scrollbar flex-1 min-h-0">
 
         {loading ? (
           <p className="text-gray-400 text-xs italic">
             Loading downloads...
           </p>
-        ) : data.length === 0 ? (
+        ) : sortedData.length === 0 ? (
           <p className="text-gray-400 text-xs italic">
             No downloads available.
           </p>
         ) : (
-          data.map((item, index) => {
+          sortedData.map((item, index) => {
             const link =
               resolveItemLink(
                 item,
@@ -393,6 +400,16 @@ function Download({
           })
         )}
 
+      </div>
+
+      <div className="mt-auto flex justify-center">
+        <Link
+          to="/all-downloads"
+          state={{ downloads: sortedData }}
+          className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-rose-700 text-white text-sm font-semibold shadow hover:bg-rose-800 hover:shadow-md transition-all duration-200"
+        >
+          View All Downloads
+        </Link>
       </div>
     </div>
   );
@@ -485,9 +502,9 @@ function News_Notification({
         News & Notification
       </div>
 
-      {/* MARQUEE */}
+      {/* SCROLLABLE NOTIFICATIONS */}
 
-      <div className="h-64 overflow-hidden relative">
+      <div className="h-64 overflow-y-auto hide-scrollbar relative">
 
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -502,13 +519,7 @@ function News_Notification({
             </p>
           </div>
         ) : (
-          <div
-            className={`notification-marquee ${
-              data.length === 1
-                ? "notification-marquee-single"
-                : ""
-            }`}
-          >
+          <div className="flex flex-col gap-3">
             {data.map(
               (item, index) => {
                 const link =

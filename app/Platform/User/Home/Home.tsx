@@ -6,10 +6,10 @@ import NewNotificationMarquee from "./Marquee/marque";
 export default function Home() {
   return (
     <div className="relative">
-      <ImageCarousel />
-      <div className="mt-0.5 ">
+      <div className="mb-0.5 ">
         <NewNotificationMarquee/>
       </div>
+      <ImageCarousel />
       <div className="mt-8 mb-10 px-3 sm:px-5 md:px-8 lg:px-10 space-y-6 text-sm sm:text-base md:text-[17px] leading-7 sm:leading-8 text-gray-700">
         <div className="font-bold flex align-middle justify-center min-w-full text-lg sm:text-xl md:text-2xl leading-normal text-center">Welcome to Manipur Institute of Technology (AICTE-NEQIP funded)</div>
         <div className="text-justify">The Manipur Institute of Technology (erstwhile Government College of Technology) was established on 28th August 1998 by the Government of Manipur as Pioneer Engineering College in the State. On 31st December 2003, the College was renamed as Manipur College of Technology and the management of the College was handed over to a Society headed by the Hon’ble Chief Minister of Manipur as Chairman. Further, the Institute was renamed as Manipur Institute of Technology (MIT) since 4th February 2005. MIT became a Constituent College of Manipur University w.e.f. 13th October 2005.</div>

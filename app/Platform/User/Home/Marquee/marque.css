@@ -19,3 +19,11 @@
     transform: translateX(-100%);
   }
 }
+
+.notification-horizontal-marquee {
+animation-play-state: running;
+}
+
+.notification-horizontal-wrapper:hover .notification-horizontal-marquee {
+animation-play-state: paused;
+}
