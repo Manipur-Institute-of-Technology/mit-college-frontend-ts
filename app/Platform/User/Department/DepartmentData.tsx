@@ -604,20 +604,45 @@ export default function DepartmentData({
             // EXPERTISE
             // =============================================
 
-            const expertFields = Array.isArray(teacher.expertFields)
-              ? teacher.expertFields
-                  .flatMap((field) => {
-                    if (typeof field !== "string") return [field];
+            const expertFieldItems: string[] = Array.isArray(
+              teacher.expertFields
+            )
+              ? (() => {
+                  const fields = teacher.expertFields!.filter(
+                    (field): field is string =>
+                      typeof field === "string" && field.trim() !== ""
+                  );
 
+                  if (fields.length === 0) return [];
+
+                  // Handle JSON arrays stored across multiple strings
+                  try {
+                    const parsed = JSON.parse(fields.join(","));
+
+                    if (Array.isArray(parsed)) {
+                      return parsed.map(String);
+                    }
+                  } catch {
+                    // Try parsing individual fields below
+                  }
+
+                  return fields.flatMap((field) => {
                     try {
                       const parsed = JSON.parse(field);
-                      return Array.isArray(parsed) ? parsed : [field];
+
+                      return Array.isArray(parsed)
+                        ? parsed.map(String)
+                        : [String(parsed)];
                     } catch {
-                      return [field];
+                      return [
+                        field.replace(/^[\s["']+|[\s\]"']+$/g, ""),
+                      ];
                     }
-                  })
-                  .join(", ")
-              : "";
+                  });
+                })()
+              : [];
+
+            const expertFields = expertFieldItems.join(", ");
 
             return (
               <button
@@ -773,15 +798,12 @@ export default function DepartmentData({
                   {/* EXPERTISE */}
 
                   {expertFields && (
-                    <p
-                      className="
-                        text-gray-600
-                        text-xs
-                        line-clamp-2
-                      "
-                    >
-                      {expertFields}
-                    </p>
+                    <div className="text-gray-600 text-xs space-y-1">
+                      {/* Keep the existing display */}
+                      <p className="line-clamp-2">
+                        {expertFields}
+                      </p>
+                    </div>
                   )}
 
                   {/* PAPER COUNT */}
